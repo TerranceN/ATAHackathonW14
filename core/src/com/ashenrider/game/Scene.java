@@ -11,15 +11,10 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
 public class Scene {
     ArrayList<Entity> entities;
-    TiledMap map;
-    OrthogonalTiledMapRenderer tiledRenderer;
-    float TILE_SIZE = 32.0f;
+    Map map;
     
     public Scene(String filename) {
-        map = new TmxMapLoader().load(filename);
-        TiledMapTileLayer layer = (TiledMapTileLayer)map.getLayers().get(0);
-        tiledRenderer = new OrthogonalTiledMapRenderer(map, Gdx.graphics.getHeight() / (layer.getHeight() * TILE_SIZE));
-        System.out.println(layer.getWidth() + ", " + layer.getHeight());
+        map = new Map(filename);
 
         entities = new ArrayList<Entity>();
         entities.add(new Player());
@@ -31,12 +26,11 @@ public class Scene {
 		}
 	}
     
-    
     public void render(OrthographicCamera camera) {
-        tiledRenderer.setView(camera);
-        tiledRenderer.render();
+        map.renderBackground(camera);
 		for (Entity e : entities) {
 			e.render();
 		}
+        map.renderForeground(camera);
     }
 }
