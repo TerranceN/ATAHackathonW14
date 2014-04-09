@@ -15,7 +15,7 @@ public class Map {
     TiledMapTileLayer decorationFrontLayer;
     TiledMapTileLayer decorationBackLayer;
 
-    float TILE_SIZE = 32.0f;
+    float unitScale = 1.f;
 
     public Map(String fileName) {
         tiledMap = new TmxMapLoader().load(fileName);
@@ -26,7 +26,17 @@ public class Map {
 
         spawnLayer.setVisible(false);
 
-        mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, Gdx.graphics.getWidth() / (levelLayer.getWidth() * TILE_SIZE));
+        float screenRatio = (float)Gdx.graphics.getWidth() / Gdx.graphics.getHeight();
+        float tileRatio = (float)levelLayer.getWidth() / Gdx.graphics.getHeight();
+        float tileSize = levelLayer.getTileWidth();
+
+        if (screenRatio >= tileRatio) {
+            unitScale = Gdx.graphics.getWidth() / (levelLayer.getWidth() * tileSize);
+        } else {
+            unitScale = Gdx.graphics.getHeight() / (levelLayer.getHeight() * tileSize);
+        }
+
+        mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, unitScale);
     }
 
     public void hideAllLayers() {
