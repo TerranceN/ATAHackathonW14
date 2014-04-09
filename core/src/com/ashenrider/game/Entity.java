@@ -55,6 +55,22 @@ public abstract class Entity {
     	return new Vector2(pos.x + size.x/2, pos.y + size.y/2);
     }
 
+    public void renderWithWrapAround(SpriteBatch batch) {
+        if (pos.x + size.x > scene.map.getWidth()) {
+            pos.x -= scene.map.getWidth();
+            render(batch);
+            pos.x += scene.map.getWidth();
+        }
+
+        if (pos.y + size.y > scene.map.getHeight()) {
+            pos.y -= scene.map.getHeight();
+            render(batch);
+            pos.y += scene.map.getHeight();
+        }
+
+        render(batch);
+    }
+
     public abstract void render(SpriteBatch batch);
 	
 	public void destroy() {

@@ -121,6 +121,10 @@ public class Map {
         mapRenderer.render();
     }
 
+    public Vector2 getTileCoords(Vector2 worldCoords) {
+        return new Vector2((float)Math.floor(worldCoords.x / tileSize), (float)Math.floor(worldCoords.y / tileSize));
+    }
+
     public Vector2 getLeastPenetration(Vector2 vel, Vector2 lower, Vector2 upper) {
         int lowerX = (int)Math.floor(lower.x / tileSize);
         int lowerY = (int)Math.floor(lower.y / tileSize);

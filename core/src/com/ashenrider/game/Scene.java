@@ -54,6 +54,8 @@ public class Scene {
         		  new KeyboardButton(Keys.ENTER),
         		  new KeyboardButton(Keys.APOSTROPHE));
 
+        boolean controllerDebug = false;
+
         for(Controller controller : Controllers.getControllers()) {
             addPlayer(new Vector2(400, 200),
                     new ControllerAxis(controller, Xbox.AXIS_LEFT_STICK_HORIZONTAL),
@@ -64,54 +66,56 @@ public class Scene {
                     new ControllerAxisButton(controller, Xbox.AXIS_LEFT_TRIGGER));
 
 
-            controller.addListener(new ControllerListener() {
-                @Override
-                public void connected(Controller controller) {
+            if (controllerDebug) {
+                controller.addListener(new ControllerListener() {
+                    @Override
+                    public void connected(Controller controller) {
 
-                }
+                    }
 
-                @Override
-                public void disconnected(Controller controller) {
+                    @Override
+                    public void disconnected(Controller controller) {
 
-                }
+                    }
 
-                @Override
-                public boolean buttonDown(Controller controller, int i) {
-                    Gdx.app.log("Controller", "BUTTON: " + i);
-                    return false;
-                }
+                    @Override
+                    public boolean buttonDown(Controller controller, int i) {
+                        Gdx.app.log("Controller", "BUTTON: " + i);
+                        return false;
+                    }
 
-                @Override
-                public boolean buttonUp(Controller controller, int i) {
-                    return false;
-                }
+                    @Override
+                    public boolean buttonUp(Controller controller, int i) {
+                        return false;
+                    }
 
-                @Override
-                public boolean axisMoved(Controller controller, int i, float v) {
-                    Gdx.app.log("Controller", "AXIS: " + i + " || " + v);
-                    return false;
-                }
+                    @Override
+                    public boolean axisMoved(Controller controller, int i, float v) {
+                        Gdx.app.log("Controller", "AXIS: " + i + " || " + v);
+                        return false;
+                    }
 
-                @Override
-                public boolean povMoved(Controller controller, int i, PovDirection povDirection) {
-                    return false;
-                }
+                    @Override
+                    public boolean povMoved(Controller controller, int i, PovDirection povDirection) {
+                        return false;
+                    }
 
-                @Override
-                public boolean xSliderMoved(Controller controller, int i, boolean b) {
-                    return false;
-                }
+                    @Override
+                    public boolean xSliderMoved(Controller controller, int i, boolean b) {
+                        return false;
+                    }
 
-                @Override
-                public boolean ySliderMoved(Controller controller, int i, boolean b) {
-                    return false;
-                }
+                    @Override
+                    public boolean ySliderMoved(Controller controller, int i, boolean b) {
+                        return false;
+                    }
 
-                @Override
-                public boolean accelerometerMoved(Controller controller, int i, Vector3 vector3) {
-                    return false;
-                }
-            });
+                    @Override
+                    public boolean accelerometerMoved(Controller controller, int i, Vector3 vector3) {
+                        return false;
+                    }
+                });
+            }
         }
 
         ArrayList<Vector2> spawnPoints = map.getSpawnPoints();
@@ -183,7 +187,7 @@ public class Scene {
 	        map.renderLayer(layer, camera);
 			batch.begin();
 			for (Entity e : entityLayers.get(layer)) {
-				e.render(batch);
+				e.renderWithWrapAround(batch);
 			}
 			batch.end();
 		}
