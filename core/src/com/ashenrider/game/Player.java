@@ -263,7 +263,7 @@ public class Player extends Entity {
         // if falling quickly and hit the ground
         if (onGround && velY < minLandedSpeed) {
         	landed = true;
-        	landedTime = 0.3f;
+        	landedTime = 0.125f;
         }
     }
 	
