@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="100" height="100" tilewidth="32" tileheight="32">
+<map version="1.0" orientation="orthogonal" width="20" height="10" tilewidth="32" tileheight="32">
  <tileset firstgid="1" name="TestTileset" tilewidth="32" tileheight="32">
-  <image source="test.png" width="32" height="32"/>
+  <image source="../../test.png" width="32" height="32"/>
  </tileset>
- <layer name="Tile Layer 1" width="100" height="100">
+ <layer name="decoration_back" width="20" height="10">
   <data encoding="base64" compression="zlib">
-   eJzt0zkKADAIBEDz/0+nDSEHuZowAxYKNsqmiEhVxWJfzrmjvuesn80507r/KB+9Pe7YzYN/vCEfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwG8ynhAAKQ==
+   eJxjZGBgYETDDCTykcUZkORJ4ZMqTsh95JhHbXWUuG8UDA4AAGaIACk=
   </data>
  </layer>
+ <layer name="level" width="20" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFwxkwUhGPRAAAGDQAFA==
+  </data>
+ </layer>
+ <layer name="spawn" width="20" height="10" visible="0">
+  <data encoding="base64" compression="zlib">
+   eJxjYBiZgHGgHTAKhgQAAAVIAAI=
+  </data>
+ </layer>
+ <layer name="decoration_front" width="20" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AU4AIAAyAAAQ==
+  </data>
+ </layer>
+ <imagelayer name="background" width="20" height="10"/>
 </map>
