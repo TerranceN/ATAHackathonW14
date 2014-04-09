@@ -1,9 +1,8 @@
 package com.ashenrider.game;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public abstract class Entity {
 	Scene scene;
@@ -56,7 +55,7 @@ public abstract class Entity {
     	return new Vector2(pos.x + size.x/2, pos.y + size.y/2);
     }
 
-    public abstract void render(OrthographicCamera camera);
+    public abstract void render(SpriteBatch batch);
 	
 	public void destroy() {
 		// remove it from the current layer's list of entities

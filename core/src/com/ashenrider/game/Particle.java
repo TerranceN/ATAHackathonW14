@@ -8,7 +8,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Particle extends Entity {
-	SpriteBatch batch;
 	Texture img;
 	Color color;
 	
@@ -30,7 +29,6 @@ public class Particle extends Entity {
 		// the particle image is a white circle, so tint it to a variable color
 		color = new Color(0.0f, 0.0f, 0.5f, 1.0f);
 
-		batch = new SpriteBatch();
 		img = new Texture("particle.png");
 		size = new Vector2(img.getWidth() * scale, img.getHeight() * scale);
 		
@@ -52,15 +50,13 @@ public class Particle extends Entity {
 	}
 
 	@Override
-	public void render(OrthographicCamera camera) {
+	public void render(SpriteBatch batch) {
 		scale = maxScale * Math.min(1.0f, duration/maxDuration);
 		float width = img.getWidth()*scale;
 		float height = img.getHeight()*scale;
-        batch.setProjectionMatrix(camera.combined);
-		batch.begin();
 		batch.setColor(color);
 		batch.draw(img, pos.x - width/2, pos.y - height/2, width, height);
-		batch.end();
+		batch.setColor(Color.WHITE);
 	}
 	
 }

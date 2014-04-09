@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class Player extends Entity {
 
-	SpriteBatch batch;
 	Texture img;
 
 	float JUMP = 400.0f;
@@ -42,11 +41,10 @@ public class Player extends Entity {
 	
 	public int number;
 	
-	public Player(int playerNumber, Vector2 initPosition, InputAxis moveAxis, InputButton jump, InputButton shoot, InputButton dash) {
+	public Player(int playerNumber, Vector2 initPosition, InputAxis moveAxis, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton dash) {
 		super(initPosition);
 
 		number = playerNumber;
-		batch = new SpriteBatch();
 		img = new Texture("p" + (playerNumber % 3) + ".png");
 
 		size = new Vector2(img.getWidth(), img.getHeight());
@@ -55,6 +53,9 @@ public class Player extends Entity {
 		axisMap = new HashMap<Action, InputAxis>();
 		
 		axisMap.put(Action.MOVE, moveAxis);
+		axisMap.put(Action.AIM_HORIZONTAL, aimH);
+		axisMap.put(Action.AIM_VERTICAL, aimV);
+
 		buttonMap.put(Action.JUMP, jump);
 		buttonMap.put(Action.SHOOT, shoot);
 		buttonMap.put(Action.DASH, dash);
@@ -167,10 +168,7 @@ public class Player extends Entity {
     }
 	
 	@Override
-	public void render(OrthographicCamera camera) {
-        batch.setProjectionMatrix(camera.combined);
-		batch.begin();
+	public void render(SpriteBatch batch) {
 		batch.draw(img, pos.x, pos.y);
-		batch.end();
 	}
 }

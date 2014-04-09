@@ -7,7 +7,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class Projectile extends Entity {
-	SpriteBatch batch;
 	Texture img;
 	
 	private int shotBy;
@@ -27,7 +26,6 @@ public class Projectile extends Entity {
 			speed = direction.scl(SPEED / direction.len());
 		}
 		shotBy = playerNumber;
-		batch = new SpriteBatch();
 		img = new Texture("projectile.png");
 		
 		// you cannot hurt yourself within the first fraction of a second that a shot is fired
@@ -74,12 +72,9 @@ public class Projectile extends Entity {
     }
     
 	@Override
-	public void render(OrthographicCamera camera) {
-        batch.setProjectionMatrix(camera.combined);
-		batch.begin();
+	public void render(SpriteBatch batch) {
 		// center the image at the center of this object's hitbox
 		batch.draw(img, pos.x + (size.x - img.getWidth())/2, pos.y + (size.y - img.getHeight())/2);
-		batch.end();
 	}
 	
 }

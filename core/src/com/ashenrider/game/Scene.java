@@ -9,6 +9,7 @@ import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector3;
@@ -31,8 +32,10 @@ public class Scene {
     public ArrayList<Player> players;
     
     public Map map;
+    SpriteBatch batch;
     
     public Scene(String filename) {
+    	batch = new SpriteBatch();
         map = new Map(filename);
 
         newEntities = new ArrayList<Entity>();
@@ -44,7 +47,9 @@ public class Scene {
         
         players = new ArrayList<Player>();
         addPlayer(new Vector2(100, 100),
-        		  new KeyboardAxis(Keys.A, Keys.D),
+	      		  new KeyboardAxis(Keys.A, Keys.D),
+	    		  new KeyboardAxis(Keys.LEFT, Keys.RIGHT),
+	    		  new KeyboardAxis(Keys.DOWN, Keys.UP),
         		  new KeyboardButton(Keys.W),
         		  new KeyboardButton(Keys.ENTER),
         		  new KeyboardButton(Keys.APOSTROPHE));
@@ -52,6 +57,8 @@ public class Scene {
         for(Controller controller : Controllers.getControllers()) {
             addPlayer(new Vector2(400, 200),
                     new ControllerAxis(controller, Xbox.AXIS_LEFT_STICK_HORIZONTAL),
+                    new ControllerAxis(controller, Xbox.AXIS_RIGHT_STICK_HORIZONTAL),
+                    new ControllerAxis(controller, Xbox.AXIS_RIGHT_STICK_VERTICAL),
                     new ControllerButton(controller, Xbox.BTN_A),
                     new ControllerAxisButton(controller, Xbox.AXIS_RIGHT_TRIGGER),
                     new ControllerAxisButton(controller, Xbox.AXIS_LEFT_TRIGGER));
@@ -158,8 +165,8 @@ public class Scene {
 		newEntities.clear();
 	}
 	
-	public void addPlayer(Vector2 position,  InputAxis moveAxis, InputButton jump, InputButton shoot, InputButton dash) {
-		Player p = new Player(players.size(), position, moveAxis, jump, shoot, dash);
+	public void addPlayer(Vector2 position,  InputAxis moveAxis, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton dash) {
+		Player p = new Player(players.size(), position, moveAxis, aimH, aimV, jump, shoot, dash);
         players.add(p);
         addEntity(p, PLAYER_LAYER);
 	}
@@ -171,11 +178,14 @@ public class Scene {
 	}
 	
     public void render() {
+        batch.setProjectionMatrix(camera.combined);
 		for (int layer =0; layer < NUM_LAYERS; layer++) {
 	        map.renderLayer(layer, camera);
+			batch.begin();
 			for (Entity e : entityLayers.get(layer)) {
-				e.render(camera);
+				e.render(batch);
 			}
+			batch.end();
 		}
     }
 }
