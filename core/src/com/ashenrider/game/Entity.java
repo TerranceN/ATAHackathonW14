@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
 public abstract class Entity {
+	Scene scene;
+	
 	Vector2 pos;
 	Vector2 speed;
 	float GRAVITY = -200.0f;

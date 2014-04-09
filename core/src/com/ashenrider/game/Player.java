@@ -18,15 +18,24 @@ public class Player extends Entity {
 	int width = 32;
 	int height = 32;
 	
+	int airjumps = 0;
+	
 	public enum Action {
-		MOVE, AIM_HORIZONTAL, AIM_VERTICAL, JUMP, SHOOT
+		MOVE, AIM_HORIZONTAL, AIM_VERTICAL, JUMP, SHOOT, DASH
 	}
 	
 	HashMap<Action, InputButton> buttonMap;
 	HashMap<Action, InputAxis> axisMap;
 	
+	HashMap<Action, Float> cooldown;
+	HashMap<Action, Float> maxCooldown;
+	
+	public int number;
+	
 	public Player(int playerNumber, Vector2 initPosition, InputAxis moveAxis, InputButton jump, InputButton shoot) {
 		super(initPosition);
+
+		number = playerNumber;
 		batch = new SpriteBatch();
 		img = new Texture("p" + (playerNumber % 3) + ".png");
 		
@@ -36,16 +45,33 @@ public class Player extends Entity {
 		axisMap.put(Action.MOVE, moveAxis);
 		buttonMap.put(Action.JUMP, jump);
 		buttonMap.put(Action.SHOOT, shoot);
+		
+		cooldown = new HashMap<Action, Float>();
+		cooldown.put(Action.JUMP, 0.0f);
+		cooldown.put(Action.SHOOT, 0.0f);
+		maxCooldown = new HashMap<Action, Float>();
+		maxCooldown.put(Action.JUMP, 0.5f);
+		maxCooldown.put(Action.SHOOT, 0.5f);
 	}
 	
 	@Override
 	public void update(float dt) {
 		super.update(dt);
 		//if (Gdx.input.isKeyPressed(keyMap.get(Action.JUMP)) && onGround) {
-		if (buttonMap.get(Action.JUMP).isDown()) {
+		if (buttonMap.get(Action.JUMP).isDown() && cooldown.get(Action.JUMP) == 0.0f) {
 			speed.y = JUMP;
+			cooldown.put(Action.JUMP, maxCooldown.get(Action.JUMP));
+		}
+		if (buttonMap.get(Action.SHOOT).isDown() && cooldown.get(Action.SHOOT) == 0.0f) {
+			Projectile p = new Projectile(pos.cpy(), speed.cpy(), number);
+			cooldown.put(Action.SHOOT, maxCooldown.get(Action.SHOOT));
+			scene.addEntity(p);
 		}
 		speed.x = speed.x + ACCEL * axisMap.get(Action.MOVE).getValue() * dt;
+		
+		for (Action action : cooldown.keySet()) {
+			cooldown.put(action, Math.max(0.0f, cooldown.get(action) - dt));
+		}
 	}
 	
 	@Override

@@ -14,14 +14,17 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector3;
 
 public class Scene {
-    ArrayList<Entity> entities;
-    ArrayList<Player> players;
+    public ArrayList<Entity> newEntities;
     
-    Map map;
+    public ArrayList<Entity> entities;
+    public ArrayList<Player> players;
+    
+    public Map map;
     
     public Scene(String filename) {
         map = new Map(filename);
 
+        newEntities = new ArrayList<Entity>();
         entities = new ArrayList<Entity>();
         players = new ArrayList<Player>();
         addPlayer(new Vector2(100, 100),
@@ -48,14 +51,23 @@ public class Scene {
 		for (Entity e : entities) {
 			e.update(dt);
 		}
+		for (Entity e : newEntities) {
+			entities.add(0, e);
+		}
+		newEntities.clear();
 	}
 	
 	public void addPlayer(Vector2 position,  InputAxis moveAxis, InputButton jump, InputButton shoot) {
 		Player p = new Player(players.size(), position, moveAxis, jump, shoot);
-        entities.add(p);
         players.add(p);
+        addEntity(p);
 	}
-    
+
+	public void addEntity(Entity e) {
+		newEntities.add(e);
+		e.scene = this;
+	}
+	
     public void render(OrthographicCamera camera) {
         map.renderBackground(camera);
 		for (Entity e : entities) {
