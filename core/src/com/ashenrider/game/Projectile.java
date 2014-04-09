@@ -14,6 +14,9 @@ public class Projectile extends Entity {
 	
 	public float SPEED = 750.0f;
 	
+	// frames per particle spawn
+	private int particleTimer = 0;
+	
 	public Projectile(Vector2 initPosition, Vector2 direction, int playerNumber) {
 		super(initPosition);
 		size = new Vector2(8, 8);
@@ -35,6 +38,9 @@ public class Projectile extends Entity {
 	public void update(float dt) {
 		super.update(dt);
 		friendlyFireTimer -= dt;
+		
+		Particle p = new Particle(getCentre(), speed.cpy().scl(-1), 0.3f, 0.3f);
+		scene.addEntity(p, Scene.PARTICLE_LAYER);
 	}
 
     @Override
@@ -69,7 +75,8 @@ public class Projectile extends Entity {
 	@Override
 	public void render() {
 		batch.begin();
-		batch.draw(img, pos.x, pos.y);
+		// center the image at the center of this object's hitbox
+		batch.draw(img, pos.x + (size.x - img.getWidth())/2, pos.y + (size.y - img.getHeight())/2);
 		batch.end();
 	}
 	

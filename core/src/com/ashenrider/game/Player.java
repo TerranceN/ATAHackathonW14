@@ -82,7 +82,7 @@ public class Player extends Entity {
 		if (buttonMap.get(Action.SHOOT).isDown() && cooldown.get(Action.SHOOT) == 0.0f) {
 			Projectile p = new Projectile(pos.cpy(), speed.cpy(), number);
 			cooldown.put(Action.SHOOT, maxCooldown.get(Action.SHOOT));
-			scene.addEntity(p);
+			scene.addEntity(p, Scene.SHOT_LAYER);
 		}
 		// dash quickly in the currently facing direction
 		// (or in the aimed direction)

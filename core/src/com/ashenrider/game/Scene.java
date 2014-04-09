@@ -14,9 +14,19 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector3;
 
 public class Scene {
+	// map and entitity layers
+	int NUM_LAYERS = 5;
+	static int BACKGROUND_LAYER = 0;
+	static int PLAYER_LAYER = 1;
+	static int PARTICLE_LAYER = 2;
+	static int SHOT_LAYER = 3;
+	static int FOREGROUND_LAYER = 4;
+	
     public ArrayList<Entity> newEntities;
-    
     public ArrayList<Entity> entities;
+    // list of lists of entities
+    public ArrayList<ArrayList<Entity>> entityLayers;
+    
     public ArrayList<Player> players;
     
     public Map map;
@@ -26,6 +36,11 @@ public class Scene {
 
         newEntities = new ArrayList<Entity>();
         entities = new ArrayList<Entity>();
+        entityLayers = new ArrayList<ArrayList<Entity>>();
+        for (int layer =0; layer < NUM_LAYERS; layer++) {
+        	entityLayers.add(new ArrayList<Entity>());
+        }
+        
         players = new ArrayList<Player>();
         addPlayer(new Vector2(100, 100),
         		  new KeyboardAxis(Keys.A, Keys.D),
@@ -111,8 +126,10 @@ public class Scene {
 			}
 		}
 		for (Entity e : newEntities) {
-			entities.add(0, e);
+			entities.add(e);
+			entityLayers.get(e.layer).add(e);
 		}
+		// remove destroyed entities
 		for (int i = entities.size() - 1; i >= 0; i--) {
 			Entity e = entities.get(i);
 			if (e.destroyed) {
@@ -125,19 +142,21 @@ public class Scene {
 	public void addPlayer(Vector2 position,  InputAxis moveAxis, InputButton jump, InputButton shoot, InputButton dash) {
 		Player p = new Player(players.size(), position, moveAxis, jump, shoot, dash);
         players.add(p);
-        addEntity(p);
+        addEntity(p, PLAYER_LAYER);
 	}
 
-	public void addEntity(Entity e) {
-		newEntities.add(e);
+	public void addEntity(Entity e, int layer) {
 		e.scene = this;
+		e.layer = layer;
+		newEntities.add(e);
 	}
 	
     public void render(OrthographicCamera camera) {
-        map.renderBackground(camera);
-		for (Entity e : entities) {
-			e.render();
-		}
-        map.renderForeground(camera);
+    	for (int layer =0; layer < NUM_LAYERS; layer++) {
+            map.renderLayer(layer, camera);
+    		for (Entity e : entityLayers.get(layer)) {
+    			e.render();
+    		}
+    	}
     }
 }

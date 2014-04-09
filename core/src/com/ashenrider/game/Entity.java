@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public abstract class Entity {
 	Scene scene;
+	int layer;
 	
 	Vector2 pos;
 	Vector2 speed;
@@ -50,9 +51,15 @@ public abstract class Entity {
     	return new Rectangle(pos.x ,pos.y, size.x, size.y);
     }
     
+    public Vector2 getCentre() {
+    	return new Vector2(pos.x + size.x/2, pos.y + size.y/2);
+    }
 	public abstract void render();
 	
 	public void destroy() {
+		// remove it from the current layer's list of entities
+		scene.entityLayers.get(layer).remove(this);
+		// and mark it to be removed from the list of all entities later
 		destroyed = true;
 	}
 }

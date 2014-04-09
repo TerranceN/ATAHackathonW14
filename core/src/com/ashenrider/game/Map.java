@@ -107,22 +107,17 @@ public class Map {
 
         return null;
     }
-
-    public void renderBackground(OrthographicCamera camera) {
+    
+    public void renderLayer(int layer, OrthographicCamera camera) {
         hideAllLayers();
-
-        decorationBackLayer.setVisible(true);
-
-        mapRenderer.setView(camera);
-        mapRenderer.render();
-    }
-
-    public void renderForeground(OrthographicCamera camera) {
-        hideAllLayers();
-
-        levelLayer.setVisible(true);
-        decorationFrontLayer.setVisible(true);
-
+        if (layer == Scene.BACKGROUND_LAYER) {
+            decorationBackLayer.setVisible(true);
+        } else if (layer == Scene.FOREGROUND_LAYER) {
+            levelLayer.setVisible(true);
+            decorationFrontLayer.setVisible(true);
+        } else {
+        	return;
+        }
         mapRenderer.setView(camera);
         mapRenderer.render();
     }
