@@ -19,8 +19,9 @@ public class Map {
     TiledMapTileLayer decorationBackLayer;
 
     float tileSize = 1.f;
-    float unitScale = 1.f;
-    float tileSizeInScreenSpace = 1.f;
+
+    float width = 0f;
+    float height = 0f;
 
     public Map(String fileName) {
         tiledMap = new TmxMapLoader().load(fileName);
@@ -31,30 +32,28 @@ public class Map {
 
         spawnLayer.setVisible(false);
 
-        float screenRatio = (float)Gdx.graphics.getWidth() / Gdx.graphics.getHeight();
-        float tileRatio = (float)levelLayer.getWidth() / Gdx.graphics.getHeight();
         tileSize = levelLayer.getTileWidth();
 
-        if (screenRatio >= tileRatio) {
-            unitScale = Gdx.graphics.getWidth() / (levelLayer.getWidth() * tileSize);
-        } else {
-            unitScale = Gdx.graphics.getHeight() / (levelLayer.getHeight() * tileSize);
-        }
+        width = tileSize * levelLayer.getWidth();
+        height = tileSize * levelLayer.getHeight();
 
-        tileSizeInScreenSpace = tileSize * unitScale;
+        mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, 1f);
+    }
 
-        mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, unitScale);
+    public float getWidth() {
+        return width;
+    }
+
+    public float getHeight() {
+        return height;
     }
 
     public Vector2 toWorldSpace(Vector2 tileCoord) {
-        int x = Math.round(tileCoord.x);
-        int y = Math.round(tileCoord.y);
-
-        return toWorldSpace(x, y);
+        return toWorldSpace(tileCoord.x, tileCoord.y);
     }
 
-    public Vector2 toWorldSpace(int x, int y) {
-        return new Vector2(tileSize * (x + 0.5f) / unitScale, tileSize * y / unitScale);
+    public Vector2 toWorldSpace(float x, float y) {
+        return new Vector2(tileSize * x, tileSize * y);
     }
 
     public ArrayList<Vector2> getSpawnPoints() {
@@ -65,7 +64,7 @@ public class Map {
         for (int x = 0; x < spawnLayer.getWidth(); x++) {
             for (int y = 0; y < spawnLayer.getHeight(); y++) {
                 if (spawnLayer.getCell(x, y) != null) {
-                    lst.add(toWorldSpace(x, y));
+                    lst.add(toWorldSpace(x + 0.5f, y));
                 }
             }
         }
@@ -123,10 +122,10 @@ public class Map {
     }
 
     public Vector2 getLeastPenetration(Vector2 vel, Vector2 lower, Vector2 upper) {
-        int lowerX = (int)Math.floor(lower.x / tileSizeInScreenSpace);
-        int lowerY = (int)Math.floor(lower.y / tileSizeInScreenSpace);
-        int upperX = (int)Math.ceil(upper.x / tileSizeInScreenSpace);
-        int upperY = (int)Math.ceil(upper.y / tileSizeInScreenSpace);
+        int lowerX = (int)Math.floor(lower.x / tileSize);
+        int lowerY = (int)Math.floor(lower.y / tileSize);
+        int upperX = (int)Math.ceil(upper.x / tileSize);
+        int upperY = (int)Math.ceil(upper.y / tileSize);
 
         float penX = 0;
         float penY = 0;
@@ -149,9 +148,9 @@ public class Map {
                 if (levelLayer.getCell(x, y) != null) {
                     foundCollision = true;
                     if (vel.x < 0) {
-                        newPenX = (x + 1) * tileSizeInScreenSpace - lower.x;
+                        newPenX = (x + 1) * tileSize - lower.x;
                     } else {
-                        newPenX = (x) * tileSizeInScreenSpace - upper.x;
+                        newPenX = (x) * tileSize - upper.x;
                     }
                 } else {
                     if (foundCollision) {
@@ -183,9 +182,9 @@ public class Map {
                 if (levelLayer.getCell(x, y) != null) {
                     foundCollision = true;
                     if (vel.y < 0) {
-                        newPenY = (y + 1) * tileSizeInScreenSpace - lower.y;
+                        newPenY = (y + 1) * tileSize - lower.y;
                     } else {
-                        newPenY = (y) * tileSizeInScreenSpace - upper.y;
+                        newPenY = (y) * tileSize - upper.y;
                     }
                 } else {
                     if (foundCollision) {

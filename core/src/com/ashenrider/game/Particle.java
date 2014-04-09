@@ -1,6 +1,7 @@
 package com.ashenrider.game;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
@@ -51,10 +52,11 @@ public class Particle extends Entity {
 	}
 
 	@Override
-	public void render() {
+	public void render(OrthographicCamera camera) {
 		scale = maxScale * Math.min(1.0f, duration/maxDuration);
 		float width = img.getWidth()*scale;
 		float height = img.getHeight()*scale;
+        batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 		batch.setColor(color);
 		batch.draw(img, pos.x - width/2, pos.y - height/2, width, height);

@@ -22,6 +22,7 @@ public class Scene {
 	static int SHOT_LAYER = 3;
 	static int FOREGROUND_LAYER = 4;
 	
+    OrthographicCamera camera;
     public ArrayList<Entity> newEntities;
     public ArrayList<Entity> entities;
     // list of lists of entities
@@ -112,6 +113,24 @@ public class Scene {
             Player player = players.get(i);
             player.pos = spawnPoints.get(i % spawnPoints.size()).cpy().sub(new Vector2(player.img.getWidth() / 2.f, 0f));
         }
+
+        onResize();
+    }
+
+    public void onResize() {
+        float screenRatio = (float)Gdx.graphics.getWidth() / Gdx.graphics.getHeight();
+        float tileRatio = (float)map.levelLayer.getWidth() / map.levelLayer.getHeight();
+        float unitScale = 1f;
+
+        if (screenRatio <= tileRatio) {
+            unitScale = Gdx.graphics.getWidth() / (map.levelLayer.getWidth() * map.tileSize);
+        } else {
+            unitScale = Gdx.graphics.getHeight() / (map.levelLayer.getHeight() * map.tileSize);
+        }
+
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, Gdx.graphics.getWidth() / unitScale, Gdx.graphics.getHeight() / unitScale);
+        camera.update();
     }
 
 	public void update(float dt) {
@@ -151,12 +170,12 @@ public class Scene {
 		newEntities.add(e);
 	}
 	
-    public void render(OrthographicCamera camera) {
-    	for (int layer =0; layer < NUM_LAYERS; layer++) {
-            map.renderLayer(layer, camera);
-    		for (Entity e : entityLayers.get(layer)) {
-    			e.render();
-    		}
-    	}
+    public void render() {
+		for (int layer =0; layer < NUM_LAYERS; layer++) {
+	        map.renderLayer(layer, camera);
+			for (Entity e : entityLayers.get(layer)) {
+				e.render(camera);
+			}
+		}
     }
 }

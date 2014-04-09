@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class Projectile extends Entity {
 	SpriteBatch batch;
@@ -73,7 +74,8 @@ public class Projectile extends Entity {
     }
     
 	@Override
-	public void render() {
+	public void render(OrthographicCamera camera) {
+        batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 		// center the image at the center of this object's hitbox
 		batch.draw(img, pos.x + (size.x - img.getWidth())/2, pos.y + (size.y - img.getHeight())/2);

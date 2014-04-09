@@ -6,15 +6,15 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class GameScreen implements Screen {
+    HackathonApp app;
+
     OrthographicCamera camera;
     Scene scene;
 
-    public GameScreen(String map) {
-        scene = new Scene(map);
+    public GameScreen(HackathonApp app, String map) {
+        this.app = app;
 
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.update();
+        scene = new Scene(map);
     }
 
     @Override
@@ -24,9 +24,7 @@ public class GameScreen implements Screen {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        camera.update();
-
-        scene.render(camera);
+        scene.render();
     }
 
     @Override
