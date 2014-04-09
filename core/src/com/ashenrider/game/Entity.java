@@ -33,6 +33,9 @@ public abstract class Entity {
 			pos.x = pos.x - Gdx.graphics.getWidth();
 		}
 	}
+
+    public void handleCollision(Map map) {
+    }
 	
 	public abstract void render();
 }

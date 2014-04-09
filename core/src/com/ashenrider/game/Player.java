@@ -40,13 +40,39 @@ public class Player extends Entity {
 	
 	@Override
 	public void update(float dt) {
-		super.update(dt);
 		//if (Gdx.input.isKeyPressed(keyMap.get(Action.JUMP)) && onGround) {
 		if (buttonMap.get(Action.JUMP).isDown()) {
 			speed.y = JUMP;
 		}
 		speed.x = speed.x + ACCEL * axisMap.get(Action.MOVE).getValue() * dt;
+		super.update(dt);
 	}
+
+    @Override
+    public void handleCollision(Map map) {
+        Vector2 pen = map.getLeastPenetration(speed, pos, pos.cpy().add(new Vector2(img.getWidth(), img.getHeight())));
+
+        if (pen.len() > 0) {
+            if (Math.abs(pen.x) > Math.abs(pen.y)) {
+                pos.add(new Vector2(0, pen.y));
+                speed.y = 0;
+            } else {
+                pos.add(new Vector2(pen.x, 0));
+                speed.x = 0;
+            }
+
+            pen = map.getLeastPenetration(speed, pos, pos.cpy().add(new Vector2(img.getWidth(), img.getHeight())));
+            pos.add(pen);
+
+            if (pen.x != 0) {
+                speed.x = 0;
+            }
+
+            if (pen.y != 0) {
+                speed.y = 0;
+            }
+        }
+    }
 	
 	@Override
 	public void render() {

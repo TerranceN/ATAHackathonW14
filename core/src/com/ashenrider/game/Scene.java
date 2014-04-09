@@ -48,6 +48,10 @@ public class Scene {
 		for (Entity e : entities) {
 			e.update(dt);
 		}
+
+		for (Entity e : entities) {
+			e.handleCollision(map);
+		}
 	}
 	
 	public void addPlayer(Vector2 position,  InputAxis moveAxis, InputButton jump, InputButton shoot) {
