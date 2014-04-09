@@ -1,4 +1,4 @@
-package com.ashenrider.game.controls;
+package com.ashenrider.game.Input;
 
 public class Xbox {
     //BUTTON

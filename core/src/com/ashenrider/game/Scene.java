@@ -2,13 +2,16 @@ package com.ashenrider.game;
 
 import java.util.ArrayList;
 
-import com.ashenrider.game.Input.InputAxis;
-import com.ashenrider.game.Input.InputButton;
-import com.ashenrider.game.Input.KeyboardAxis;
-import com.ashenrider.game.Input.KeyboardButton;
+import com.ashenrider.game.Input.*;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.controllers.Controllers;
+import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.math.Vector3;
 
 public class Scene {
     ArrayList<Entity> entities;
@@ -25,11 +28,13 @@ public class Scene {
         		  new KeyboardAxis(Keys.A, Keys.D),
         		  new KeyboardButton(Keys.W),
         		  new KeyboardButton(Keys.ENTER));
-        
-        addPlayer(new Vector2(400, 200),
-	      		  new KeyboardAxis(Keys.LEFT, Keys.RIGHT),
-	      		  new KeyboardButton(Keys.UP),
-	      		  new KeyboardButton(Keys.CONTROL_RIGHT));
+
+        for(Controller controller : Controllers.getControllers()) {
+            addPlayer(new Vector2(400, 200),
+                    new ControllerAxis(controller, Xbox.AXIS_LEFT_STICK_HORIZONTAL),
+                    new ControllerButton(controller, Xbox.BTN_A),
+                    new ControllerAxisButton(controller, Xbox.AXIS_RIGHT_TRIGGER));
+        }
     }
 
 	public void update(float dt) {
