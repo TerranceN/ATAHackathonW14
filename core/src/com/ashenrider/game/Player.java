@@ -12,6 +12,8 @@ public class Player extends Entity {
 
 	Texture img;
 
+    int lives = 10;
+
 	float JUMP = 400.0f;
 	float ACCEL = 4000.0f;
 	float MAX_SPEED = 400.0f; // while not dashing
@@ -69,7 +71,12 @@ public class Player extends Entity {
 		maxCooldown.put(Action.SHOOT, 0.3f);
 		maxCooldown.put(Action.DASH, DASH_TIME + 0.5f);
 	}
-	
+
+    public int getLives() {
+        return lives;
+    }
+	public Texture getSprite() { return img; }
+
 	@Override
 	public void update(float dt) {
 		// jump
