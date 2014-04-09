@@ -14,26 +14,31 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector3;
 
 public class Scene {
-    ArrayList<Entity> entities;
-    ArrayList<Player> players;
+    public ArrayList<Entity> newEntities;
     
-    Map map;
+    public ArrayList<Entity> entities;
+    public ArrayList<Player> players;
+    
+    public Map map;
     
     public Scene(String filename) {
         map = new Map(filename);
 
+        newEntities = new ArrayList<Entity>();
         entities = new ArrayList<Entity>();
         players = new ArrayList<Player>();
         addPlayer(new Vector2(100, 100),
         		  new KeyboardAxis(Keys.A, Keys.D),
         		  new KeyboardButton(Keys.W),
-        		  new KeyboardButton(Keys.ENTER));
+        		  new KeyboardButton(Keys.ENTER),
+        		  new KeyboardButton(Keys.APOSTROPHE));
 
         for(Controller controller : Controllers.getControllers()) {
             addPlayer(new Vector2(400, 200),
                     new ControllerAxis(controller, Xbox.AXIS_LEFT_STICK_HORIZONTAL),
                     new ControllerButton(controller, Xbox.BTN_A),
-                    new ControllerAxisButton(controller, Xbox.AXIS_RIGHT_TRIGGER));
+                    new ControllerAxisButton(controller, Xbox.AXIS_RIGHT_TRIGGER),
+                    new ControllerAxisButton(controller, Xbox.AXIS_LEFT_TRIGGER));
 
 
             controller.addListener(new ControllerListener() {
@@ -96,20 +101,38 @@ public class Scene {
 
 	public void update(float dt) {
 		for (Entity e : entities) {
-			e.update(dt);
+			if (!e.destroyed) {
+				e.update(dt);
+			}
 		}
-
 		for (Entity e : entities) {
-			e.handleCollision(map);
+			if (!e.destroyed) {
+				e.handleCollision(map);
+			}
 		}
+		for (Entity e : newEntities) {
+			entities.add(0, e);
+		}
+		for (int i = entities.size() - 1; i >= 0; i--) {
+			Entity e = entities.get(i);
+			if (e.destroyed) {
+				entities.remove(i);
+			}
+		}
+		newEntities.clear();
 	}
 	
-	public void addPlayer(Vector2 position,  InputAxis moveAxis, InputButton jump, InputButton shoot) {
-		Player p = new Player(players.size(), position, moveAxis, jump, shoot);
-        entities.add(p);
+	public void addPlayer(Vector2 position,  InputAxis moveAxis, InputButton jump, InputButton shoot, InputButton dash) {
+		Player p = new Player(players.size(), position, moveAxis, jump, shoot, dash);
         players.add(p);
+        addEntity(p);
 	}
-    
+
+	public void addEntity(Entity e) {
+		newEntities.add(e);
+		e.scene = this;
+	}
+	
     public void render(OrthographicCamera camera) {
         map.renderBackground(camera);
 		for (Entity e : entities) {
