@@ -82,7 +82,8 @@ public class Player extends Entity {
 		}
 		// shoot
 		if (buttonMap.get(Action.SHOOT).isDown() && cooldown.get(Action.SHOOT) == 0.0f) {
-			Projectile p = new Projectile(pos.cpy(), speed.cpy(), number);
+			Vector2 dir = new Vector2(axisMap.get(Action.AIM_HORIZONTAL).getValue(), axisMap.get(Action.AIM_VERTICAL).getValue());
+			Projectile p = new Projectile(pos.cpy(), dir, number);
 			cooldown.put(Action.SHOOT, maxCooldown.get(Action.SHOOT));
 			scene.addEntity(p, Scene.SHOT_LAYER);
 		}

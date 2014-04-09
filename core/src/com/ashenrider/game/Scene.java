@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.ashenrider.game.Input.*;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.Controllers;
@@ -38,6 +39,7 @@ public class Scene {
     	batch = new SpriteBatch();
         map = new Map(filename);
 
+        onResize();
         newEntities = new ArrayList<Entity>();
         entities = new ArrayList<Entity>();
         entityLayers = new ArrayList<ArrayList<Entity>>();
@@ -46,13 +48,16 @@ public class Scene {
         }
         
         players = new ArrayList<Player>();
-        addPlayer(new Vector2(100, 100),
-	      		  new KeyboardAxis(Keys.A, Keys.D),
-	    		  new KeyboardAxis(Keys.LEFT, Keys.RIGHT),
-	    		  new KeyboardAxis(Keys.DOWN, Keys.UP),
+        Player p = addPlayer(new Vector2(100, 100),
+        		  new KeyboardAxis(Keys.A, Keys.D),
+        		  // mouseAxis needs a reference to the player
+        		  null,
+        		  null,
         		  new KeyboardButton(Keys.W),
-        		  new KeyboardButton(Keys.ENTER),
-        		  new KeyboardButton(Keys.APOSTROPHE));
+        		  new MouseButton(Buttons.LEFT),
+        		  new KeyboardButton(Keys.S));
+        p.axisMap.put(Player.Action.AIM_HORIZONTAL, new MouseAxis(p, camera, true));
+        p.axisMap.put(Player.Action.AIM_VERTICAL, new MouseAxis(p, camera, false));
 
         for(Controller controller : Controllers.getControllers()) {
             addPlayer(new Vector2(400, 200),
@@ -120,8 +125,6 @@ public class Scene {
             Player player = players.get(i);
             player.pos = spawnPoints.get(i % spawnPoints.size()).cpy().sub(new Vector2(player.img.getWidth() / 2.f, 0f));
         }
-
-        onResize();
     }
 
     public void onResize() {
@@ -165,10 +168,11 @@ public class Scene {
 		newEntities.clear();
 	}
 	
-	public void addPlayer(Vector2 position,  InputAxis moveAxis, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton dash) {
+	public Player addPlayer(Vector2 position,  InputAxis moveAxis, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton dash) {
 		Player p = new Player(players.size(), position, moveAxis, aimH, aimV, jump, shoot, dash);
         players.add(p);
         addEntity(p, PLAYER_LAYER);
+        return p;
 	}
 
 	public void addEntity(Entity e, int layer) {

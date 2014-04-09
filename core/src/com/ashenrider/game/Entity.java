@@ -8,7 +8,7 @@ public abstract class Entity {
 	Scene scene;
 	int layer;
 	
-	Vector2 pos;
+	public Vector2 pos;
 	Vector2 speed;
 	Vector2 size;
 	
