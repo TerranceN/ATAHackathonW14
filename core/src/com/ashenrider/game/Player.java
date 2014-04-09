@@ -20,13 +20,16 @@ public class Player extends Entity {
 	float DASH_TIME = 0.125f;
 	boolean dashing = false;
 	float dashTime = 0.0f;
+
+    boolean onWall = false;
+    int wallDir = 0;
 	
 	// current
 	int airJumps = 0;
 	int airDashes = 0;
 	
 	// maximum
-	static int NUM_AIRJUMPS = 2;
+	static int NUM_AIRJUMPS = 0;
 	static int NUM_AIRDASHES = 1;
 	
 	public enum Action {
@@ -73,12 +76,17 @@ public class Player extends Entity {
 	@Override
 	public void update(float dt) {
 		// jump
-		if (buttonMap.get(Action.JUMP).isDown() && cooldown.get(Action.JUMP) == 0.0f && (onGround || airJumps > 0)) {
-			speed.y = JUMP;
-			cooldown.put(Action.JUMP, maxCooldown.get(Action.JUMP));
-			if (!onGround) {
-				airJumps--;
-			}
+		if (buttonMap.get(Action.JUMP).isDown() && cooldown.get(Action.JUMP) == 0.0f) {
+            if (onGround || airJumps > 0) {
+                speed.y = JUMP;
+                cooldown.put(Action.JUMP, maxCooldown.get(Action.JUMP));
+                if (!onGround) {
+                    airJumps--;
+                }
+            } else if (onWall) {
+                speed.y = JUMP * 1.25f;
+                speed.x = wallDir * JUMP * 0.75f;
+            }
 		}
 		// shoot
 		if (buttonMap.get(Action.SHOOT).isDown() && cooldown.get(Action.SHOOT) == 0.0f) {
@@ -133,39 +141,43 @@ public class Player extends Entity {
         }
 	}
 
-    public boolean collisionCheck(Map map) {
-        Vector2 pen = map.getLeastPenetration(speed, pos, pos.cpy().add(size));
-        onGround = false;
+    public int sign(float x) {
+        if (x < 0) {
+            return -1;
+        } else if (x > 0) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
 
-        boolean hitGround = false;
+    public void collisionCheck(Map map) {
+        Vector2 pen = map.getLeastPenetration(speed, pos, pos.cpy().add(size));
 
         if (pen.len() > 0) {
             if (pen.y != 0 && (pen.x == 0 || Math.abs(pen.x) > Math.abs(pen.y))) {
                 pos.add(new Vector2(0, pen.y));
                 speed.y = 0;
                 if (pen.y > 0) {
-                    hitGround = true;
+                    onGround = true;
                     airJumps = NUM_AIRJUMPS;
                 	airDashes = NUM_AIRDASHES;
                 }
             } else {
                 pos.add(new Vector2(pen.x, 0));
                 speed.x = 0;
+                onWall = true;
+                wallDir = sign(pen.x);
             }
         }
-
-        return hitGround;
     }
     
     @Override
-    public boolean handleCollision(Map map) {
+    public void handleCollision(Map map) {
         onGround = false;
-		boolean b1 = collisionCheck(map);
-		boolean b2 = collisionCheck(map);
-        if (b1 || b2) {
-            onGround = true;
-        }
-        return onGround;
+        onWall = false;
+		collisionCheck(map);
+		collisionCheck(map);
     }
 	
 	@Override
