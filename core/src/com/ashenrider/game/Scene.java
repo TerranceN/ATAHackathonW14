@@ -14,6 +14,8 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector3;
 
 public class Scene {
+    OrthographicCamera camera;
+
     public ArrayList<Entity> newEntities;
     
     public ArrayList<Entity> entities;
@@ -97,6 +99,24 @@ public class Scene {
             Player player = players.get(i);
             player.pos = spawnPoints.get(i % spawnPoints.size()).cpy().sub(new Vector2(player.img.getWidth() / 2.f, 0f));
         }
+
+        onResize();
+    }
+
+    public void onResize() {
+        float screenRatio = (float)Gdx.graphics.getWidth() / Gdx.graphics.getHeight();
+        float tileRatio = (float)map.levelLayer.getWidth() / map.levelLayer.getHeight();
+        float unitScale = 1f;
+
+        if (screenRatio <= tileRatio) {
+            unitScale = Gdx.graphics.getWidth() / (map.levelLayer.getWidth() * map.tileSize);
+        } else {
+            unitScale = Gdx.graphics.getHeight() / (map.levelLayer.getHeight() * map.tileSize);
+        }
+
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, Gdx.graphics.getWidth() / unitScale, Gdx.graphics.getHeight() / unitScale);
+        camera.update();
     }
 
 	public void update(float dt) {
@@ -133,10 +153,10 @@ public class Scene {
 		e.scene = this;
 	}
 	
-    public void render(OrthographicCamera camera) {
+    public void render() {
         map.renderBackground(camera);
 		for (Entity e : entities) {
-			e.render();
+			e.render(camera);
 		}
         map.renderForeground(camera);
     }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class Projectile extends Entity {
 	SpriteBatch batch;
@@ -67,7 +68,8 @@ public class Projectile extends Entity {
     }
     
 	@Override
-	public void render() {
+	public void render(OrthographicCamera camera) {
+        batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 		batch.draw(img, pos.x, pos.y);
 		batch.end();
