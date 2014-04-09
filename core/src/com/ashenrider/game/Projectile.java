@@ -29,6 +29,10 @@ public class Projectile extends Entity {
 		falls = false;
 	}
 
+    public int getShotBy() {
+        return shotBy;
+    }
+
 	@Override
 	public void update(float dt) {
 		super.update(dt);
@@ -50,6 +54,7 @@ public class Projectile extends Entity {
         		Rectangle playerBox = p.getBounds();
         		if (shotBox.overlaps(playerBox)) {
         			collided = true;
+                    p.onShot(this);
         		}
         	}
         }

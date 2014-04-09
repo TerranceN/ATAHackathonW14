@@ -35,8 +35,8 @@ public class Player extends Entity {
 	// maximum
 	static int NUM_AIRJUMPS = 0;
 	static int NUM_AIRDASHES = 1;
-	
-	public enum Action {
+
+    public enum Action {
 		MOVE, AIM_HORIZONTAL, AIM_VERTICAL, JUMP, SHOOT, DASH
 	}
 	
@@ -209,4 +209,10 @@ public class Player extends Entity {
 	public void render(SpriteBatch batch) {
 		batch.draw(img, pos.x, pos.y);
 	}
+
+    public void onShot(Projectile projectile) {
+        int playerId = projectile.getShotBy();
+        lives--;
+        scene.respawnPlayer(this, true);
+    }
 }
