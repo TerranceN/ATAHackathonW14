@@ -3,14 +3,17 @@ package com.ashenrider.game;
 import java.util.HashMap;
 
 import com.ashenrider.game.Input.*;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class Player extends Entity {
-
-	Texture img;
+	float animationTime = 0.0f;
 
 	float JUMP = 400.0f;
 	float ACCEL = 4000.0f;
@@ -18,7 +21,6 @@ public class Player extends Entity {
 	
 	float DASH_SPEED = 800.0f;
 	float DASH_TIME = 0.125f;
-	boolean dashing = false;
 	float dashTime = 0.0f;
 	
 	// current
@@ -29,6 +31,18 @@ public class Player extends Entity {
 	static int NUM_AIRJUMPS = 2;
 	static int NUM_AIRDASHES = 1;
 	
+	// state logic (for animation and some logic)
+	//onGround
+	boolean facingRight = true;
+	boolean dashing = false;
+	boolean landed = false;
+	// landDuration / animation
+	// standing
+	// onWall
+	// falling
+	
+	float landedTime = 0.0f;
+	
 	public enum Action {
 		MOVE, AIM_HORIZONTAL, AIM_VERTICAL, JUMP, SHOOT, DASH
 	}
@@ -38,16 +52,38 @@ public class Player extends Entity {
 	
 	HashMap<Action, Float> cooldown;
 	HashMap<Action, Float> maxCooldown;
-	
+		
 	public int number;
 	
+	private int NUM_FRAMES = 2;
+	private float RUNNING_FRAME_DURATION = 0.12f;
+	
+	private Animation walkLeftAnimation;
+    private Animation walkRightAnimation;
+	private TextureRegion landLeft;
+	private TextureRegion landRight;
+    
 	public Player(int playerNumber, Vector2 initPosition, InputAxis moveAxis, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton dash) {
 		super(initPosition);
 
 		number = playerNumber;
-		img = new Texture("p" + (playerNumber % 3) + ".png");
+		//img = new Texture("p" + (playerNumber % 3) + ".png");
+		// 16x32 regions
+		TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/animations.atlas"));
+		TextureRegion[] leftFrames = new TextureRegion[2];
+		TextureRegion[] rightFrames = new TextureRegion[2];
+		for (int i=0; i<NUM_FRAMES; i++) {
+			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 3) + "-" + i);
+			leftFrames[i] = new TextureRegion(rightFrames[i]);
+            leftFrames[i].flip(true, false);
+		}
+		landLeft = leftFrames[1];
+		landRight = rightFrames[1];
+		walkLeftAnimation = new Animation(RUNNING_FRAME_DURATION, leftFrames);
+		walkRightAnimation = new Animation(RUNNING_FRAME_DURATION, rightFrames);
 
-		size = new Vector2(img.getWidth(), img.getHeight());
+		size = new Vector2(landLeft.getRegionWidth(), landLeft.getRegionHeight());
+		//size = new Vector2(img.getWidth(), img.getHeight());
 		
 		buttonMap = new HashMap<Action, InputButton>();
 		axisMap = new HashMap<Action, InputAxis>();
@@ -104,11 +140,20 @@ public class Player extends Entity {
             if (!onGround) {
                 xAcceleration *= 0.25f;
             }
-            speed.x = speed.x + xAcceleration * dt;
+            if (!landed) {
+            	speed.x = speed.x + xAcceleration * dt;
+            }
         }
 		// update cooldowns
 		for (Action action : cooldown.keySet()) {
 			cooldown.put(action, Math.max(0.0f, cooldown.get(action) - dt));
+		}
+		// landed stun
+		if (landed) {
+			landedTime = Math.max(0.0f, landedTime - dt);
+			if (landedTime == 0.0f) {
+				landed = false;
+			}
 		}
 		// update duration of persistent effects
 		if (dashing) {
@@ -131,6 +176,11 @@ public class Player extends Entity {
         if (onGround && !dashing) {
             speed.x -= Math.min(1, dt * 10) * speed.x;
         }
+        
+        if (speed.x != 0) {
+        	facingRight = speed.x > 0;
+        }
+        animationTime += dt;
 	}
 
     public boolean collisionCheck(Map map) {
@@ -159,17 +209,31 @@ public class Player extends Entity {
     
     @Override
     public boolean handleCollision(Map map) {
+    	float velY = speed.y; // speed before collision
         onGround = false;
 		boolean b1 = collisionCheck(map);
 		boolean b2 = collisionCheck(map);
         if (b1 || b2) {
             onGround = true;
         }
+        // if falling quickly and hit the ground
+        if (onGround && velY < -20.0f) {
+        	landed = true;
+        	landedTime = 0.3f;
+        }
         return onGround;
     }
 	
 	@Override
 	public void render(SpriteBatch batch) {
-		batch.draw(img, pos.x, pos.y);
+		TextureRegion frame;
+		if (landed) {
+			frame = facingRight ? landLeft : landRight;
+		} else {
+			// pass a time to animation to get the right frame
+			frame = facingRight ? walkRightAnimation.getKeyFrame(animationTime, true) : walkLeftAnimation.getKeyFrame(animationTime, true);
+		}
+		batch.draw(frame, pos.x, pos.y);
+		//batch.draw(img, pos.x, pos.y);
 	}
 }

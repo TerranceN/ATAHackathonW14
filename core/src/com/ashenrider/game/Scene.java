@@ -128,7 +128,7 @@ public class Scene {
 
         for (int i = 0; i < players.size(); i++) {
             Player player = players.get(i);
-            player.pos = spawnPoints.get(i % spawnPoints.size()).cpy().sub(new Vector2(player.img.getWidth() / 2.f, 0f));
+            player.pos = spawnPoints.get(i % spawnPoints.size()).cpy().sub(new Vector2(player.size.x / 2.f, 0f));
         }
     }
 

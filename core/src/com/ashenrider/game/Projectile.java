@@ -17,6 +17,12 @@ public class Projectile extends Entity {
 	// frames per particle spawn
 	private int particleTimer = 0;
 	
+	// shoud lit bounce on wall collision or be destroyed?
+	protected boolean BOUNCE_WALLS = false;
+	protected boolean BOUNCE_CEILING = false;
+	protected int groundBounces = 0;
+	protected float elasticity = 1.0f;
+	
 	public Projectile(Vector2 initPosition, Vector2 direction, int playerNumber) {
 		super(initPosition);
 		size = new Vector2(8, 8);
