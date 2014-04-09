@@ -3,7 +3,7 @@
  <tileset firstgid="1" name="TestTileset" tilewidth="32" tileheight="32">
   <image source="../../test.png" width="32" height="32"/>
  </tileset>
- <layer name="decoration_back" width="20" height="10" visible="0">
+ <layer name="decoration_back" width="20" height="10">
   <data encoding="base64" compression="zlib">
    eJxjZGBgYETDDCTykcUZkORJ4ZMqTsh95JhHbXWUuG8UDA4AAGaIACk=
   </data>
@@ -13,14 +13,14 @@
    eJxjYBgFwxkwUhGPRAAAGDQAFA==
   </data>
  </layer>
+ <layer name="decoration_front" width="20" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AU4AIAAyAAAQ==
+  </data>
+ </layer>
  <layer name="spawn" width="20" height="10">
   <data encoding="base64" compression="zlib">
    eJxjYBgF5ALGQWrWKKAeAAAGnAAD
-  </data>
- </layer>
- <layer name="decoration_front" width="20" height="10" visible="0">
-  <data encoding="base64" compression="zlib">
-   eJxjYBgFo2AU4AIAAyAAAQ==
   </data>
  </layer>
 </map>
