@@ -101,20 +101,23 @@ public class Scene {
 
 	public void update(float dt) {
 		for (Entity e : entities) {
-			e.update(dt);
+			if (!e.destroyed) {
+				e.update(dt);
+			}
 		}
 		for (Entity e : entities) {
-            e.onGround = false;
-
-			boolean b1 = e.handleCollision(map);
-			boolean b2 = e.handleCollision(map);
-
-            if (b1 || b2) {
-                e.onGround = true;
-            }
+			if (!e.destroyed) {
+				e.handleCollision(map);
+			}
 		}
 		for (Entity e : newEntities) {
 			entities.add(0, e);
+		}
+		for (int i = entities.size() - 1; i >= 0; i--) {
+			Entity e = entities.get(i);
+			if (e.destroyed) {
+				entities.remove(i);
+			}
 		}
 		newEntities.clear();
 	}

@@ -1,6 +1,7 @@
 package com.ashenrider.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public abstract class Entity {
@@ -8,10 +9,14 @@ public abstract class Entity {
 	
 	Vector2 pos;
 	Vector2 speed;
+	Vector2 size;
+	
 	float GRAVITY = -600.0f;
 	boolean falls = true;
 	boolean onGround = false;
 	boolean collides = true;
+	
+	boolean destroyed = false;
 	
 	public Entity(Vector2 initPosition) {
 		pos = initPosition;
@@ -41,5 +46,13 @@ public abstract class Entity {
         return false;
     }
 	
+    public Rectangle getBounds() {
+    	return new Rectangle(pos.x ,pos.y, size.x, size.y);
+    }
+    
 	public abstract void render();
+	
+	public void destroy() {
+		destroyed = true;
+	}
 }

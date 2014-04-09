@@ -21,9 +21,6 @@ public class Player extends Entity {
 	boolean dashing = false;
 	float dashTime = 0.0f;
 	
-	int width = 32;
-	int height = 32;
-	
 	// current
 	int airJumps = 0;
 	int airDashes = 0;
@@ -50,6 +47,8 @@ public class Player extends Entity {
 		number = playerNumber;
 		batch = new SpriteBatch();
 		img = new Texture("p" + (playerNumber % 3) + ".png");
+
+		size = new Vector2(img.getWidth(), img.getHeight());
 		
 		buttonMap = new HashMap<Action, InputButton>();
 		axisMap = new HashMap<Action, InputAxis>();
@@ -120,9 +119,8 @@ public class Player extends Entity {
 		super.update(dt);
 	}
 
-    @Override
-    public boolean handleCollision(Map map) {
-        Vector2 pen = map.getLeastPenetration(speed, pos, pos.cpy().add(new Vector2(img.getWidth(), img.getHeight())));
+    public boolean collisionCheck(Map map) {
+        Vector2 pen = map.getLeastPenetration(speed, pos, pos.cpy().add(size));
         onGround = false;
 
         boolean hitGround = false;
@@ -143,6 +141,17 @@ public class Player extends Entity {
         }
 
         return hitGround;
+    }
+    
+    @Override
+    public boolean handleCollision(Map map) {
+        onGround = false;
+		boolean b1 = collisionCheck(map);
+		boolean b2 = collisionCheck(map);
+        if (b1 || b2) {
+            onGround = true;
+        }
+        return onGround;
     }
 	
 	@Override
