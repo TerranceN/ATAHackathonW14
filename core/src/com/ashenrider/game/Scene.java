@@ -30,13 +30,15 @@ public class Scene {
         addPlayer(new Vector2(100, 100),
         		  new KeyboardAxis(Keys.A, Keys.D),
         		  new KeyboardButton(Keys.W),
-        		  new KeyboardButton(Keys.ENTER));
+        		  new KeyboardButton(Keys.ENTER),
+        		  new KeyboardButton(Keys.APOSTROPHE));
 
         for(Controller controller : Controllers.getControllers()) {
             addPlayer(new Vector2(400, 200),
                     new ControllerAxis(controller, Xbox.AXIS_LEFT_STICK_HORIZONTAL),
                     new ControllerButton(controller, Xbox.BTN_A),
-                    new ControllerAxisButton(controller, Xbox.AXIS_RIGHT_TRIGGER));
+                    new ControllerAxisButton(controller, Xbox.AXIS_RIGHT_TRIGGER),
+                    new ControllerAxisButton(controller, Xbox.AXIS_LEFT_TRIGGER));
 
 
             controller.addListener(new ControllerListener() {
@@ -110,8 +112,8 @@ public class Scene {
 		newEntities.clear();
 	}
 	
-	public void addPlayer(Vector2 position,  InputAxis moveAxis, InputButton jump, InputButton shoot) {
-		Player p = new Player(players.size(), position, moveAxis, jump, shoot);
+	public void addPlayer(Vector2 position,  InputAxis moveAxis, InputButton jump, InputButton shoot, InputButton dash) {
+		Player p = new Player(players.size(), position, moveAxis, jump, shoot, dash);
         players.add(p);
         addEntity(p);
 	}
