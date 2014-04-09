@@ -19,7 +19,6 @@ public class Scene {
         map = new TmxMapLoader().load(filename);
         TiledMapTileLayer layer = (TiledMapTileLayer)map.getLayers().get(0);
         tiledRenderer = new OrthogonalTiledMapRenderer(map, Gdx.graphics.getHeight() / (layer.getHeight() * TILE_SIZE));
-        System.out.println(layer.getWidth() + ", " + layer.getHeight());
 
         entities = new ArrayList<Entity>();
         entities.add(new Player());
