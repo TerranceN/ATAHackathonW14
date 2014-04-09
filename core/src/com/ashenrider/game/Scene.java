@@ -38,6 +38,7 @@ public class Scene {
     public Scene(String filename) {
     	batch = new SpriteBatch();
         map = new Map(filename);
+        camera = new OrthographicCamera();
 
         onResize();
         newEntities = new ArrayList<Entity>();
@@ -142,7 +143,6 @@ public class Scene {
             unitScale = Gdx.graphics.getHeight() / (map.levelLayer.getHeight() * map.tileSize);
         }
 
-        camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth() / unitScale, Gdx.graphics.getHeight() / unitScale);
         camera.update();
     }
