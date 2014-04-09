@@ -20,6 +20,7 @@ public class Map {
 
     float tileSize = 1.f;
     float unitScale = 1.f;
+    float tileSizeInScreenSpace = 1.f;
 
     public Map(String fileName) {
         tiledMap = new TmxMapLoader().load(fileName);
@@ -39,6 +40,8 @@ public class Map {
         } else {
             unitScale = Gdx.graphics.getHeight() / (levelLayer.getHeight() * tileSize);
         }
+
+        tileSizeInScreenSpace = tileSize * unitScale;
 
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, unitScale);
     }
@@ -122,5 +125,46 @@ public class Map {
 
         mapRenderer.setView(camera);
         mapRenderer.render();
+    }
+
+    public Vector2 getLeastPenetration(Vector2 vel, Vector2 lower, Vector2 upper) {
+        int lowerX = (int)Math.floor(lower.x / tileSizeInScreenSpace);
+        int lowerY = (int)Math.floor(lower.y / tileSizeInScreenSpace);
+        int upperX = (int)Math.ceil(upper.x / tileSizeInScreenSpace);
+        int upperY = (int)Math.ceil(upper.y / tileSizeInScreenSpace);
+
+        float penX = 0;
+        float penY = 0;
+
+        for (int x = lowerX; x < upperX; x++) {
+            for (int y = lowerY; y < upperY; y++) {
+                if (levelLayer.getCell(x, y) != null) {
+                    float newPenX = 0;
+                    float newPenY = 0;
+
+                    if (vel.x < 0) {
+                        newPenX = (x + 1) * tileSizeInScreenSpace - lower.x;
+                    } else {
+                        newPenX = (x) * tileSizeInScreenSpace - upper.x;
+                    }
+
+                    if (vel.y < 0) {
+                        newPenY = (y + 1) * tileSizeInScreenSpace - lower.y;
+                    } else {
+                        newPenY = (y) * tileSizeInScreenSpace - upper.y;
+                    }
+
+                    if (Math.abs(newPenX) > Math.abs(penX)) {
+                        penX = newPenX;
+                    }
+
+                    if (Math.abs(newPenY) > Math.abs(penY)) {
+                        penY = newPenY;
+                    }
+                }
+            }
+        }
+
+        return new Vector2(penX, penY);
     }
 }

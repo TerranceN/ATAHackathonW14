@@ -98,10 +98,14 @@ public class Scene {
 		for (Entity e : entities) {
 			e.update(dt);
 		}
+
+		for (Entity e : entities) {
+			e.handleCollision(map);
+		}
 	}
 	
 	public void addPlayer(Vector2 position,  InputAxis moveAxis, InputButton jump, InputButton shoot) {
-		Player p = new Player(position, moveAxis, jump, shoot);
+		Player p = new Player(players.size(), position, moveAxis, jump, shoot);
         entities.add(p);
         players.add(p);
 	}
