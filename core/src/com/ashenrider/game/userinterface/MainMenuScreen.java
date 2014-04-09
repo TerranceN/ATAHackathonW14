@@ -2,27 +2,29 @@ package com.ashenrider.game.userinterface;
 
 import com.ashenrider.game.GameScreen;
 import com.ashenrider.game.HackathonApp;
+import com.ashenrider.game.Input.Xbox;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.controllers.Controllers;
+import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
-import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 public class MainMenuScreen implements Screen {
 
+    private ControllerListener listener;
     private HackathonApp app;
     private TextureAtlas atlas;
     private Stage stage;
@@ -62,7 +64,7 @@ public class MainMenuScreen implements Screen {
         startButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                app.setScreen(new GameScreen(app, "test.tmx"));
+                startGame();
             }
         });
 
@@ -70,13 +72,73 @@ public class MainMenuScreen implements Screen {
         exitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                Gdx.app.exit();
+                exitGame();
             }
         });
 
         menu.add(startButton).width(300).height(50).padBottom(10);
         menu.row();
         menu.add(exitButton).width(300).height(50).padBottom(10);
+
+        listener = new ControllerListener() {
+            @Override
+            public void connected(Controller controller) {
+
+            }
+
+            @Override
+            public void disconnected(Controller controller) {
+
+            }
+
+            @Override
+            public boolean buttonDown(Controller controller, int i) {
+                if(i == Xbox.BTN_A || i == Xbox.BTN_START) {
+                    startGame();
+                } else if (i == Xbox.BTN_B || i == Xbox.BTN_BACK) {
+                    exitGame();
+                }
+                return false;
+            }
+
+            @Override
+            public boolean buttonUp(Controller controller, int i) {
+                return false;
+            }
+
+            @Override
+            public boolean axisMoved(Controller controller, int i, float v) {
+                return false;
+            }
+
+            @Override
+            public boolean povMoved(Controller controller, int i, PovDirection povDirection) {
+                return false;
+            }
+
+            @Override
+            public boolean xSliderMoved(Controller controller, int i, boolean b) {
+                return false;
+            }
+
+            @Override
+            public boolean ySliderMoved(Controller controller, int i, boolean b) {
+                return false;
+            }
+
+            @Override
+            public boolean accelerometerMoved(Controller controller, int i, Vector3 vector3) {
+                return false;
+            }
+        };
+    }
+
+    public void startGame() {
+        app.setScreen(new GameScreen(app, "test.tmx"));
+    }
+
+    public void exitGame() {
+        Gdx.app.exit();
     }
 
     @Override
@@ -98,11 +160,13 @@ public class MainMenuScreen implements Screen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
+        Controllers.addListener(listener);
     }
 
     @Override
     public void hide() {
         Gdx.input.setInputProcessor(null);
+        Controllers.removeListener(listener);
     }
 
     @Override
