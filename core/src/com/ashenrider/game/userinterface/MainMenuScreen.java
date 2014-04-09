@@ -34,7 +34,6 @@ public class MainMenuScreen implements Screen {
         this.app = app;
 
         BitmapFont buttonFont = new BitmapFont();
-        buttonFont.setScale(2.0f);
 
         atlas = new TextureAtlas(Gdx.files.internal("pack/gui.atlas"));
 
@@ -146,7 +145,7 @@ public class MainMenuScreen implements Screen {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        stage.act(Gdx.graphics.getDeltaTime());
+        stage.act(delta);
         stage.draw();
 
         Table.drawDebug(stage);

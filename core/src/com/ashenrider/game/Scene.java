@@ -29,6 +29,7 @@ public class Scene {
     public ArrayList<Entity> entities;
     // list of lists of entities
     public ArrayList<ArrayList<Entity>> entityLayers;
+    ArrayList<Vector2> spawnPoints;
     
     public ArrayList<Player> players;
     
@@ -124,12 +125,19 @@ public class Scene {
             }
         }
 
-        ArrayList<Vector2> spawnPoints = map.getSpawnPoints();
+        spawnPoints = map.getSpawnPoints();
 
         for (int i = 0; i < players.size(); i++) {
             Player player = players.get(i);
-            player.pos = spawnPoints.get(i % spawnPoints.size()).cpy().sub(new Vector2(player.size.x / 2.f, 0f));
+            respawnPlayer(player, false);
         }
+    }
+
+    public void respawnPlayer(Player player, boolean body) {
+        //TODO: Random spawn points?
+        player.pos = spawnPoints.get(player.number % spawnPoints.size()).cpy().sub(new Vector2(player.size.x / 2.f, 0f));
+
+        //TODO Spawn a body.
     }
 
     public void onResize() {

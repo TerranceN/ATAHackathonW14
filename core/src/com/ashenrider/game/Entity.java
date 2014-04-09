@@ -43,8 +43,7 @@ public abstract class Entity {
 		}
 	}
 
-    public boolean handleCollision(Map map) {
-        return false;
+    public void handleCollision(Map map) {
     }
 	
     public Rectangle getBounds() {

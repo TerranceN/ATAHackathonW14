@@ -15,6 +15,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 public class Player extends Entity {
 	float animationTime = 0.0f;
 
+    int lives = 10;
+
 	float JUMP = 400.0f;
 	float ACCEL = 4000.0f;
 	float MAX_SPEED = 400.0f; // while not dashing
@@ -22,13 +24,15 @@ public class Player extends Entity {
 	float DASH_SPEED = 800.0f;
 	float DASH_TIME = 0.125f;
 	float dashTime = 0.0f;
+
+    boolean jumpPressedLastFrame = false;
 	
 	// current
 	int airJumps = 0;
 	int airDashes = 0;
 	
 	// maximum
-	static int NUM_AIRJUMPS = 2;
+	static int NUM_AIRJUMPS = 0;
 	static int NUM_AIRDASHES = 1;
 	
 	// state logic (for animation and some logic)
@@ -38,9 +42,11 @@ public class Player extends Entity {
 	boolean landed = false;
 	// landDuration / animation
 	// standing
-	// onWall
 	// falling
-	
+    boolean onWall = false;
+    int wallDir = 0;
+
+	float minLandedSpeed = -20.0f;
 	float landedTime = 0.0f;
 	
 	public enum Action {
@@ -101,20 +107,50 @@ public class Player extends Entity {
 		cooldown.put(Action.SHOOT, 0.0f);
 		cooldown.put(Action.DASH, 0.0f);
 		maxCooldown = new HashMap<Action, Float>();
-		maxCooldown.put(Action.JUMP, 0.5f);
+		maxCooldown.put(Action.JUMP, 0.0f);
 		maxCooldown.put(Action.SHOOT, 0.3f);
 		maxCooldown.put(Action.DASH, DASH_TIME + 0.5f);
 	}
-	
+
+    public int getLives() {
+        return lives;
+    }
+	public TextureRegion getSprite() {
+		TextureRegion frame;
+		if (landed) {
+			frame = facingRight ? landLeft : landRight;
+		} else {
+			// pass a time to animation to get the right frame
+			frame = facingRight ? walkRightAnimation.getKeyFrame(animationTime, true) : walkLeftAnimation.getKeyFrame(animationTime, true);
+		}
+		return frame;
+	}
+
 	@Override
 	public void update(float dt) {
 		// jump
-		if (buttonMap.get(Action.JUMP).isDown() && cooldown.get(Action.JUMP) == 0.0f && (onGround || airJumps > 0)) {
-			speed.y = JUMP;
-			cooldown.put(Action.JUMP, maxCooldown.get(Action.JUMP));
-			if (!onGround) {
-				airJumps--;
-			}
+		if (!jumpPressedLastFrame && buttonMap.get(Action.JUMP).isDown() && cooldown.get(Action.JUMP) == 0.0f) {
+            if (onGround || airJumps > 0) {
+                speed.y = JUMP;
+                cooldown.put(Action.JUMP, maxCooldown.get(Action.JUMP));
+                if (!onGround) {
+                    airJumps--;
+                }
+            } else if (onWall) {
+                boolean nextToWall = false;
+                if (wallDir == 1) {
+                    Vector2 tileCoords = scene.map.getTileCoords(pos.cpy());
+                    nextToWall = scene.map.levelLayer.getCell((int)(tileCoords.x - 1.0f), (int)tileCoords.y) != null;
+                } else if (wallDir == -1) {
+                    Vector2 tileCoords = scene.map.getTileCoords(pos.cpy().add(size));
+                    nextToWall = scene.map.levelLayer.getCell((int)(tileCoords.x), (int)tileCoords.y) != null;
+                }
+                if (nextToWall) {
+                    speed.y = JUMP * 1.25f;
+                    speed.x = wallDir * JUMP * 0.75f;
+                    onWall = false;
+                }
+            }
 		}
 		// shoot
 		if (buttonMap.get(Action.SHOOT).isDown() && cooldown.get(Action.SHOOT) == 0.0f) {
@@ -176,64 +212,70 @@ public class Player extends Entity {
         if (onGround && !dashing) {
             speed.x -= Math.min(1, dt * 10) * speed.x;
         }
-        
         if (speed.x != 0) {
         	facingRight = speed.x > 0;
         }
         animationTime += dt;
+        jumpPressedLastFrame = buttonMap.get(Action.JUMP).isDown();
 	}
 
-    public boolean collisionCheck(Map map) {
-        Vector2 pen = map.getLeastPenetration(speed, pos, pos.cpy().add(size));
-        onGround = false;
+    public int sign(float x) {
+        if (x < 0) {
+            return -1;
+        } else if (x > 0) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
 
-        boolean hitGround = false;
+    public void collisionCheck(Map map) {
+        Vector2 pen = map.getLeastPenetration(speed, pos, pos.cpy().add(size));
 
         if (pen.len() > 0) {
             if (pen.y != 0 && (pen.x == 0 || Math.abs(pen.x) > Math.abs(pen.y))) {
                 pos.add(new Vector2(0, pen.y));
                 speed.y = 0;
                 if (pen.y > 0) {
-                    hitGround = true;
+                    onGround = true;
                     airJumps = NUM_AIRJUMPS;
                 	airDashes = NUM_AIRDASHES;
                 }
             } else {
                 pos.add(new Vector2(pen.x, 0));
                 speed.x = 0;
+                onWall = true;
+                wallDir = sign(pen.x);
             }
         }
-
-        return hitGround;
     }
     
     @Override
-    public boolean handleCollision(Map map) {
+    public void handleCollision(Map map) {
     	float velY = speed.y; // speed before collision
         onGround = false;
-		boolean b1 = collisionCheck(map);
-		boolean b2 = collisionCheck(map);
-        if (b1 || b2) {
-            onGround = true;
+		collisionCheck(map);
+		collisionCheck(map);
+
+        if (onGround) {
+            onWall = false;
         }
         // if falling quickly and hit the ground
-        if (onGround && velY < -20.0f) {
+        if (onGround && velY < minLandedSpeed) {
         	landed = true;
         	landedTime = 0.3f;
         }
-        return onGround;
     }
 	
 	@Override
 	public void render(SpriteBatch batch) {
-		TextureRegion frame;
-		if (landed) {
-			frame = facingRight ? landLeft : landRight;
-		} else {
-			// pass a time to animation to get the right frame
-			frame = facingRight ? walkRightAnimation.getKeyFrame(animationTime, true) : walkLeftAnimation.getKeyFrame(animationTime, true);
-		}
+		TextureRegion frame = getSprite();
 		batch.draw(frame, pos.x, pos.y);
-		//batch.draw(img, pos.x, pos.y);
 	}
+
+    public void onShot(Projectile projectile) {
+        int playerId = projectile.getShotBy();
+        lives--;
+        scene.respawnPlayer(this, true);
+    }
 }
