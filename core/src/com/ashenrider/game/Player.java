@@ -88,36 +88,27 @@ public class Player extends Entity {
 	}
 
     @Override
-    public void handleCollision(Map map) {
+    public boolean handleCollision(Map map) {
         Vector2 pen = map.getLeastPenetration(speed, pos, pos.cpy().add(new Vector2(img.getWidth(), img.getHeight())));
         onGround = false;
-        
+
+        boolean hitGround = false;
+
         if (pen.len() > 0) {
-            if (Math.abs(pen.x) > Math.abs(pen.y)) {
+            if (pen.y != 0 && (pen.x == 0 || Math.abs(pen.x) > Math.abs(pen.y))) {
                 pos.add(new Vector2(0, pen.y));
                 speed.y = 0;
+                if (pen.y > 0) {
+                    hitGround = true;
+                    airJumps = NUM_AIRJUMPS;
+                }
             } else {
                 pos.add(new Vector2(pen.x, 0));
                 speed.x = 0;
             }
-            
-            // moved upwards from a collision
-            if (pen.y > 0) {
-            	onGround = true;
-            	airJumps = NUM_AIRJUMPS;
-            }
-
-            pen = map.getLeastPenetration(speed, pos, pos.cpy().add(new Vector2(img.getWidth(), img.getHeight())));
-            pos.add(pen);
-
-            if (pen.x != 0) {
-                speed.x = 0;
-            }
-
-            if (pen.y != 0) {
-                speed.y = 0;
-            }
         }
+
+        return hitGround;
     }
 	
 	@Override

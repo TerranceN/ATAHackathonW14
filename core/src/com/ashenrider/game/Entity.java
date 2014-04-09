@@ -37,7 +37,8 @@ public abstract class Entity {
 		}
 	}
 
-    public void handleCollision(Map map) {
+    public boolean handleCollision(Map map) {
+        return false;
     }
 	
 	public abstract void render();
