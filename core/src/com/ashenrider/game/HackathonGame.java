@@ -3,13 +3,11 @@ package com.ashenrider.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-
-import com.badlogic.gdx.maps.*;
-import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Input.Keys;
+
 
 public class HackathonGame extends ApplicationAdapter implements InputProcessor {
     OrthographicCamera camera;
@@ -41,13 +39,13 @@ public class HackathonGame extends ApplicationAdapter implements InputProcessor 
 	
 	@Override
 	public boolean keyDown(int keycode) {
-		// TODO Auto-generated method stub
+		scene.keyDown(keycode);
 		return false;
 	}
 
 	@Override
 	public boolean keyUp(int keycode) {
-		// TODO Auto-generated method stub
+		scene.keyUp(keycode);
 		return false;
 	}
 

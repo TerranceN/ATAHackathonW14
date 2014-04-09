@@ -7,21 +7,25 @@ public abstract class Entity {
 	Vector2 pos;
 	Vector2 speed;
 	float GRAVITY = -200.0f;
-	boolean falling = true;
+	boolean falls = true;
+	boolean onGround = false;
+	boolean collides = true;
 	
-	public Entity() {
-		pos = new Vector2(100,100);
+	public Entity(Vector2 initPosition) {
+		pos = initPosition;
 		speed = new Vector2(0,0);
 	}
 	
 	public void update(float dt) {
-		if (falling) {
+		if (falls && !onGround) {
 			speed.add(0, GRAVITY * dt);
 		}
 
 		pos.add(speed.cpy().scl(dt));
 		if (pos.y < 0) {
 			pos.y = pos.y + Gdx.graphics.getHeight();
+		} else if (pos.y > Gdx.graphics.getHeight()) {
+			pos.y = pos.y - Gdx.graphics.getHeight();
 		}
 	}
 	
