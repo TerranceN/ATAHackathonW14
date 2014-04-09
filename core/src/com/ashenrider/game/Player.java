@@ -3,6 +3,7 @@ package com.ashenrider.game;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.ashenrider.game.Input.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -14,32 +15,36 @@ public class Player extends Entity {
 	Texture img;
 
 	float JUMP = 200.0f;
+	float ACCEL = 200.0f;
 	
 	public enum Action {
-		LEFT, RIGHT, JUMP, SHOOT
+		MOVE, AIM_HORIZONTAL, AIM_VERTICAL, JUMP, SHOOT
 	}
 	
-	HashMap<Action, Integer> keyMap;
+	HashMap<Action, InputButton> buttonMap;
+	HashMap<Action, InputAxis> axisMap;
 	
-	public Player(Vector2 initPosition, int keyL, int keyR, int keyJump, int keyShoot) {
+	public Player(Vector2 initPosition, InputAxis moveAxis, InputButton jump, InputButton shoot) {
 		super(initPosition);
 		batch = new SpriteBatch();
 		img = new Texture("player.png");
 		
-		keyMap = new HashMap<Action, Integer>();
-		keyMap.put(Action.LEFT, keyL);
-		keyMap.put(Action.RIGHT, keyR);
-		keyMap.put(Action.JUMP, keyJump);
-		keyMap.put(Action.SHOOT, keyShoot);
+		buttonMap = new HashMap<Action, InputButton>();
+		axisMap = new HashMap<Action, InputAxis>();
+		
+		axisMap.put(Action.MOVE, moveAxis);
+		buttonMap.put(Action.JUMP, jump);
+		buttonMap.put(Action.SHOOT, shoot);
 	}
 	
 	@Override
 	public void update(float dt) {
 		super.update(dt);
 		//if (Gdx.input.isKeyPressed(keyMap.get(Action.JUMP)) && onGround) {
-		if (Gdx.input.isKeyPressed(keyMap.get(Action.JUMP))) {
+		if (buttonMap.get(Action.JUMP).isDown()) {
 			speed.y = JUMP;
 		}
+		speed.x = speed.x + ACCEL * axisMap.get(Action.MOVE).getValue()*dt;
 	}
 	
 	@Override
