@@ -8,7 +8,7 @@ public abstract class Entity {
 	
 	Vector2 pos;
 	Vector2 speed;
-	float GRAVITY = -200.0f;
+	float GRAVITY = -600.0f;
 	boolean falls = true;
 	boolean onGround = false;
 	boolean collides = true;
@@ -19,7 +19,8 @@ public abstract class Entity {
 	}
 	
 	public void update(float dt) {
-		if (falls && !onGround) {
+		//if (falls && !onGround) {
+		if (falls) {
 			speed.add(0, GRAVITY * dt);
 		}
 
@@ -35,6 +36,9 @@ public abstract class Entity {
 			pos.x = pos.x - Gdx.graphics.getWidth();
 		}
 	}
+
+    public void handleCollision(Map map) {
+    }
 	
 	public abstract void render();
 }

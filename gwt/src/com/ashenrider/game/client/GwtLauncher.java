@@ -1,9 +1,9 @@
 package com.ashenrider.game.client;
 
+import com.ashenrider.game.HackathonApp;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
-import com.ashenrider.game.HackathonGame;
 
 public class GwtLauncher extends GwtApplication {
 
@@ -14,6 +14,6 @@ public class GwtLauncher extends GwtApplication {
 
         @Override
         public ApplicationListener getApplicationListener () {
-                return new HackathonGame();
+                return new HackathonApp();
         }
 }
