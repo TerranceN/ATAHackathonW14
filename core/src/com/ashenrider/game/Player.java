@@ -14,7 +14,7 @@ public class Player extends Entity {
 	Texture img;
 
 	float JUMP = 400.0f;
-	float ACCEL = 800.0f;
+	float ACCEL = 4000.0f;
 	float MAX_SPEED = 400.0f; // while not dashing
 	
 	float DASH_SPEED = 800.0f;
@@ -96,7 +96,14 @@ public class Player extends Entity {
 			dashTime = DASH_TIME;
 		}
 		// accelerate
-		speed.x = speed.x + ACCEL * axisMap.get(Action.MOVE).getValue() * dt;
+        float move = axisMap.get(Action.MOVE).getValue();
+        float xAcceleration = ACCEL * move;
+        if (Math.abs(move) > 0.25) {
+            if (!onGround) {
+                xAcceleration *= 0.25f;
+            }
+            speed.x = speed.x + xAcceleration * dt;
+        }
 		// update cooldowns
 		for (Action action : cooldown.keySet()) {
 			cooldown.put(action, Math.max(0.0f, cooldown.get(action) - dt));
@@ -118,6 +125,10 @@ public class Player extends Entity {
 			}
 		}
 		super.update(dt);
+
+        if (onGround && !dashing) {
+            speed.x -= Math.min(1, dt * 10) * speed.x;
+        }
 	}
 
     public boolean collisionCheck(Map map) {
