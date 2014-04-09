@@ -36,7 +36,7 @@ public class Projectile extends Entity {
 	}
 
     @Override
-    public boolean handleCollision(Map map) {
+    public void handleCollision(Map map) {
     	boolean collided = false;
     	// check if the projectile is currently overlapping a wall based on its size and position
     	Vector2 pen = map.getLeastPenetration(speed, pos, pos.cpy().add(size));
@@ -61,7 +61,6 @@ public class Projectile extends Entity {
         	// spawn particles here, possibly based on the normal of collision or the velocity
         	destroy();
         }
-        return collided;
     }
     
 	@Override
