@@ -5,6 +5,9 @@ import com.badlogic.gdx.maps.*;
 import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
+
+import java.util.ArrayList;
 
 public class Map {
     TiledMap tiledMap;
@@ -15,6 +18,7 @@ public class Map {
     TiledMapTileLayer decorationFrontLayer;
     TiledMapTileLayer decorationBackLayer;
 
+    float tileSize = 1.f;
     float unitScale = 1.f;
 
     public Map(String fileName) {
@@ -28,7 +32,7 @@ public class Map {
 
         float screenRatio = (float)Gdx.graphics.getWidth() / Gdx.graphics.getHeight();
         float tileRatio = (float)levelLayer.getWidth() / Gdx.graphics.getHeight();
-        float tileSize = levelLayer.getTileWidth();
+        tileSize = levelLayer.getTileWidth();
 
         if (screenRatio >= tileRatio) {
             unitScale = Gdx.graphics.getWidth() / (levelLayer.getWidth() * tileSize);
@@ -37,6 +41,33 @@ public class Map {
         }
 
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, unitScale);
+    }
+
+    public Vector2 toWorldSpace(Vector2 tileCoord) {
+        int x = Math.round(tileCoord.x);
+        int y = Math.round(tileCoord.y);
+
+        return toWorldSpace(x, y);
+    }
+
+    public Vector2 toWorldSpace(int x, int y) {
+        return new Vector2(tileSize * (x + 0.5f) / unitScale, tileSize * y / unitScale);
+    }
+
+    public ArrayList<Vector2> getSpawnPoints() {
+        ArrayList<Vector2> lst = new ArrayList<Vector2>();
+
+        int layerWidth = spawnLayer.getWidth();
+        int layerHeight = spawnLayer.getHeight();
+        for (int x = 0; x < spawnLayer.getWidth(); x++) {
+            for (int y = 0; y < spawnLayer.getHeight(); y++) {
+                if (spawnLayer.getCell(x, y) != null) {
+                    lst.add(toWorldSpace(x, y));
+                }
+            }
+        }
+
+        return lst;
     }
 
     public void hideAllLayers() {

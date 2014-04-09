@@ -30,6 +30,13 @@ public class Scene {
 	      		  new KeyboardAxis(Keys.LEFT, Keys.RIGHT),
 	      		  new KeyboardButton(Keys.UP),
 	      		  new KeyboardButton(Keys.CONTROL_RIGHT));
+
+        ArrayList<Vector2> spawnPoints = map.getSpawnPoints();
+
+        for (int i = 0; i < players.size(); i++) {
+            Player player = players.get(i);
+            player.pos = spawnPoints.get(i % spawnPoints.size()).cpy().sub(new Vector2(player.img.getWidth() / 2.f, 0f));
+        }
     }
 
 	public void update(float dt) {
