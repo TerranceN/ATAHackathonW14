@@ -136,32 +136,71 @@ public class Map {
         float penX = 0;
         float penY = 0;
 
-        for (int x = lowerX; x < upperX; x++) {
-            for (int y = lowerY; y < upperY; y++) {
-                if (levelLayer.getCell(x, y) != null) {
-                    float newPenX = 0;
-                    float newPenY = 0;
+        int startX = 0;
+        int xDir = 0;
 
+        if (vel.x < 0) {
+            startX = lowerX;
+            xDir = 1;
+        } else {
+            startX = upperX - 1;
+            xDir = -1;
+        }
+
+        for (int y = lowerY; y < upperY; y++) {
+            boolean foundCollision = false;
+            float newPenX = 0;
+            for (int x = startX; foundCollision || (x < upperX && x >= lowerX); x += xDir) {
+                if (levelLayer.getCell(x, y) != null) {
+                    foundCollision = true;
                     if (vel.x < 0) {
                         newPenX = (x + 1) * tileSizeInScreenSpace - lower.x;
                     } else {
                         newPenX = (x) * tileSizeInScreenSpace - upper.x;
                     }
+                } else {
+                    if (foundCollision) {
+                        break;
+                    }
+                }
+            }
 
+            if (penX == 0 || (newPenX != 0 && Math.abs(newPenX) < Math.abs(penX))) {
+                penX = newPenX;
+            }
+        }
+
+        int startY = 0;
+        int yDir = 0;
+
+        if (vel.y < 0) {
+            startY = lowerY;
+            yDir = 1;
+        } else {
+            startY = upperY - 1;
+            yDir = -1;
+        }
+
+        for (int x = lowerX; x < upperX; x++) {
+            boolean foundCollision = false;
+            float newPenY = 0;
+            for (int y = startY; foundCollision || (y < upperY && y >= lowerY); y += yDir) {
+                if (levelLayer.getCell(x, y) != null) {
+                    foundCollision = true;
                     if (vel.y < 0) {
                         newPenY = (y + 1) * tileSizeInScreenSpace - lower.y;
                     } else {
                         newPenY = (y) * tileSizeInScreenSpace - upper.y;
                     }
-
-                    if (Math.abs(newPenX) > Math.abs(penX)) {
-                        penX = newPenX;
-                    }
-
-                    if (Math.abs(newPenY) > Math.abs(penY)) {
-                        penY = newPenY;
+                } else {
+                    if (foundCollision) {
+                        break;
                     }
                 }
+            }
+
+            if (penY == 0 || (newPenY != 0 && Math.abs(newPenY) < Math.abs(penY))) {
+                penY = newPenY;
             }
         }
 

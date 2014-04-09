@@ -104,7 +104,14 @@ public class Scene {
 			e.update(dt);
 		}
 		for (Entity e : entities) {
-			e.handleCollision(map);
+            e.onGround = false;
+
+			boolean b1 = e.handleCollision(map);
+			boolean b2 = e.handleCollision(map);
+
+            if (b1 || b2) {
+                e.onGround = true;
+            }
 		}
 		for (Entity e : newEntities) {
 			entities.add(0, e);
