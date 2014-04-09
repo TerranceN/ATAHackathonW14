@@ -35,6 +35,13 @@ public class Scene {
                     new ControllerButton(controller, Xbox.BTN_A),
                     new ControllerAxisButton(controller, Xbox.AXIS_RIGHT_TRIGGER));
         }
+
+        ArrayList<Vector2> spawnPoints = map.getSpawnPoints();
+
+        for (int i = 0; i < players.size(); i++) {
+            Player player = players.get(i);
+            player.pos = spawnPoints.get(i % spawnPoints.size()).cpy().sub(new Vector2(player.img.getWidth() / 2.f, 0f));
+        }
     }
 
 	public void update(float dt) {

@@ -27,6 +27,11 @@ public abstract class Entity {
 		} else if (pos.y > Gdx.graphics.getHeight()) {
 			pos.y = pos.y - Gdx.graphics.getHeight();
 		}
+		if (pos.x < 0) {
+			pos.x = pos.x + Gdx.graphics.getWidth();
+		} else if (pos.x > Gdx.graphics.getWidth()) {
+			pos.x = pos.x - Gdx.graphics.getWidth();
+		}
 	}
 	
 	public abstract void render();
