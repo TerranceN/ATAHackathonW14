@@ -70,7 +70,7 @@ public class Player extends Entity {
 		cooldown.put(Action.SHOOT, 0.0f);
 		cooldown.put(Action.DASH, 0.0f);
 		maxCooldown = new HashMap<Action, Float>();
-		maxCooldown.put(Action.JUMP, 0.5f);
+		maxCooldown.put(Action.JUMP, 0.0f);
 		maxCooldown.put(Action.SHOOT, 0.3f);
 		maxCooldown.put(Action.DASH, DASH_TIME + 0.5f);
 	}
