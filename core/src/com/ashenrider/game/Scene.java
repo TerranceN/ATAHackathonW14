@@ -65,7 +65,7 @@ public class Scene {
             addPlayer(new Vector2(400, 200),
                     new ControllerAxis(controller, Xbox.AXIS_LEFT_STICK_HORIZONTAL),
                     new ControllerAxis(controller, Xbox.AXIS_RIGHT_STICK_HORIZONTAL),
-                    new ControllerAxis(controller, Xbox.AXIS_RIGHT_STICK_VERTICAL),
+                    new ControllerAxis(controller, Xbox.AXIS_RIGHT_STICK_VERTICAL, true),
                     new ControllerButton(controller, Xbox.BTN_A),
                     new ControllerAxisButton(controller, Xbox.AXIS_RIGHT_TRIGGER),
                     new ControllerAxisButton(controller, Xbox.AXIS_LEFT_TRIGGER));

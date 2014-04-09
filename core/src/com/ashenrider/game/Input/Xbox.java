@@ -28,7 +28,7 @@ public class Xbox {
     public static final int AXIS_RIGHT_TRIGGER = 1;
 
     public static final int AXIS_LEFT_STICK_HORIZONTAL = 2;
-    public static final int AXIS_LEFT_STICK_VERTICAL = 3;
+    public static final int AXIS_LEFT_STICK_VERTICAL = 3; // positive is probably down
     public static final int AXIS_RIGHT_STICK_HORIZONTAL = 4;
-    public static final int AXIS_RIGHT_STICK_VERTICAL = 5;
+    public static final int AXIS_RIGHT_STICK_VERTICAL = 5; // positive is down
 }
