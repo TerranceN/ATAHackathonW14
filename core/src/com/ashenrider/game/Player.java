@@ -23,6 +23,8 @@ public class Player extends Entity {
 
     boolean onWall = false;
     int wallDir = 0;
+
+    boolean jumpPressedLastFrame = false;
 	
 	// current
 	int airJumps = 0;
@@ -76,7 +78,7 @@ public class Player extends Entity {
 	@Override
 	public void update(float dt) {
 		// jump
-		if (buttonMap.get(Action.JUMP).isDown() && cooldown.get(Action.JUMP) == 0.0f) {
+		if (!jumpPressedLastFrame && buttonMap.get(Action.JUMP).isDown() && cooldown.get(Action.JUMP) == 0.0f) {
             if (onGround || airJumps > 0) {
                 speed.y = JUMP;
                 cooldown.put(Action.JUMP, maxCooldown.get(Action.JUMP));
@@ -84,8 +86,19 @@ public class Player extends Entity {
                     airJumps--;
                 }
             } else if (onWall) {
-                speed.y = JUMP * 1.25f;
-                speed.x = wallDir * JUMP * 0.75f;
+                boolean nextToWall = false;
+                if (wallDir == 1) {
+                    Vector2 tileCoords = scene.map.getTileCoords(pos.cpy());
+                    nextToWall = scene.map.levelLayer.getCell((int)(tileCoords.x - 1.0f), (int)tileCoords.y) != null;
+                } else if (wallDir == -1) {
+                    Vector2 tileCoords = scene.map.getTileCoords(pos.cpy().add(size));
+                    nextToWall = scene.map.levelLayer.getCell((int)(tileCoords.x), (int)tileCoords.y) != null;
+                }
+                if (nextToWall) {
+                    speed.y = JUMP * 1.25f;
+                    speed.x = wallDir * JUMP * 0.75f;
+                    onWall = false;
+                }
             }
 		}
 		// shoot
@@ -139,6 +152,8 @@ public class Player extends Entity {
         if (onGround && !dashing) {
             speed.x -= Math.min(1, dt * 10) * speed.x;
         }
+
+        jumpPressedLastFrame = buttonMap.get(Action.JUMP).isDown();
 	}
 
     public int sign(float x) {
@@ -175,9 +190,12 @@ public class Player extends Entity {
     @Override
     public void handleCollision(Map map) {
         onGround = false;
-        onWall = false;
 		collisionCheck(map);
 		collisionCheck(map);
+
+        if (onGround) {
+            onWall = false;
+        }
     }
 	
 	@Override
