@@ -40,13 +40,4 @@ public class Scene {
 		}
         map.renderForeground(camera);
     }
-    
-    // player inputs
-    public void keyUp(int keycode) {
-    	
-    }
-    
-    public void keyDown(int keycode) {
-    	
-    }
 }

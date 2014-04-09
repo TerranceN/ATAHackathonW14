@@ -10,15 +10,13 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Input.Keys;
 
 
-public class HackathonGame extends ApplicationAdapter implements InputProcessor {
+public class HackathonGame extends ApplicationAdapter {
     OrthographicCamera camera;
     Scene scene;
     
 	@Override
 	public void create () {
         scene = new Scene("test.tmx");
-        
-        Gdx.input.setInputProcessor(this);
         
         camera = new OrthographicCamera();
 		camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -37,53 +35,4 @@ public class HackathonGame extends ApplicationAdapter implements InputProcessor 
 
         scene.render(camera);
 	}
-	
-	@Override
-	public boolean keyDown(int keycode) {
-		scene.keyDown(keycode);
-		return false;
-	}
-
-	@Override
-	public boolean keyUp(int keycode) {
-		scene.keyUp(keycode);
-		return false;
-	}
-
-	@Override
-	public boolean keyTyped(char character) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean mouseMoved(int screenX, int screenY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean scrolled(int amount) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
 }
