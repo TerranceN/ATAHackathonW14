@@ -20,11 +20,7 @@ public class Projectile extends Entity {
 	public Projectile(Vector2 initPosition, Vector2 direction, int playerNumber) {
 		super(initPosition);
 		size = new Vector2(8, 8);
-		if (direction.isZero()) {
-			speed = new Vector2(0, SPEED);
-		} else {
-			speed = direction.scl(SPEED / direction.len());
-		}
+		speed = direction.nor().scl(SPEED);
 		shotBy = playerNumber;
 		img = new Texture("projectile.png");
 		
@@ -37,9 +33,6 @@ public class Projectile extends Entity {
 	public void update(float dt) {
 		super.update(dt);
 		friendlyFireTimer -= dt;
-		
-		Particle p = new Particle(getCentre(), speed.cpy().scl(-1), 0.3f, 0.3f);
-		scene.addEntity(p, Scene.PARTICLE_LAYER);
 	}
 
     @Override

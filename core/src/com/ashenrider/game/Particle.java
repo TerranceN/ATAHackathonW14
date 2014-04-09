@@ -21,11 +21,8 @@ public class Particle extends Entity {
 	
 	public Particle(Vector2 initPosition, Vector2 direction, float scale, float lifespan) {
 		super(initPosition);
-		if (direction.isZero()) {
-			speed = new Vector2(0, SPEED);
-		} else {
-			speed = direction.scl(SPEED / direction.len());
-		}
+		speed = direction.nor().scl(SPEED);
+		
 		// the particle image is a white circle, so tint it to a variable color
 		color = new Color(0.0f, 0.0f, 0.5f, 1.0f);
 
