@@ -7,22 +7,43 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 public class MainMenuScreen implements Screen {
 
     private HackathonApp app;
+    private TextureAtlas atlas;
     private Stage stage;
+    private Skin skin;
 
     public MainMenuScreen(final HackathonApp app) {
         this.app = app;
+
+        BitmapFont buttonFont = new BitmapFont();
+
+        atlas = new TextureAtlas(Gdx.files.internal("pack/gui.atlas"));
+
+        skin = new Skin();
+
+        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
+        style.up = new NinePatchDrawable(atlas.createPatch("ashenrider_btn"));
+        style.down = new NinePatchDrawable(atlas.createPatch("ashenrider_btn_pressed"));
+        style.disabled = new NinePatchDrawable(atlas.createPatch("ashenrider_btn_disabled"));
+        style.over = new NinePatchDrawable(atlas.createPatch("ashenrider_btn_highlight"));
+        style.font = buttonFont;
+
+        skin.add("default", style);
 
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
@@ -33,17 +54,10 @@ public class MainMenuScreen implements Screen {
         Table menu = new Table();
         menu.setFillParent(true);
         stage.addActor(menu);
+        menu.setBackground(new NinePatchDrawable(atlas.createPatch("ashenrider_btn_failed")));
 
-        Texture upRegion = new Texture("p0.png");
-        Texture downRegion = new Texture("p1.png");
-        BitmapFont buttonFont = new BitmapFont();
-
-        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
-        style.up = new SpriteDrawable(new Sprite(upRegion));
-        style.down = new SpriteDrawable(new Sprite(downRegion));
-        style.font = buttonFont;
-
-        TextButton startButton = new TextButton("Start", style);
+        TextButton startButton = new TextButton("Start", skin);
+        startButton.setWidth(400);
         startButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {

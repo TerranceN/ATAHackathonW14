@@ -1,0 +1,50 @@
+
+gui.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+ashenrider_btn
+  rotate: false
+  xy: 2, 2
+  size: 32, 32
+  split: 17, 8, 11, 11
+  pad: 6, 6, 6, 6
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+ashenrider_btn_disabled
+  rotate: false
+  xy: 36, 2
+  size: 32, 32
+  split: 17, 8, 11, 11
+  pad: 6, 6, 6, 6
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+ashenrider_btn_failed
+  rotate: false
+  xy: 70, 2
+  size: 32, 32
+  split: 16, 8, 11, 11
+  pad: 6, 7, 6, 6
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+ashenrider_btn_highlight
+  rotate: false
+  xy: 104, 2
+  size: 32, 32
+  split: 15, 8, 11, 11
+  pad: 6, 6, 6, 6
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+ashenrider_btn_pressed
+  rotate: false
+  xy: 138, 2
+  size: 32, 32
+  split: 15, 8, 11, 11
+  pad: 6, 6, 6, 6
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
