@@ -57,3 +57,5 @@ build/
 
 ## OSX
 .DS_Store
+*.classpath
+*.project

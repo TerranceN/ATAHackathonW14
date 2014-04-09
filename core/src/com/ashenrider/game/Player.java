@@ -15,7 +15,7 @@ public class Player extends Entity {
 	Texture img;
 
 	float JUMP = 200.0f;
-	float ACCEL = 200.0f;
+	float ACCEL = 400.0f;
 	
 	public enum Action {
 		MOVE, AIM_HORIZONTAL, AIM_VERTICAL, JUMP, SHOOT
