@@ -1,5 +1,6 @@
 package com.ashenrider.game;
 
+import com.ashenrider.game.userinterface.MainMenuScreen;
 import com.badlogic.gdx.*;
 
 import java.util.Stack;
@@ -13,7 +14,7 @@ public class HackathonApp extends Game {
 	public void create () {
         backStack = new Stack<Screen>();
 
-        setScreen(new GameScreen("test.tmx"));
+        setScreen(new MainMenuScreen(this));
     }
 
 	@Override

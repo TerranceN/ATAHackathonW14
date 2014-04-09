@@ -6,10 +6,14 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class GameScreen implements Screen {
+    HackathonApp app;
+
     OrthographicCamera camera;
     Scene scene;
 
-    public GameScreen(String map) {
+    public GameScreen(HackathonApp app, String map) {
+        this.app = app;
+
         scene = new Scene(map);
 
         camera = new OrthographicCamera();
