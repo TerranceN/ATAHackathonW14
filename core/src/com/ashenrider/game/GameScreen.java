@@ -15,22 +15,16 @@ public class GameScreen implements Screen {
         this.app = app;
 
         scene = new Scene(map);
-
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.update();
     }
 
     @Override
     public void render(float delta) {
         scene.update(Gdx.graphics.getDeltaTime());
 
-        Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        camera.update();
-
-        scene.render(camera);
+        scene.render();
     }
 
     @Override

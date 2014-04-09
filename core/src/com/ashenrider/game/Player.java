@@ -6,14 +6,14 @@ import com.ashenrider.game.Input.*;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class Player extends Entity {
 
-	SpriteBatch batch;
 	Texture img;
 
 	float JUMP = 400.0f;
-	float ACCEL = 800.0f;
+	float ACCEL = 4000.0f;
 	float MAX_SPEED = 400.0f; // while not dashing
 	
 	float DASH_SPEED = 800.0f;
@@ -41,11 +41,10 @@ public class Player extends Entity {
 	
 	public int number;
 	
-	public Player(int playerNumber, Vector2 initPosition, InputAxis moveAxis, InputButton jump, InputButton shoot, InputButton dash) {
+	public Player(int playerNumber, Vector2 initPosition, InputAxis moveAxis, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton dash) {
 		super(initPosition);
 
 		number = playerNumber;
-		batch = new SpriteBatch();
 		img = new Texture("p" + (playerNumber % 3) + ".png");
 
 		size = new Vector2(img.getWidth(), img.getHeight());
@@ -54,6 +53,9 @@ public class Player extends Entity {
 		axisMap = new HashMap<Action, InputAxis>();
 		
 		axisMap.put(Action.MOVE, moveAxis);
+		axisMap.put(Action.AIM_HORIZONTAL, aimH);
+		axisMap.put(Action.AIM_VERTICAL, aimV);
+
 		buttonMap.put(Action.JUMP, jump);
 		buttonMap.put(Action.SHOOT, shoot);
 		buttonMap.put(Action.DASH, dash);
@@ -80,9 +82,10 @@ public class Player extends Entity {
 		}
 		// shoot
 		if (buttonMap.get(Action.SHOOT).isDown() && cooldown.get(Action.SHOOT) == 0.0f) {
-			Projectile p = new Projectile(pos.cpy(), speed.cpy(), number);
+			Vector2 dir = new Vector2(axisMap.get(Action.AIM_HORIZONTAL).getValue(), axisMap.get(Action.AIM_VERTICAL).getValue());
+			Projectile p = new Projectile(pos.cpy(), dir, number);
 			cooldown.put(Action.SHOOT, maxCooldown.get(Action.SHOOT));
-			scene.addEntity(p);
+			scene.addEntity(p, Scene.SHOT_LAYER);
 		}
 		// dash quickly in the currently facing direction
 		// (or in the aimed direction)
@@ -95,7 +98,14 @@ public class Player extends Entity {
 			dashTime = DASH_TIME;
 		}
 		// accelerate
-		speed.x = speed.x + ACCEL * axisMap.get(Action.MOVE).getValue() * dt;
+        float move = axisMap.get(Action.MOVE).getValue();
+        float xAcceleration = ACCEL * move;
+        if (Math.abs(move) > 0.25) {
+            if (!onGround) {
+                xAcceleration *= 0.25f;
+            }
+            speed.x = speed.x + xAcceleration * dt;
+        }
 		// update cooldowns
 		for (Action action : cooldown.keySet()) {
 			cooldown.put(action, Math.max(0.0f, cooldown.get(action) - dt));
@@ -117,6 +127,10 @@ public class Player extends Entity {
 			}
 		}
 		super.update(dt);
+
+        if (onGround && !dashing) {
+            speed.x -= Math.min(1, dt * 10) * speed.x;
+        }
 	}
 
     public boolean collisionCheck(Map map) {
@@ -155,9 +169,7 @@ public class Player extends Entity {
     }
 	
 	@Override
-	public void render() {
-		batch.begin();
+	public void render(SpriteBatch batch) {
 		batch.draw(img, pos.x, pos.y);
-		batch.end();
 	}
 }

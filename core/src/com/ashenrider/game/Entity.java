@@ -1,13 +1,14 @@
 package com.ashenrider.game;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public abstract class Entity {
 	Scene scene;
+	int layer;
 	
-	Vector2 pos;
+	public Vector2 pos;
 	Vector2 speed;
 	Vector2 size;
 	
@@ -31,14 +32,14 @@ public abstract class Entity {
 
 		pos.add(speed.cpy().scl(dt));
 		if (pos.y < 0) {
-			pos.y = pos.y + Gdx.graphics.getHeight();
-		} else if (pos.y > Gdx.graphics.getHeight()) {
-			pos.y = pos.y - Gdx.graphics.getHeight();
+			pos.y = pos.y + scene.map.getHeight();
+		} else if (pos.y > scene.map.getHeight()) {
+			pos.y = pos.y - scene.map.getHeight();
 		}
 		if (pos.x < 0) {
-			pos.x = pos.x + Gdx.graphics.getWidth();
-		} else if (pos.x > Gdx.graphics.getWidth()) {
-			pos.x = pos.x - Gdx.graphics.getWidth();
+			pos.x = pos.x + scene.map.getWidth();
+		} else if (pos.x > scene.map.getWidth()) {
+			pos.x = pos.x - scene.map.getWidth();
 		}
 	}
 
@@ -50,9 +51,32 @@ public abstract class Entity {
     	return new Rectangle(pos.x ,pos.y, size.x, size.y);
     }
     
-	public abstract void render();
+    public Vector2 getCentre() {
+    	return new Vector2(pos.x + size.x/2, pos.y + size.y/2);
+    }
+
+    public void renderWithWrapAround(SpriteBatch batch) {
+        if (pos.x + size.x > scene.map.getWidth()) {
+            pos.x -= scene.map.getWidth();
+            render(batch);
+            pos.x += scene.map.getWidth();
+        }
+
+        if (pos.y + size.y > scene.map.getHeight()) {
+            pos.y -= scene.map.getHeight();
+            render(batch);
+            pos.y += scene.map.getHeight();
+        }
+
+        render(batch);
+    }
+
+    public abstract void render(SpriteBatch batch);
 	
 	public void destroy() {
+		// remove it from the current layer's list of entities
+		scene.entityLayers.get(layer).remove(this);
+		// and mark it to be removed from the list of all entities later
 		destroyed = true;
 	}
 }
