@@ -208,6 +208,7 @@ public class Player extends Entity {
                 speed = new Vector2(wallDir * 0.75f, 1.25f).scl(AIR_JUMP);
                 cooldown.put(Action.JUMP, maxCooldown.get(Action.JUMP));
                 onWall = false;
+                airDashes = NUM_AIRDASHES;
             }
 		}
 		// if was on wall, am I still on the wall?
@@ -241,11 +242,12 @@ public class Player extends Entity {
 		// dash quickly in the currently facing direction
 		// (or in the aimed direction)
 		if (buttonMap.get(Action.DASH).isDown() && cooldown.get(Action.DASH) == 0.0f && airDashes > 0) {
-			if (speed.x >= 0) {
-				speed = new Vector2(DASH_SPEED, 0.0f);
-			} else {
-				speed = new Vector2(-DASH_SPEED, 0.0f);
-			}
+	        float xAxis = axisMap.get(Action.MOVE).getValue();
+	        float dir = speed.x > 0 ? 1 : -1;
+	        if (Math.abs(xAxis) > 0.25) {
+	        	dir = Math.signum(xAxis);
+	        }
+			speed = new Vector2(DASH_SPEED * dir, 0.0f);
 			cooldown.put(Action.DASH, maxCooldown.get(Action.DASH));
 			airDashes--;
 			falls = false;
@@ -355,6 +357,20 @@ public class Player extends Entity {
         collisionCheck(map);
         collisionCheck(map);
 
+        if (pos.x + size.x > map.getWidth()) {
+            pos.x -= map.getWidth();
+            collisionCheck(map);
+            collisionCheck(map);
+            pos.x += map.getWidth();
+        }
+
+        if (pos.y + size.y > map.getHeight()) {
+            pos.y -= map.getHeight();
+            collisionCheck(map);
+            collisionCheck(map);
+            pos.y += map.getHeight();
+        }
+
         if (onGround) {
             onWall = false;
         }
@@ -365,16 +381,18 @@ public class Player extends Entity {
             landedTime = LAND_FRAME_DURATION * 4;
             // spawn some smoke particles
             Random rand = new Random();
-            for (int i = 0; i<5; i++) {
-                float pX = pos.x + rand.nextFloat() * size.x;
-                float pY = pos.y + rand.nextFloat() * 5;
-                float pSize = 0.2f + rand.nextFloat() * 0.2f;
-                float pDuration = 0.3f + rand.nextFloat() * 0.9f;
-                float pSpeed = 20 + rand.nextFloat() * 100;
-                float pAngle = rand.nextFloat() * (float) Math.PI;
-                Particle p = new Particle(new Vector2(pX,pY), new Vector2(1,0).setAngleRad(pAngle), pSpeed, pSize, pDuration, new Color(1.0f,1.0f, 1.0f, 1.0f));
-                scene.addEntity(p, Scene.PARTICLE_LAYER);
-            }
+//            for (int i = 0; i<5; i++) {
+//                float pX = pos.x + rand.nextFloat() * size.x;
+//                float pY = pos.y + rand.nextFloat() * 5;
+//                float pSize = 0.2f + rand.nextFloat() * 0.2f;
+//                float pDuration = 0.3f + rand.nextFloat() * 0.9f;
+//                float pSpeed = 20 + rand.nextFloat() * 100;
+//                float pAngle = rand.nextFloat() * (float) Math.PI;
+//                Particle p = new Particle(new Vector2(pX,pY), new Vector2(1,0).setAngleRad(pAngle), pSpeed, pSize, pDuration, new Color(1.0f,1.0f, 1.0f, 1.0f));
+//                scene.addEntity(p, Scene.PARTICLE_LAYER);
+//            }
+            scene.addEntity(new GroundSmoke(new Vector2(pos.x + size.x/2, pos.y), false), Scene.PARTICLE_LAYER);
+            scene.addEntity(new GroundSmoke(new Vector2(pos.x + size.x/2, pos.y), true), Scene.PARTICLE_LAYER);
         }
     }
 
