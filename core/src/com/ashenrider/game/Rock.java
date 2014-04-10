@@ -17,7 +17,7 @@ public class Rock extends Projectile {
 		SPEED = 700.0f;
 		speed = direction.nor().scl(SPEED);
 		//GRAVITY = -300.0f;
-		falls = true;
+		falls = false;
 		
 		BOUNCE_WALLS = true;
 		BOUNCE_CEILING = true;
