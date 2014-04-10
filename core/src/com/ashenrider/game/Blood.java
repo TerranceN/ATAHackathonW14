@@ -34,6 +34,7 @@ public class Blood extends Entity {
         anim = new Animation(FRAME_DURATION, frames);
 
         size = new Vector2(16.0f, 16.0f).scl(scale);
+        pos = initPosition.cpy().sub(size.cpy().scl(0.5f));
         
         lifeTime = FRAME_DURATION * 10;
         falls = false;
@@ -58,8 +59,8 @@ public class Blood extends Entity {
         TextureRegion frame = getSprite();
         float w = frame.getRegionWidth();
         float h = frame.getRegionHeight();
-        //batch.draw(frame, pos.x-w/2f, pos.y-h/2f, w, h);
-        batch.draw(frame, pos.x, pos.y, w/2, h/2, w, h, scale, scale, angle);
-        //batch.draw(region, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
+        float oX = 21;
+        float oY = 28;
+        batch.draw(frame, pos.x + size.x/2f -oX, pos.y + size.y/2f -oY, oX, oY, w, h, scale, scale, angle);
     }
 }

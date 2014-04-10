@@ -1,5 +1,7 @@
 package com.ashenrider.game;
 
+import java.util.Random;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -21,7 +23,8 @@ public class Explosion extends Entity {
 
     public Explosion(Vector2 initPosition) {
         super(initPosition);
-        angle = 0.0f;//direction.angle();
+        Random rand = new Random();
+        angle = 360 * rand.nextFloat();
         boolean flipped = false;
         
         TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/fx.atlas"));
@@ -35,6 +38,7 @@ public class Explosion extends Entity {
         anim = new Animation(FRAME_DURATION, frames);
 
         size = new Vector2(16.0f, 16.0f).scl(scale);
+        pos = initPosition.cpy().sub(size.cpy().scl(0.5f));
         
         lifeTime = FRAME_DURATION * 44;
         falls = false;
@@ -59,6 +63,8 @@ public class Explosion extends Entity {
         TextureRegion frame = getSprite();
         float w = frame.getRegionWidth();
         float h = frame.getRegionHeight();
-        batch.draw(frame, pos.x, pos.y, w/2, h/2, w, h, scale, scale, angle);
+        float oX = 26; // flip this if flipped
+        float oY = 30;
+        batch.draw(frame, pos.x + size.x/2f -oX, pos.y + size.y/2f -oY, oX, oY, w, h, scale, scale, angle);
     }
 }

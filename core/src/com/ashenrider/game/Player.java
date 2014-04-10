@@ -503,13 +503,6 @@ public class Player extends Entity {
         }
 
 		batch.draw(frame, pos.x + (animationOffset * scale), pos.y, frame.getRegionWidth() * scale, frame.getRegionHeight() * scale);
-        //if (Particle.BASE_PARTICLE != null) {
-        //    batch.draw(Particle.BASE_PARTICLE, pos.x - Particle.BASE_PARTICLE.getWidth() / 2f, pos.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
-        //    batch.draw(Particle.BASE_PARTICLE, pos.x + size.x - Particle.BASE_PARTICLE.getWidth() / 2f, pos.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
-        //    batch.draw(Particle.BASE_PARTICLE, pos.x + size.x - Particle.BASE_PARTICLE.getWidth() / 2f, pos.y + size.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
-        //    batch.draw(Particle.BASE_PARTICLE, pos.x - Particle.BASE_PARTICLE.getWidth() / 2f, pos.y + size.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
-        //}
-
         batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 

@@ -34,7 +34,9 @@ public class Fireball extends Projectile {
         }
         anim = new Animation(FRAME_DURATION, frames);
         
-		size = new Vector2(12, 12);
+		size = new Vector2(16, 16);
+        pos = initPosition.cpy().sub(size.cpy().scl(0.5f));
+
 		
 		// you cannot hurt yourself within the first fraction of a second that a shot is fired
 		SPEED = 700.0f;
@@ -71,8 +73,8 @@ public class Fireball extends Projectile {
         TextureRegion frame = getSprite();
         float w = frame.getRegionWidth();
         float h = frame.getRegionHeight();
-        //batch.draw(frame, pos.x-w/2f, pos.y-h/2f, w, h);
-        batch.draw(frame, pos.x - (w*scale/2), pos.y - (h*scale/2), w/2, h/2, w, h, scale, scale, angle);
-        //batch.draw(region, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
+        float oX = 38;
+        float oY = 24;
+        batch.draw(frame, pos.x + size.x/2f -oX, pos.y + size.y/2f -oY, oX, oY, w, h, scale, scale, angle);
     }
 }
