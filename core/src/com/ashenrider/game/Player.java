@@ -72,6 +72,8 @@ public class Player extends Entity {
 	HashMap<Action, Float> maxCooldown;
 		
 	public int number;
+
+    ArrayList<Boolean> texCollidedBeforeUpdate;
 	
 	// every image is 70 wide and the middle 20 are the hitbox
 	int animationOffset = -27;
@@ -168,6 +170,61 @@ public class Player extends Entity {
 		maxCooldown.put(Action.SHOOT, 0.3f);
 		maxCooldown.put(Action.DASH, DASH_TIME + 0.5f);
 	}
+
+    public ArrayList<Vector2> getPoints() {
+        ArrayList<Vector2> points = new ArrayList<Vector2>();
+
+        points.add(pos);
+        points.add(pos.cpy().add(new Vector2(size.x, 0)));
+        points.add(pos.cpy().add(size));
+        points.add(pos.cpy().add(new Vector2(0, size.y)));
+
+        return points;
+    }
+
+    public void recordTexCollision() {
+        ArrayList<Vector2> points = getPoints();
+        texCollidedBeforeUpdate = new ArrayList<Boolean>();
+
+        for (Vector2 p : points) {
+            float modX = p.x % scene.map.getWidth();
+            float modY = p.y % scene.map.getHeight();
+
+            if (modX < 0) {
+                modX += scene.map.getWidth();
+            }
+            if (modY < 0) {
+                modY += scene.map.getHeight();
+            }
+
+            int textureValue = scene.getCollisionMaskValueAtPoint(modX, modY);
+            texCollidedBeforeUpdate.add(textureValue != 0);
+        }
+    }
+
+    public void texCollisionResolve() {
+        ArrayList<Vector2> points = getPoints();
+
+        for (int i = 0; i < points.size(); i++) {
+            if (texCollidedBeforeUpdate.get(i)) {
+                float modX = points.get(i).x % scene.map.getWidth();
+                float modY = points.get(i).y % scene.map.getHeight();
+
+                if (modX < 0) {
+                    modX += scene.map.getWidth();
+                }
+                if (modY < 0) {
+                    modY += scene.map.getHeight();
+                }
+
+                int textureValue = scene.getCollisionMaskValueAtPoint(modX, modY);
+
+                if (textureValue == 0) {
+                    killPlayer(number);
+                }
+            }
+        }
+    }
 
     public int getLives() {
         return lives;
@@ -398,14 +455,9 @@ public class Player extends Entity {
         onGround = false;
         if (!nullSphereEnabled) {
             //
-            ArrayList<Vector2> points = new ArrayList<Vector2>();
+            ArrayList<Vector2> points = getPoints();
             ArrayList<Boolean> texCollision = new ArrayList<Boolean>();
             ArrayList<Boolean> levelCollision = new ArrayList<Boolean>();
-
-            points.add(pos);
-            points.add(pos.cpy().add(new Vector2(size.x, 0)));
-            points.add(pos.cpy().add(size));
-            points.add(pos.cpy().add(new Vector2(0, size.y)));
 
             int numTexCollisionZero = 0;
             int numTexCollisionGTZeroOrNotLevelCollision = 0;
@@ -525,13 +577,11 @@ public class Player extends Entity {
         batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 
-    public boolean onShot(Projectile projectile) {
+    public boolean killPlayer(int murderer) {
         if(invulnerableTime <= 0.0f && !destroyed) {
             lives--;
-            int playerId = projectile.getShotBy();
             scene.addEntity(new PlayerBody(number, pos, speed.cpy(), 5.0f, facingRight), Scene.PLAYER_LAYER);
-            scene.addEntity(new Blood(getCentre(), projectile.speed.cpy()), Scene.PARTICLE_LAYER);
-            scene.reportPlayerDeath(scene.players.get(playerId), this);
+            scene.reportPlayerDeath(scene.players.get(murderer), this);
             if(lives > 0) {
                 scene.respawnPlayer(this, true);
                 onInvulnerable(INVULNERABILITY_LENGTH);
@@ -540,6 +590,15 @@ public class Player extends Entity {
             }
             return true;
         }
+        return false;
+    }
+
+    public boolean onShot(Projectile projectile) {
+        if (killPlayer(projectile.getShotBy())) {
+            scene.addEntity(new Blood(getCentre(), projectile.speed.cpy()), Scene.PARTICLE_LAYER);
+            return true;
+        }
+
         return false;
     }
 

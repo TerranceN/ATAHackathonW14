@@ -263,25 +263,21 @@ public class Scene {
 	public void update(float dt) {
         collisionMask.begin();
         for (Player p : players) {
-            //System.out.println(getCollisionMaskValueAtPoint(p.pos.x, p.pos.y));
+            p.recordTexCollision();
         }
-        collisionMask.end();
-
-        //TODO: make player record which corners are texCollision > 0
-
         // fade collision mask
         batch.setShader(nullSphereFadeShader);
         nullSphereFadeShader.begin();
-        collisionMask.begin();
         batch.begin();
         batch.setProjectionMatrix(mapCam.combined);
         batch.draw(collisionMaskRegion, 0, 0, map.getWidth(), map.getHeight());
         batch.end();
-        collisionMask.end();
         nullSphereFadeShader.end();
         batch.setShader(null);
-
-        //TODO: if a corner was texCollision > 0, but isn't now and is in the level, kill the player
+        for (Player p : players) {
+            p.texCollisionResolve();
+        }
+        collisionMask.end();
 
 		for (Entity e : entities) {
 			if (!e.destroyed) {
