@@ -15,6 +15,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class Player extends Entity {
+    private static final float INVULNERABILITY_LENGTH = 2.0f;
+
 	float scale = 2.0f;
 	float animationTime = 0.0f;
 
@@ -51,6 +53,8 @@ public class Player extends Entity {
 
 	float minLandedSpeed = -20.0f;
 	float landedTime = 0.0f;
+
+    float invulnerableTime;
 	
 	public enum Action {
 		MOVE, AIM_HORIZONTAL, AIM_VERTICAL, JUMP, SHOOT, DASH
@@ -280,6 +284,9 @@ public class Player extends Entity {
 				speed.scl(1.0f, MAX_SPEED / Math.abs(speed.y));
 			}
 		}
+        if(invulnerableTime > 0.0f) {
+            invulnerableTime = (invulnerableTime - dt > 0) ? invulnerableTime - dt : 0.0f;
+        }
 		super.update(dt);
 
         if (onGround && !dashing) {
@@ -356,13 +363,26 @@ public class Player extends Entity {
 	@Override
 	public void render(SpriteBatch batch) {
 		TextureRegion frame = getSprite();
+        if(invulnerableTime > 0.0f) {
+            batch.setColor(1.0f, 1.0f, 1.0f, 0.4f + (invulnerableTime%0.3f)*2.0f);
+        }
+
 		batch.draw(frame, pos.x + (animationOffset * scale), pos.y, frame.getRegionWidth() * scale, frame.getRegionHeight() * scale);
+
+        batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 
     public void onShot(Projectile projectile) {
-        int playerId = projectile.getShotBy();
-        scene.reportPlayerDeath(scene.players.get(playerId), this);
-        lives--;
-        scene.respawnPlayer(this, true);
+        if(invulnerableTime <= 0.0f) {
+            int playerId = projectile.getShotBy();
+            scene.reportPlayerDeath(scene.players.get(playerId), this);
+            lives--;
+            scene.respawnPlayer(this, true);
+            onInvulnerable(INVULNERABILITY_LENGTH);
+        }
+    }
+
+    public void onInvulnerable(float time) {
+        this.invulnerableTime = time;
     }
 }
