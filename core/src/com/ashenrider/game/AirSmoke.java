@@ -16,6 +16,8 @@ public class AirSmoke extends Entity {
     float scale = 2.0f;
     float animationTime = 0.0f;
 
+    private static Animation staticAnim = null;
+
     private float FRAME_DURATION = 0.025f;
     private Animation anim;
     
@@ -27,15 +29,18 @@ public class AirSmoke extends Entity {
         this.angle = angle;
         flipped = isUpsideDown;
 
-        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/fx.atlas"));
-        TextureRegion[] frames = new TextureRegion[18];
-        for (int i=0; i<18; i++) {
-            frames[i] = atlas.findRegion("smoke/smoke-" + (i+1));
-            //if (flipped) {
-            //	frames[i].flip(true,  false);
-            //}
+        if (staticAnim == null) {
+            TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/fx.atlas"));
+            TextureRegion[] frames = new TextureRegion[18];
+            for (int i=0; i<18; i++) {
+                frames[i] = atlas.findRegion("smoke/smoke-" + (i+1));
+            }
+            anim = new Animation(FRAME_DURATION, frames);
+            staticAnim = anim;
+        } else {
+            anim = staticAnim;
         }
-        anim = new Animation(FRAME_DURATION, frames);
+
 
         size = new Vector2(8.0f, 8.0f).scl(scale);
     	pos = initPosition.cpy().sub(size.cpy().scl(0.5f));
