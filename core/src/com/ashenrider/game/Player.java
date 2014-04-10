@@ -241,7 +241,11 @@ public class Player extends Entity {
 		// dash quickly in the currently facing direction
 		// (or in the aimed direction)
 		if (buttonMap.get(Action.DASH).isDown() && cooldown.get(Action.DASH) == 0.0f && airDashes > 0) {
-			speed = new Vector2(DASH_SPEED * Math.signum(speed.x), 0.0f);
+			if (speed.x >= 0) {
+				speed = new Vector2(DASH_SPEED, 0.0f);
+			} else {
+				speed = new Vector2(-DASH_SPEED, 0.0f);
+			}
 			cooldown.put(Action.DASH, maxCooldown.get(Action.DASH));
 			airDashes--;
 			falls = false;
