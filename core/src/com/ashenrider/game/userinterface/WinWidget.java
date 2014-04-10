@@ -22,6 +22,7 @@ public class WinWidget implements PlayerDeathListener {
 
     Image playerImage;
     Label winText;
+    Table container;
 
     private Scene scene;
     private TextureAtlas atlas;
@@ -47,15 +48,20 @@ public class WinWidget implements PlayerDeathListener {
         stage.addActor(ui);
 
         atlas = new TextureAtlas(Gdx.files.internal("pack/gui.atlas"));
-        //ui.setBackground(new NinePatchDrawable(atlas.createPatch("ashenrider_btn_pressed")));
 
         ui.center();
+        container = new Table();
+        container.setBackground(new NinePatchDrawable(atlas.createPatch("ashenrider_btn_pressed")));
+        ui.add(container).width(200).height(80);
+
+        container.center();
         playerImage = new Image();
-        ui.add(playerImage);
+        container.add(playerImage);
 
         winText = new Label("Wins!", skin);
-        ui.add(winText).padLeft(10);
+        container.add(winText).padLeft(10);
 
+        container.setVisible(false);
         playerImage.setVisible(false);
         winText.setVisible(false);
     }
@@ -64,6 +70,8 @@ public class WinWidget implements PlayerDeathListener {
         if(winner != null) {
             playerImage.setVisible(true);
             winText.setVisible(true);
+            container.setVisible(true);
+
             if(playerImage.getDrawable() == null) {
                 playerImage.setDrawable(new SpriteDrawable(new Sprite(winner.getSprite())));
             } else {

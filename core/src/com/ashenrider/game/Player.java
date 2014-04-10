@@ -511,7 +511,7 @@ public class Player extends Entity {
 	}
 
     public boolean onShot(Projectile projectile) {
-        if(invulnerableTime <= 0.0f) {
+        if(invulnerableTime <= 0.0f && !destroyed) {
             lives--;
             int playerId = projectile.getShotBy();
             scene.addEntity(new PlayerBody(number, pos, speed.cpy(), 5.0f, facingRight), Scene.PLAYER_LAYER);
