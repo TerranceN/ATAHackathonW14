@@ -20,7 +20,7 @@ public class Map {
     TiledMapTileLayer decorationBackLayer;
 
     float tileSize = 1.f;
-    float mapScale = 1f;
+    float mapScale = 1.2f;
 
     float width = 0f;
     float height = 0f;
