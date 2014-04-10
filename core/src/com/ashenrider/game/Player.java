@@ -5,6 +5,7 @@ import java.util.Random;
 
 import com.ashenrider.game.Input.*;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -271,11 +272,11 @@ public class Player extends Entity {
         	for (int i = 0; i<5; i++) {
         		float pX = pos.x + rand.nextFloat() * size.x;
         		float pY = pos.y + rand.nextFloat() * 5;
-        		float pSize = 0.3f + rand.nextFloat() * 0.5f;
-        		float pDuration = 0.2f + rand.nextFloat() * 0.6f;
-        		float pSpeed = 20 + rand.nextFloat() * 120;
+        		float pSize = 0.2f + rand.nextFloat() * 0.2f;
+        		float pDuration = 0.3f + rand.nextFloat() * 0.9f;
+        		float pSpeed = 20 + rand.nextFloat() * 100;
         		float pAngle = rand.nextFloat() * (float) Math.PI;
-        		Particle p = new Particle(new Vector2(pX,pY), new Vector2(pSpeed,0).setAngleRad(pAngle), pSize, pDuration);
+        		Particle p = new Particle(new Vector2(pX,pY), new Vector2(1,0).setAngleRad(pAngle), pSpeed, pSize, pDuration, new Color(1.0f,1.0f, 1.0f, 1.0f));
         		scene.addEntity(p, Scene.PARTICLE_LAYER);
         	}
         }

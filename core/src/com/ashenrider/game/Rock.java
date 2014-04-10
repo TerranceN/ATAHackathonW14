@@ -1,5 +1,6 @@
 package com.ashenrider.game;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
@@ -31,7 +32,7 @@ public class Rock extends Projectile {
 	@Override
 	public void update(float dt) {
 		super.update(dt);
-		Particle p = new Particle(getCentre(), speed.cpy().scl(-1), 0.3f, 0.3f);
+		Particle p = new Particle(getCentre(), speed.cpy().scl(-1), 0.0f, 0.3f, 0.3f, new Color(0.0f, 0.0f, 0.5f, 1.0f));
 		scene.addEntity(p, Scene.PARTICLE_LAYER);
 	}
 }

@@ -11,20 +11,18 @@ public class Particle extends Entity {
 	Texture img;
 	Color color;
 	
-	public float SPEED = 0.0f; // 150.0f
-	
 	float scale;
 	float maxScale;
 	
 	private float duration;
 	private float maxDuration;
 	
-	public Particle(Vector2 initPosition, Vector2 direction, float scale, float lifespan) {
+	public Particle(Vector2 initPosition, Vector2 direction, float pSpeed, float scale, float lifespan, Color col) {
 		super(initPosition);
-		speed = direction.nor().scl(SPEED);
+		speed = direction.nor().scl(pSpeed);
 		
 		// the particle image is a white circle, so tint it to a variable color
-		color = new Color(0.0f, 0.0f, 0.5f, 1.0f);
+		color = col;
 
 		img = new Texture("particle.png");
 		size = new Vector2(img.getWidth() * scale, img.getHeight() * scale);
