@@ -276,8 +276,16 @@ public class Player extends Entity {
             float pSize = 0.2f + rand.nextFloat() * 0.4f;
             float pDuration = 0.4f + rand.nextFloat();
             float pSpeed = (40 + rand.nextFloat() * 200);
-            Particle p = new Particle(new Vector2(pX,pY), new Vector2(wallDir ,0), pSpeed, pSize, pDuration, new Color(1.0f,1.0f, 1.0f, 1.0f));
-            scene.addEntity(p, Scene.PARTICLE_LAYER);
+
+            float smokeThreshold = 200f;
+
+            if (speed.y < -smokeThreshold) {
+                AirSmoke smoke = new AirSmoke(new Vector2(pX,pY), 90, wallDir == 1);
+                scene.addEntity(smoke, Scene.PARTICLE_LAYER);
+            } else if (speed.y > smokeThreshold) {
+                AirSmoke smoke = new AirSmoke(new Vector2(pX,pY), 270, wallDir == -1);
+                scene.addEntity(smoke, Scene.PARTICLE_LAYER);
+            }
             
             boolean nextToWall = false;
             if (wallDir == 1) {
