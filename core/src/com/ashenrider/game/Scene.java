@@ -188,9 +188,8 @@ public class Scene {
         spawnPoints = map.getSpawnPoints();
         powerUpPoints = map.getPowerupPoints();
 
-        for(Vector2 location : powerUpPoints) {
-            addEntity(new InvulnerabilityPowerUp(location), PLAYER_LAYER);
-        }
+        //TODO: make some sort of system for generating powerups.
+        addEntity(new InvulnerabilityPowerUp(powerUpPoints), PLAYER_LAYER);
 
         for (int i = 0; i < players.size(); i++) {
             Player player = players.get(i);
