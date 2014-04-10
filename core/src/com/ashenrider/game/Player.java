@@ -21,7 +21,7 @@ public class Player extends Entity {
 	float scale = 2.0f;
 	float animationTime = 0.0f;
 
-    int lives = 10;
+    int lives = 1;
 
 	float JUMP = 550.0f;
 	float AIR_JUMP = 400.0f;
@@ -208,6 +208,7 @@ public class Player extends Entity {
                 speed = new Vector2(wallDir * 0.75f, 1.25f).scl(AIR_JUMP);
                 cooldown.put(Action.JUMP, maxCooldown.get(Action.JUMP));
                 onWall = false;
+                airDashes = NUM_AIRDASHES;
             }
 		}
 		// if was on wall, am I still on the wall?
@@ -355,6 +356,20 @@ public class Player extends Entity {
 
         collisionCheck(map);
         collisionCheck(map);
+
+        if (pos.x + size.x > map.getWidth()) {
+            pos.x -= map.getWidth();
+            collisionCheck(map);
+            collisionCheck(map);
+            pos.x += map.getWidth();
+        }
+
+        if (pos.y + size.y > map.getHeight()) {
+            pos.y -= map.getHeight();
+            collisionCheck(map);
+            collisionCheck(map);
+            pos.y += map.getHeight();
+        }
 
         if (onGround) {
             onWall = false;
@@ -514,14 +529,18 @@ public class Player extends Entity {
 	}
 
     public boolean onShot(Projectile projectile) {
-        if(invulnerableTime <= 0.0f) {
-            int playerId = projectile.getShotBy();
-            scene.reportPlayerDeath(scene.players.get(playerId), this);
+        if(invulnerableTime <= 0.0f && !destroyed) {
             lives--;
+            int playerId = projectile.getShotBy();
             scene.addEntity(new PlayerBody(number, pos, speed.cpy(), 5.0f, facingRight), Scene.PLAYER_LAYER);
             scene.addEntity(new Blood(getCentre(), projectile.speed.cpy()), Scene.PARTICLE_LAYER);
-            scene.respawnPlayer(this, true);
-            onInvulnerable(INVULNERABILITY_LENGTH);
+            scene.reportPlayerDeath(scene.players.get(playerId), this);
+            if(lives > 0) {
+                scene.respawnPlayer(this, true);
+                onInvulnerable(INVULNERABILITY_LENGTH);
+            } else {
+                destroy();
+            }
             return true;
         }
         return false;
@@ -529,5 +548,14 @@ public class Player extends Entity {
 
     public void onInvulnerable(float time) {
         this.invulnerableTime = time;
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+    }
+
+    public boolean isDestroyed() {
+        return destroyed;
     }
 }

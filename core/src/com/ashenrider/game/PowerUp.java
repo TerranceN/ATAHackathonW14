@@ -36,7 +36,7 @@ public abstract class PowerUp extends Entity {
     @Override
     public void handleCollision(Map map) {
         for (Player p : scene.players) {
-            if (respawnTimer <= 0) {
+            if (respawnTimer <= 0 && !p.isDestroyed()) {
                 Rectangle shotBox = getBounds();
                 Rectangle playerBox = p.getBounds();
                 if (shotBox.overlaps(playerBox)) {

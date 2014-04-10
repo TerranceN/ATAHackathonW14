@@ -332,7 +332,7 @@ public class Scene {
         shapeRenderer.setColor(1, 0, 0, 1);
         float radius = 100;
         for (Player p : players) {
-            if (p.nullSphereEnabled) {
+            if (p.nullSphereEnabled && !p.isDestroyed()) {
                 shapeRenderer.circle(p.pos.x + p.size.x / 2f, p.pos.y + p.size.y / 2f, radius, 20);
 
                 if (p.pos.x + p.size.x + radius > map.getWidth()) {
@@ -358,29 +358,11 @@ public class Scene {
         batch.end();
         levelBuffer.end();
 
+        renderLayers(0, BACKGROUND_LAYER - 1);
         maskAndDrawTmpFrameBufferForLayer(BACKGROUND_LAYER);
-
-        levelBuffer.begin();
-        batch.setProjectionMatrix(mapCam.combined);
-		for (int layer = BACKGROUND_LAYER + 1; layer < FOREGROUND_LAYER; layer++) {
-	        map.renderLayer(layer, mapCam);
-			batch.begin();
-			for (Entity e : entityLayers.get(layer)) {
-				e.renderWithWrapAround(batch);
-				if (Particle.BASE_PARTICLE == null) {
-					Particle.BASE_PARTICLE = new Texture("particle.png");
-				} else if (Particle.BASE_PARTICLE != null) {
-		            batch.draw(Particle.BASE_PARTICLE, e.pos.x - Particle.BASE_PARTICLE.getWidth() / 2f, e.pos.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
-		            batch.draw(Particle.BASE_PARTICLE, e.pos.x + e.size.x - Particle.BASE_PARTICLE.getWidth() / 2f, e.pos.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
-		            batch.draw(Particle.BASE_PARTICLE, e.pos.x + e.size.x - Particle.BASE_PARTICLE.getWidth() / 2f, e.pos.y + e.size.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
-		            batch.draw(Particle.BASE_PARTICLE, e.pos.x - Particle.BASE_PARTICLE.getWidth() / 2f, e.pos.y + e.size.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
-		        }
-			}
-			batch.end();
-		}
-        levelBuffer.end();
-
+        renderLayers(BACKGROUND_LAYER + 1, FOREGROUND_LAYER - 1);
         maskAndDrawTmpFrameBufferForLayer(FOREGROUND_LAYER);
+        renderLayers(FOREGROUND_LAYER + 1, NUM_LAYERS - 1);
 
         batch.setShader(nullSphereFilterShader);
         nullSphereFilterShader.begin();
@@ -394,6 +376,30 @@ public class Scene {
         batch.end();
         nullSphereFilterShader.end();
         batch.setShader(null);
+    }
+
+    void renderLayers(int start, int end) {
+        levelBuffer.begin();
+        batch.setProjectionMatrix(mapCam.combined);
+		for (int layer = start; layer <= end; layer++) {
+	        map.renderLayer(layer, mapCam);
+			batch.begin();
+			for (Entity e : entityLayers.get(layer)) {
+                if(!e.destroyed) {
+                    e.renderWithWrapAround(batch);
+                    //if (Particle.BASE_PARTICLE == null) {
+                    //	Particle.BASE_PARTICLE = new Texture("particle.png");
+                    //} else if (Particle.BASE_PARTICLE != null) {
+                    //    batch.draw(Particle.BASE_PARTICLE, e.pos.x - Particle.BASE_PARTICLE.getWidth() / 2f, e.pos.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
+                    //    batch.draw(Particle.BASE_PARTICLE, e.pos.x + e.size.x - Particle.BASE_PARTICLE.getWidth() / 2f, e.pos.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
+                    //    batch.draw(Particle.BASE_PARTICLE, e.pos.x + e.size.x - Particle.BASE_PARTICLE.getWidth() / 2f, e.pos.y + e.size.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
+                    //    batch.draw(Particle.BASE_PARTICLE, e.pos.x - Particle.BASE_PARTICLE.getWidth() / 2f, e.pos.y + e.size.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
+                    //}
+                }
+			}
+			batch.end();
+		}
+        levelBuffer.end();
     }
 
     void maskAndDrawTmpFrameBufferForLayer(int layer) {

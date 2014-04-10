@@ -2,6 +2,7 @@ package com.ashenrider.game;
 
 import com.ashenrider.game.userinterface.DeathsWidget;
 import com.ashenrider.game.userinterface.LivesWidget;
+import com.ashenrider.game.userinterface.WinWidget;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -14,6 +15,7 @@ public class GameScreen implements Screen {
     Scene scene;
     LivesWidget livesWidget;
     DeathsWidget deathsWidget;
+    WinWidget winWidget;
 
     public GameScreen(HackathonApp app, String map) {
         this.app = app;
@@ -22,6 +24,7 @@ public class GameScreen implements Screen {
 
         livesWidget = new LivesWidget(scene);
         deathsWidget = new DeathsWidget(scene);
+        winWidget = new WinWidget(scene);
     }
 
     @Override
@@ -34,6 +37,7 @@ public class GameScreen implements Screen {
         scene.render();
         livesWidget.render(delta);
         deathsWidget.render(delta);
+        winWidget.render(delta);
     }
 
     @Override
