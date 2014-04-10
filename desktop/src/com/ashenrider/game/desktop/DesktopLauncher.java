@@ -12,6 +12,7 @@ public class DesktopLauncher {
         settings.maxHeight=512;
         TexturePacker.process(settings, "gui", "pack", "gui");
         TexturePacker.process(settings, "animations", "pack", "animations");
+        TexturePacker.process(settings, "fx", "pack", "fx");
 
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.width = 1280;

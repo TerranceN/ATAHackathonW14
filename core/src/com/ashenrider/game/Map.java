@@ -145,6 +145,13 @@ public class Map {
         return new Vector2((float)Math.floor(worldCoords.x / tileSize), (float)Math.floor(worldCoords.y / tileSize));
     }
 
+    public boolean isInsideLevel(float x, float y) {
+        int tileX = (int)Math.floor(x / tileSize);
+        int tileY = (int)Math.floor(y / tileSize);
+
+        return levelLayer.getCell(tileX, tileY) != null;
+    }
+
     public Vector2 getLeastPenetration(Vector2 vel, Vector2 lower, Vector2 upper) {
     	// check this many tiles further than the size of the character to determine the "depth" of the wall.
     	// this may require fewer cells to be checked
@@ -161,71 +168,78 @@ public class Map {
         int startX = 0;
         int xDir = 0;
 
-        if (vel.x < 0) {
-            startX = lowerX;
-            xDir = 1;
-        } else {
-            startX = upperX - 1;
-            xDir = -1;
-        }
+        vel = new Vector2(1, 1);
+        for (int i = 0; i < 2; i++) {
+            if (i % 2 == 1) {
+                vel = vel.scl(-1);
+            }
+            if (vel.x < 0) {
+                startX = lowerX;
+                xDir = 1;
+            } else {
+                startX = upperX - 1;
+                xDir = -1;
+            }
 
-        // check rows for collision offset
-        for (int y = lowerY; y < upperY; y++) {
-            boolean foundCollision = false;
-            float newPenX = 0;
-            for (int x = startX; (foundCollision && (x < upperX + maxDepth && x >= lowerX - maxDepth)) || (x < upperX && x >= lowerX); x += xDir) {
-                if (levelLayer.getCell(x, y) != null) {
-                    foundCollision = true;
-                    if (vel.x < 0) {
-                        newPenX = (x + 1) * tileSize - lower.x;
+            // check rows for collision offset
+            for (int y = lowerY; y < upperY; y++) {
+                boolean foundCollision = false;
+                float newPenX = 0;
+                for (int x = startX; (foundCollision && (x < upperX + maxDepth && x >= lowerX - maxDepth)) || (x < upperX && x >= lowerX); x += xDir) {
+                    if (levelLayer.getCell(x, y) != null) {
+                        foundCollision = true;
+                        if (vel.x < 0) {
+                            newPenX = (x + 1) * tileSize - lower.x;
+                        } else {
+                            newPenX = (x) * tileSize - upper.x;
+                        }
                     } else {
-                        newPenX = (x) * tileSize - upper.x;
+                        if (foundCollision) {
+                            break;
+                        }
                     }
-                } else {
-                    if (foundCollision) {
-                        break;
-                    }
+                }
+
+                if (penX == 0 || (newPenX != 0 && Math.abs(newPenX) < Math.abs(penX))) {
+                    penX = newPenX;
                 }
             }
 
-            if (penX == 0 || (newPenX != 0 && Math.abs(newPenX) < Math.abs(penX))) {
-                penX = newPenX;
+            int startY = 0;
+            int yDir = 0;
+
+            if (vel.y < 0) {
+                startY = lowerY;
+                yDir = 1;
+            } else {
+                startY = upperY - 1;
+                yDir = -1;
             }
-        }
 
-        int startY = 0;
-        int yDir = 0;
-
-        if (vel.y < 0) {
-            startY = lowerY;
-            yDir = 1;
-        } else {
-            startY = upperY - 1;
-            yDir = -1;
-        }
-
-        // check columns for collision offset
-        for (int x = lowerX; x < upperX; x++) {
-            boolean foundCollision = false;
-            float newPenY = 0;
-            for (int y = startY; (foundCollision && (y < upperY + maxDepth && y >= lowerY - maxDepth)) || (y < upperY && y >= lowerY); y += yDir) {
-                if (levelLayer.getCell(x, y) != null) {
-                    foundCollision = true;
-                    if (vel.y < 0) {
-                        newPenY = (y + 1) * tileSize - lower.y;
+            // check columns for collision offset
+            for (int x = lowerX; x < upperX; x++) {
+                boolean foundCollision = false;
+                float newPenY = 0;
+                for (int y = startY; (foundCollision && (y < upperY + maxDepth && y >= lowerY - maxDepth)) || (y < upperY && y >= lowerY); y += yDir) {
+                    if (levelLayer.getCell(x, y) != null) {
+                        foundCollision = true;
+                        if (vel.y < 0) {
+                            newPenY = (y + 1) * tileSize - lower.y;
+                        } else {
+                            newPenY = (y) * tileSize - upper.y;
+                        }
                     } else {
-                        newPenY = (y) * tileSize - upper.y;
+                        if (foundCollision) {
+                            break;
+                        }
                     }
-                } else {
-                    if (foundCollision) {
-                        break;
-                    }
+                }
+
+                if (penY == 0 || (newPenY != 0 && Math.abs(newPenY) < Math.abs(penY))) {
+                    penY = newPenY;
                 }
             }
 
-            if (penY == 0 || (newPenY != 0 && Math.abs(newPenY) < Math.abs(penY))) {
-                penY = newPenY;
-            }
         }
 
         return new Vector2(penX, penY);

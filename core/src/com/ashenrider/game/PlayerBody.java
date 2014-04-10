@@ -16,11 +16,11 @@ public class PlayerBody extends Entity {
 
     public int number;
 
-    int animationOffset = -27;
+    int animationOffset = -37;
     private float DEATH_FRAME_DURATION = 0.12f;
     private Animation deathAnimation;
 
-    public PlayerBody(int playerNumber, Vector2 initPosition, Vector2 initVelocity, float lifeTime) {
+    public PlayerBody(int playerNumber, Vector2 initPosition, Vector2 initVelocity, float lifeTime, boolean facingRight) {
         super(initPosition);
         speed.x = initVelocity.x;
         speed.y = initVelocity.y;
@@ -30,6 +30,9 @@ public class PlayerBody extends Entity {
         TextureRegion[] deathFrames = new TextureRegion[10];
         for (int i=0; i<10; i++) {
             deathFrames[i] = atlas.findRegion(String.format("p%d/death-%02d", (playerNumber % 3), i+1));
+            if (facingRight) {
+            	deathFrames[i].flip(true,  false);
+            }
         }
         deathAnimation = new Animation(DEATH_FRAME_DURATION, deathFrames);
 
