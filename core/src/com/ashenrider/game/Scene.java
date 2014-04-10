@@ -58,6 +58,7 @@ public class Scene {
 
     ShaderProgram nullSphereMaskingShader;
     ShaderProgram nullSphereFadeShader;
+    ShaderProgram nullSphereFilterShader;
 
     Player player;
 
@@ -66,6 +67,9 @@ public class Scene {
 
     FrameBuffer tmpMapBuffer;
     TextureRegion tmpMapBufferRegion;
+
+    FrameBuffer levelBuffer;
+    TextureRegion levelBufferRegion;
     
     public Scene(String filename) {
     	batch = new SpriteBatch();
@@ -87,6 +91,10 @@ public class Scene {
         tmpMapBuffer = new FrameBuffer(Format.RGBA8888, (int)map.getWidth(), (int)map.getHeight(), false);
         tmpMapBufferRegion = new TextureRegion(tmpMapBuffer.getColorBufferTexture());
         tmpMapBufferRegion.flip(false, true);
+
+        levelBuffer = new FrameBuffer(Format.RGBA8888, (int)map.getWidth(), (int)map.getHeight(), false);
+        levelBufferRegion = new TextureRegion(levelBuffer.getColorBufferTexture());
+        levelBufferRegion.flip(false, true);
 
         background = new Texture("background.png");
 
@@ -219,6 +227,11 @@ public class Scene {
                 Gdx.files.internal("shaders/nullSphereFade.vert").readString(),
                 Gdx.files.internal("shaders/nullSphereFade.frag").readString());
         testShaderCompilation(nullSphereFadeShader);
+
+        nullSphereFilterShader = new ShaderProgram(
+                Gdx.files.internal("shaders/nullSphereFilter.vert").readString(),
+                Gdx.files.internal("shaders/nullSphereFilter.frag").readString());
+        testShaderCompilation(nullSphereFilterShader);
     }
 
     public void onResize() {
@@ -338,16 +351,19 @@ public class Scene {
         shapeRenderer.end();
         collisionMask.end();
 
-        batch.setProjectionMatrix(camera.combined);
+        levelBuffer.begin();
+        batch.setProjectionMatrix(mapCam.combined);
         batch.begin();
         batch.draw(background, 0, 0, map.getWidth(), map.getHeight());
         batch.end();
+        levelBuffer.end();
 
         maskAndDrawTmpFrameBufferForLayer(BACKGROUND_LAYER);
 
-        batch.setProjectionMatrix(camera.combined);
-		for (int layer = 0; layer < FOREGROUND_LAYER; layer++) {
-	        map.renderLayer(layer, camera);
+        levelBuffer.begin();
+        batch.setProjectionMatrix(mapCam.combined);
+		for (int layer = BACKGROUND_LAYER + 1; layer < FOREGROUND_LAYER; layer++) {
+	        map.renderLayer(layer, mapCam);
 			batch.begin();
 			for (Entity e : entityLayers.get(layer)) {
 				e.renderWithWrapAround(batch);
@@ -362,8 +378,22 @@ public class Scene {
 			}
 			batch.end();
 		}
+        levelBuffer.end();
 
         maskAndDrawTmpFrameBufferForLayer(FOREGROUND_LAYER);
+
+        batch.setShader(nullSphereFilterShader);
+        nullSphereFilterShader.begin();
+        Texture collisionTexture = collisionMaskRegion.getTexture();
+        collisionTexture.bind(1);
+        nullSphereMaskingShader.setUniformi("u_maskTexture", 1);
+        Gdx.graphics.getGL20().glActiveTexture(GL20.GL_TEXTURE0);
+        batch.begin();
+        batch.setProjectionMatrix(camera.combined);
+        batch.draw(levelBufferRegion, 0, 0, map.getWidth(), map.getHeight());
+        batch.end();
+        nullSphereFilterShader.end();
+        batch.setShader(null);
     }
 
     void maskAndDrawTmpFrameBufferForLayer(int layer) {
@@ -373,10 +403,12 @@ public class Scene {
 
         maskTmpFrameBuffer();
 
+        levelBuffer.begin();
         batch.begin();
-        batch.setProjectionMatrix(camera.combined);
+        batch.setProjectionMatrix(mapCam.combined);
         batch.draw(tmpMapBufferRegion, 0, 0, map.getWidth(), map.getHeight());
         batch.end();
+        levelBuffer.end();
     }
 
     void maskTmpFrameBuffer() {
