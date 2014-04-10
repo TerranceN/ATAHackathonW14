@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.ashenrider.game.Input.*;
-import com.ashenrider.game.userinterface.DeathsWidget;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
@@ -19,10 +18,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -44,6 +41,7 @@ public class Scene {
     // list of lists of entities
     public ArrayList<ArrayList<Entity>> entityLayers;
     ArrayList<Vector2> spawnPoints;
+    ArrayList<Vector2> powerUpPoints;
     
     public ArrayList<Player> players;
     
@@ -178,13 +176,16 @@ public class Scene {
         }
 
         spawnPoints = map.getSpawnPoints();
+        powerUpPoints = map.getPowerupPoints();
+
+        for(Vector2 location : powerUpPoints) {
+            addEntity(new InvulnerabilityPowerUp(location), PLAYER_LAYER);
+        }
 
         for (int i = 0; i < players.size(); i++) {
             Player player = players.get(i);
             respawnPlayer(player, false);
         }
-
-        addEntity(new InvulnerabilityPowerUp(new Vector2(100.0f, 100.0f)), PLAYER_LAYER);
 
         loadShaders();
 
@@ -197,8 +198,6 @@ public class Scene {
     public void respawnPlayer(Player player, boolean body) {
         //TODO: Random spawn points?
         player.pos = spawnPoints.get(player.number % spawnPoints.size()).cpy().sub(new Vector2(player.size.x / 2.f, 0f));
-
-        //TODO Spawn a body.
     }
 
     public void testShaderCompilation(ShaderProgram program) {

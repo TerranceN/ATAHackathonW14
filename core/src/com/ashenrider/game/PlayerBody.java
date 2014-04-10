@@ -67,6 +67,10 @@ public class PlayerBody extends Entity {
     @Override
     public void update(float dt) {
         super.update(dt);
+        if (onGround) {
+            speed.x -= Math.min(1, dt * 10) * speed.x;
+        }
+
         animationTime += dt;
         if(animationTime > DEATH_FRAME_DURATION * 9.5f) animationTime = DEATH_FRAME_DURATION * 9.5f;
         lifeTime -= dt;

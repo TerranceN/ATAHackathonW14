@@ -45,6 +45,9 @@
   <tile id="35" terrain="0,0,0,0"/>
   <tile id="36" terrain="0,0,0,0"/>
  </tileset>
+ <tileset firstgid="322" name="PowerUpTileset" tilewidth="32" tileheight="32">
+  <image source="PowerUpTileset.png" width="256" height="256"/>
+ </tileset>
  <layer name="decoration_back" width="64" height="32">
   <data encoding="base64" compression="zlib">
    eJzt1zEOgDAIBdBewNHJ+9/T3cFgxVDie0m3hgSGXzoGd/aEe9EaAF+J5tBxOW/vP60HHWyL1Kjy9/4z9rrO/WfQf73K99nfiFn2ypgVMqaSjAE6kFVAhL2uhrkza7XZnVPeA4Y=
@@ -58,6 +61,11 @@
  <layer name="spawn" width="64" height="32">
   <data encoding="base64" compression="zlib">
    eJzt1jkKACAMBMD1/5+2sBexiERm6iA5IDEBSMaDuNO3AIAaP9zmH2pgMUsAAH+iavoN7HTdEV3z5t4E2uwADA==
+  </data>
+ </layer>
+ <layer name="powerup" width="64" height="32">
+  <data encoding="base64" compression="zlib">
+   eJztziEBAAAIA7BTjf6hsFgUZkuwBAAAAADuur4HAAAAbAOzJABE
   </data>
  </layer>
  <layer name="level" width="64" height="32">

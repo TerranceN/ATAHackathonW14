@@ -14,6 +14,7 @@ public class Map {
     OrthogonalTiledMapRenderer mapRenderer;
 
     TiledMapTileLayer levelLayer;
+    TiledMapTileLayer powerUpLayer;
     TiledMapTileLayer spawnLayer;
     TiledMapTileLayer decorationFrontLayer;
     TiledMapTileLayer decorationBackLayer;
@@ -26,6 +27,7 @@ public class Map {
     public Map(String fileName) {
         tiledMap = new TmxMapLoader().load(fileName);
         spawnLayer = getLayerByName("spawn");
+        powerUpLayer = getLayerByName("powerup");
         levelLayer = getLayerByName("level");
         decorationFrontLayer = getLayerByName("decoration_front");
         decorationBackLayer = getLayerByName("decoration_back");
@@ -70,6 +72,22 @@ public class Map {
         }
 
         return lst;
+    }
+
+    public ArrayList<Vector2> getPowerupPoints() {
+        ArrayList<Vector2> powerUps = new ArrayList<Vector2>();
+
+        int layerWidth = powerUpLayer.getWidth();
+        int layerHeight = powerUpLayer.getHeight();
+        for (int x=0; x < powerUpLayer.getWidth(); x++) {
+            for(int y=0; y < powerUpLayer.getHeight(); y++) {
+                if(powerUpLayer.getCell(x, y) != null) {
+                    powerUps.add(toWorldSpace(x, y));
+                }
+            }
+        }
+
+        return powerUps;
     }
 
     public void hideAllLayers() {

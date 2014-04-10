@@ -49,7 +49,7 @@ public abstract class PowerUp extends Entity {
     @Override
     public void render(SpriteBatch batch) {
         if(respawnTimer < 0.0f) {
-            batch.draw(img, pos.x * scale, pos.y, img.getWidth() * scale, img.getHeight() * scale);
+            batch.draw(img, pos.x, pos.y, img.getWidth() * scale, img.getHeight() * scale);
         }
     }
 
