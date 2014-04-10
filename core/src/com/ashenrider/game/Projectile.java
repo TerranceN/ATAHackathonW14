@@ -4,9 +4,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class Projectile extends Entity {
+	static Texture BASE_PROJECTILE = null;
 	Texture img;
 	
 	private int shotBy;
@@ -15,7 +15,7 @@ public class Projectile extends Entity {
 	public float SPEED = 750.0f;
 	public float MAX_SPEED = 1000.0f;
 	
-	// frames per particle spawn
+	// frames per particle spawn (unused)
 	private int particleTimer = 0;
 	
 	// shoud lit bounce on wall collision or be destroyed?
@@ -29,7 +29,11 @@ public class Projectile extends Entity {
 		size = new Vector2(8, 8);
 		speed = direction.nor().scl(SPEED);
 		shotBy = playerNumber;
-		img = new Texture("projectile.png");
+
+		if (BASE_PROJECTILE == null) {
+			BASE_PROJECTILE = new Texture("projectile.png");
+		}
+		img = BASE_PROJECTILE;
 		
 		// you cannot hurt yourself within the first fraction of a second that a shot is fired
 		friendlyFireTimer = 0.75f;

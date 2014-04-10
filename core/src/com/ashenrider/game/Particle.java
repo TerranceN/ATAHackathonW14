@@ -8,6 +8,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Particle extends Entity {
+	static Texture BASE_PARTICLE = null;
+	
 	Texture img;
 	Color color;
 	
@@ -24,7 +26,11 @@ public class Particle extends Entity {
 		// the particle image is a white circle, so tint it to a variable color
 		color = col;
 
-		img = new Texture("particle.png");
+		if (BASE_PARTICLE == null) {
+			BASE_PARTICLE = new Texture("particle.png");
+		}
+		img = BASE_PARTICLE;
+		
 		size = new Vector2(img.getWidth() * scale, img.getHeight() * scale);
 		
 		maxScale = scale;
