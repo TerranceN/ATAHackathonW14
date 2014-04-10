@@ -285,7 +285,7 @@ public class Scene {
         shapeRenderer.setProjectionMatrix(mapCam.combined);
         shapeRenderer.setColor(1, 0, 0, 1);
         for (Player p : players) {
-            if (p.nullSphereEnabled) {
+            if (p.nullSphereEnabled && !p.isDestroyed()) {
                 shapeRenderer.circle(p.pos.x + p.size.x / 2f, p.pos.y + p.size.y / 2f, 100, 20);
             }
         }
@@ -304,7 +304,9 @@ public class Scene {
 	        map.renderLayer(layer, camera);
 			batch.begin();
 			for (Entity e : entityLayers.get(layer)) {
-				e.renderWithWrapAround(batch);
+                if(!e.destroyed) {
+                    e.renderWithWrapAround(batch);
+                }
 			}
 			batch.end();
 		}

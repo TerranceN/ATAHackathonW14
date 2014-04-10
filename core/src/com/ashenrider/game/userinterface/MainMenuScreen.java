@@ -128,15 +128,15 @@ public class MainMenuScreen implements Screen {
         back.add(new KeyboardButton(Keys.ESCAPE));
         
         for(Controller controller : Controllers.getControllers()) {
-            hAxis.add(new ControllerAxis(controller, XboxWindows.AXIS_LEFT_STICK_HORIZONTAL));
-            vAxis.add(new ControllerAxis(controller, XboxWindows.AXIS_LEFT_STICK_VERTICAL, true));
-            select.add(new ControllerButton(controller, XboxWindows.BTN_A));
-            back.add(new ControllerButton(controller, XboxWindows.BTN_B));
+            hAxis.add(new ControllerAxis(controller, Xbox.AXIS_LEFT_STICK_HORIZONTAL));
+            vAxis.add(new ControllerAxis(controller, Xbox.AXIS_LEFT_STICK_VERTICAL, true));
+            select.add(new ControllerButton(controller, Xbox.BTN_A));
+            back.add(new ControllerButton(controller, Xbox.BTN_B));
         }
     }
 
     public void startGame() {
-        app.setScreen(new GameScreen(app, "test.tmx"));
+        app.setScreen(new GameScreen(app, "finalMap.tmx"));
     }
 
     public void exitGame() {
@@ -147,9 +147,9 @@ public class MainMenuScreen implements Screen {
         //
         for (InputAxis iAxis : hAxis) {
         	if (iAxis.getValue() > 0.5f) {
-                Gdx.app.log("input", "Go right");
+                //Gdx.app.log("input", "Go right");
         	} else if (iAxis.getValue() < -0.5f) {
-                Gdx.app.log("input", "Go left");
+                //Gdx.app.log("input", "Go left");
         	}
         }
         for (InputAxis iAxis : vAxis) {
@@ -160,17 +160,17 @@ public class MainMenuScreen implements Screen {
         		} else {
             		btnIndex = btnIndex % buttons.size();
         		}
-        		Gdx.app.log("Button index", "btn index: " + btnIndex);
+        		//Gdx.app.log("Button index", "btn index: " + btnIndex);
         	}
         	if (iAxis.getValue() > 0.5f) {
-                Gdx.app.log("input", "Go up");
+                //Gdx.app.log("input", "Go up");
         	} else if (iAxis.getValue() < -0.5f) {
-                Gdx.app.log("input", "Go down");
+                //Gdx.app.log("input", "Go down");
         	}
         }
         for (InputButton iButton : select) {
         	if (iButton.isDown()) {
-                Gdx.app.log("input", "Ok");
+                //Gdx.app.log("input", "Ok");
             	if (Math.floor(btnIndex) == 0) {
             		startGame();
             	} else {
@@ -180,8 +180,8 @@ public class MainMenuScreen implements Screen {
         }
         for (InputButton iButton : back) {
         	if (iButton.isDown()) {
-                Gdx.app.log("input", "Back");
-                //exitGame();
+                //Gdx.app.log("input", "Back");
+               //exitGame();
         	}
         }
         for (int i=0; i<buttons.size(); i++) {

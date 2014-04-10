@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="38" height="25" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="TileSet" tilewidth="32" tileheight="32">
+  <image source="tiles.png" width="512" height="512"/>
+  <terraintypes>
+   <terrain name="Purple" tile="-1"/>
+   <terrain name="Green" tile="-1"/>
+  </terraintypes>
+  <tile id="64" terrain=",,,0"/>
+  <tile id="65" terrain=",,0,0"/>
+  <tile id="66" terrain=",,0,"/>
+  <tile id="67" terrain=",,0,0"/>
+  <tile id="69" terrain=",,,1"/>
+  <tile id="70" terrain=",,1,1"/>
+  <tile id="71" terrain=",,1,"/>
+  <tile id="73" terrain="0,1,0,1"/>
+  <tile id="80" terrain=",0,,0"/>
+  <tile id="81" terrain="0,0,0,0"/>
+  <tile id="82" terrain="0,,0,"/>
+  <tile id="83" terrain="0,0,0,0"/>
+  <tile id="85" terrain=",1,,1"/>
+  <tile id="86" terrain="1,1,1,1"/>
+  <tile id="87" terrain="1,,1,"/>
+  <tile id="88" terrain="1,1,1,1"/>
+  <tile id="96" terrain=",0,,"/>
+  <tile id="97" terrain="0,0,,"/>
+  <tile id="98" terrain="0,,,"/>
+  <tile id="101" terrain=",1,,"/>
+  <tile id="102" terrain="1,1,,"/>
+  <tile id="103" terrain="1,,,"/>
+  <tile id="115" terrain=",,0,0"/>
+  <tile id="131" terrain="0,0,0,"/>
+  <tile id="132" terrain="0,0,,0"/>
+  <tile id="147" terrain="0,,0,"/>
+  <tile id="148" terrain=",0,,0"/>
+  <tile id="150" terrain="1,,1,1"/>
+  <tile id="151" terrain=",1,1,1"/>
+  <tile id="163" terrain="0,,0,0"/>
+  <tile id="164" terrain=",0,0,0"/>
+  <tile id="166" terrain="1,1,1,"/>
+  <tile id="167" terrain="1,1,,1"/>
+ </tileset>
+ <tileset firstgid="257" name="control" tilewidth="32" tileheight="32">
+  <image source="controls.png" width="256" height="256"/>
+ </tileset>
+ <layer name="decoration_back" width="38" height="25">
+  <data encoding="base64" compression="zlib">
+   eJztzrERABAUwFArazABxmaBXynCybtLn5REa/RAYNID0qFKDwQGPSBdJO8KPRHo9MDDMj0g6TsLTXcD3Q==
+  </data>
+ </layer>
+ <layer name="level" width="38" height="25">
+  <data encoding="base64" compression="zlib">
+   eJzlV9sNwjAMzBDtQEAXaOgCwApMgMgGdAMGJZZqyTJ2XorLB5ZOLaW+XOI4dr1zbonw5OrJ77OTbRZ8FgZ8rnFQHj4u4BlxVXBT+C4JH0AgvBqHxBPInFLzabU14tXgh+uXm0+rAX/LfHH9rKxVl7VZ6TpEHBVMEfeIU8JvNNIF803lKeSNF/xofv1i36Luva1EV22cIMY89tKzvXVBjHlsa3ksdGk8b/e9ZlpewfuD03NyZP8Dz2O7r4kLrGHYtGGew1WrQ7n6J+VnSPDltPE871Ufc7pK9/faWRfEHfsTia90P9L+qYeu3Hlao8uyz5HGwzxJ1THUZVUvuEl5JI1r3ef8m2G/AntB62dqzs8eBmPCeZ7KC+t+FGsInv9YY+j3kqZr2HwmxkP7x1xdwrjciQ/WIf79SK8pXfw9/t1Ycg7Ngg/gA/6cYcY=
+  </data>
+ </layer>
+ <layer name="decoration_front" width="38" height="25">
+  <data encoding="base64" compression="zlib">
+   eJzt1tEOwBAMBVC/PEvwBds+2+tCp9WJRtzzSBr1cJVzoHUQa0lQ55n9s/NMiUdZ9xd319mCdQMfLusGNtCTHW3OYA2tNxZ4mnyUsyCOaKRBMosp99Aualaz2MouWZtxz3fu8JcBoGVmkQq/
+  </data>
+ </layer>
+ <layer name="spawn" width="38" height="25">
+  <data encoding="base64" compression="zlib">
+   eJzt0zEKACAMBMHo/x9tayMWCicy0wdS3FZBTm/pD4DZrsmbzeqfX9k2rJ32kb7nXQOkiAAZ
+  </data>
+ </layer>
+ <layer name="powerup" width="38" height="25">
+  <data encoding="base64" compression="zlib">
+   eJzt1UENAAAIAzHwbxoVhACtgn2Wi4BbMqcXwH5+BAB9Ojr7vd0FPPwACQ==
+  </data>
+ </layer>
+</map>

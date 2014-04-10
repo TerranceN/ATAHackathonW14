@@ -20,7 +20,7 @@ public class Player extends Entity {
 	float scale = 2.0f;
 	float animationTime = 0.0f;
 
-    int lives = 10;
+    int lives = 1;
 
 	float JUMP = 550.0f;
 	float AIR_JUMP = 400.0f;
@@ -390,12 +390,17 @@ public class Player extends Entity {
 
     public boolean onShot(Projectile projectile) {
         if(invulnerableTime <= 0.0f) {
-            int playerId = projectile.getShotBy();
-            scene.reportPlayerDeath(scene.players.get(playerId), this);
             lives--;
+
+            int playerId = projectile.getShotBy();
             scene.addEntity(new PlayerBody(number, pos, speed.cpy(), 5.0f), Scene.PLAYER_LAYER);
-            scene.respawnPlayer(this, true);
-            onInvulnerable(INVULNERABILITY_LENGTH);
+            scene.reportPlayerDeath(scene.players.get(playerId), this);
+            if(lives > 0) {
+                scene.respawnPlayer(this, true);
+                onInvulnerable(INVULNERABILITY_LENGTH);
+            } else {
+                destroy();
+            }
             return true;
         }
         return false;
@@ -403,5 +408,14 @@ public class Player extends Entity {
 
     public void onInvulnerable(float time) {
         this.invulnerableTime = time;
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+    }
+
+    public boolean isDestroyed() {
+        return destroyed;
     }
 }
