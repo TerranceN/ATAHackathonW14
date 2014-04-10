@@ -374,7 +374,7 @@ public class Player extends Entity {
 	public void render(SpriteBatch batch) {
 		TextureRegion frame = getSprite();
         if(invulnerableTime > 0.0f) {
-            batch.setColor(1.0f, 1.0f, 1.0f, 0.4f + (invulnerableTime%0.3f)*2.0f);
+            batch.setColor(1.0f, 1.0f, 1.0f - (invulnerableTime%0.3f) * 1.5f, 0.4f + (invulnerableTime%0.3f)*2.0f);
         }
 
 		batch.draw(frame, pos.x + (animationOffset * scale), pos.y, frame.getRegionWidth() * scale, frame.getRegionHeight() * scale);
