@@ -1,6 +1,7 @@
 package com.ashenrider.game;
 
 import java.util.HashMap;
+import java.util.Random;
 
 import com.ashenrider.game.Input.*;
 import com.badlogic.gdx.Gdx;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class Player extends Entity {
+	float scale = 2.0f;
 	float animationTime = 0.0f;
 
     int lives = 10;
@@ -88,7 +90,7 @@ public class Player extends Entity {
 		walkLeftAnimation = new Animation(RUNNING_FRAME_DURATION, leftFrames);
 		walkRightAnimation = new Animation(RUNNING_FRAME_DURATION, rightFrames);
 
-		size = new Vector2(landLeft.getRegionWidth(), landLeft.getRegionHeight());
+		size = new Vector2(landLeft.getRegionWidth() * scale, landLeft.getRegionHeight() * scale);
 		//size = new Vector2(img.getWidth(), img.getHeight());
 		
 		buttonMap = new HashMap<Action, InputButton>();
@@ -263,14 +265,26 @@ public class Player extends Entity {
         // if falling quickly and hit the ground
         if (onGround && velY < minLandedSpeed) {
         	landed = true;
-        	landedTime = 0.3f;
+        	landedTime = 0.125f;
+        	// spawn some smoke particles
+        	Random rand = new Random();
+        	for (int i = 0; i<5; i++) {
+        		float pX = pos.x + rand.nextFloat() * size.x;
+        		float pY = pos.y + rand.nextFloat() * 5;
+        		float pSize = 0.3f + rand.nextFloat() * 0.5f;
+        		float pDuration = 0.2f + rand.nextFloat() * 0.6f;
+        		float pSpeed = 20 + rand.nextFloat() * 120;
+        		float pAngle = rand.nextFloat() * (float) Math.PI;
+        		Particle p = new Particle(new Vector2(pX,pY), new Vector2(pSpeed,0).setAngleRad(pAngle), pSize, pDuration);
+        		scene.addEntity(p, Scene.PARTICLE_LAYER);
+        	}
         }
     }
 	
 	@Override
 	public void render(SpriteBatch batch) {
 		TextureRegion frame = getSprite();
-		batch.draw(frame, pos.x, pos.y);
+		batch.draw(frame, pos.x, pos.y, frame.getRegionWidth() * scale, frame.getRegionHeight() * scale);
 	}
 
     public void onShot(Projectile projectile) {

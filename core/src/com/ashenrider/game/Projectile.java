@@ -21,7 +21,7 @@ public class Projectile extends Entity {
 	protected boolean BOUNCE_WALLS = false;
 	protected boolean BOUNCE_CEILING = false;
 	protected int groundBounces = 0;
-	protected float elasticity = 1.0f;
+	protected float ELASTICITY = 1.0f;
 	
 	public Projectile(Vector2 initPosition, Vector2 direction, int playerNumber) {
 		super(initPosition);
@@ -51,7 +51,26 @@ public class Projectile extends Entity {
     	// check if the projectile is currently overlapping a wall based on its size and position
     	Vector2 pen = map.getLeastPenetration(speed, pos, pos.cpy().add(size));
         if (pen.len() > 0) {
-        	collided = true;
+            if (pen.y != 0 && (pen.x == 0 || Math.abs(pen.x) > Math.abs(pen.y))) {
+            	// vertical collision
+            	if ((pen.y < 0 && BOUNCE_CEILING) || groundBounces > 0) {
+                    pos.add(new Vector2(0, pen.y));
+                    speed.y = speed.y * -ELASTICITY;
+                    if (pen.y < 0) {
+                    	groundBounces -= 1;
+                    }
+            	} else {
+            		destroy();
+            	}
+            } else {
+            	// horizontal collision
+            	if (BOUNCE_WALLS) {
+                    pos.add(new Vector2(pen.x, 0));
+                    speed.x = speed.x * - ELASTICITY;
+            	} else {
+                	destroy();
+            	}
+            }
         }
         //
         for (Player p : scene.players) {
@@ -59,7 +78,7 @@ public class Projectile extends Entity {
         		Rectangle shotBox = getBounds();
         		Rectangle playerBox = p.getBounds();
         		if (shotBox.overlaps(playerBox)) {
-        			collided = true;
+                	destroy();
                     p.onShot(this);
         		}
         	}
@@ -67,10 +86,10 @@ public class Projectile extends Entity {
         
     	// TODO
     	// and check the line of the projectiles path to see if it moved through any thin walls since the last frame
+        // (this is necessary if projectiles can go very fast or walls are thin
         if (collided) {
         	// bouncing projectiles could be cool too
         	// spawn particles here, possibly based on the normal of collision or the velocity
-        	destroy();
         }
     }
     
