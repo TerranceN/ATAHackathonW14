@@ -5,14 +5,7 @@ import java.util.List;
 
 import com.ashenrider.game.GameScreen;
 import com.ashenrider.game.HackathonApp;
-import com.ashenrider.game.Input.ControllerAxis;
-import com.ashenrider.game.Input.ControllerButton;
-import com.ashenrider.game.Input.InputAxis;
-import com.ashenrider.game.Input.InputButton;
-import com.ashenrider.game.Input.KeyboardAxis;
-import com.ashenrider.game.Input.KeyboardButton;
-import com.ashenrider.game.Input.Xbox;
-import com.ashenrider.game.Input.XboxWindows;
+import com.ashenrider.game.Input.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
@@ -128,10 +121,14 @@ public class MainMenuScreen implements Screen {
         back.add(new KeyboardButton(Keys.ESCAPE));
         
         for(Controller controller : Controllers.getControllers()) {
-            hAxis.add(new ControllerAxis(controller, Xbox.AXIS_LEFT_STICK_HORIZONTAL));
-            vAxis.add(new ControllerAxis(controller, Xbox.AXIS_LEFT_STICK_VERTICAL, true));
-            select.add(new ControllerButton(controller, Xbox.BTN_A));
-            back.add(new ControllerButton(controller, Xbox.BTN_B));
+            hAxis.add(ControllerHelper.getAxis(controller, ControllerHelper.LEFT_STICK_HORIZONTAL));
+            vAxis.add(ControllerHelper.getAxis(controller, ControllerHelper.LEFT_STICK_VERTICAL));
+            select.add(ControllerHelper.getButton(controller, ControllerHelper.A_BTN));
+            back.add(ControllerHelper.getButton(controller, ControllerHelper.B_BTN));
+        }
+
+        for(Controller cont : Controllers.getControllers()) {
+            Gdx.app.log("NAME", cont.getName());
         }
     }
 

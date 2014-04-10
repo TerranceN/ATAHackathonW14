@@ -124,13 +124,13 @@ public class Scene {
 
         for(Controller controller : Controllers.getControllers()) {
             addPlayer(new Vector2(400, 200),
-                    new ControllerAxis(controller, Xbox.AXIS_LEFT_STICK_HORIZONTAL),
-                    new ControllerAxis(controller, Xbox.AXIS_RIGHT_STICK_HORIZONTAL),
-                    new ControllerAxis(controller, Xbox.AXIS_RIGHT_STICK_VERTICAL, true),
-                    new ControllerButton(controller, Xbox.BTN_A),
-                    new ControllerAxisButton(controller, Xbox.AXIS_RIGHT_TRIGGER),
-                    new ControllerAxisButton(controller, Xbox.AXIS_LEFT_TRIGGER),
-                    new ControllerButton(controller, Xbox.BTN_B));
+                    ControllerHelper.getAxis(controller, ControllerHelper.LEFT_STICK_HORIZONTAL),
+                    ControllerHelper.getAxis(controller, ControllerHelper.RIGHT_STICK_HORIZONTAL),
+                    ControllerHelper.getAxis(controller, ControllerHelper.RIGHT_STICK_VERTICAL),
+                    ControllerHelper.getButton(controller, ControllerHelper.A_BTN),
+                    ControllerHelper.getButton(controller, ControllerHelper.RIGHT_TRIGGER),
+                    ControllerHelper.getButton(controller, ControllerHelper.LEFT_TRIGGER),
+                    ControllerHelper.getButton(controller, ControllerHelper.B_BTN));
 
 
             if (controllerDebug) {
