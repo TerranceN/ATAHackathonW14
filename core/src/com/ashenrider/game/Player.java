@@ -275,6 +275,7 @@ public class Player extends Entity {
 
     public void onShot(Projectile projectile) {
         int playerId = projectile.getShotBy();
+        scene.reportPlayerDeath(scene.players.get(playerId), this);
         lives--;
         scene.respawnPlayer(this, true);
     }

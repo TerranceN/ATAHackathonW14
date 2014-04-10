@@ -14,7 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ScoreWidget {
+public class LivesWidget {
 
     private List<Player> playersList;
     private List<Label> playerLivesList = new LinkedList<Label>();
@@ -23,7 +23,7 @@ public class ScoreWidget {
     private Stage stage;
     private Skin skin;
 
-    public ScoreWidget(Scene scene) {
+    public LivesWidget(Scene scene) {
         this.scene = scene;
         playersList = scene.players;
 

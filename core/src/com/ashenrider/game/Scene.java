@@ -1,8 +1,11 @@
 package com.ashenrider.game;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import com.ashenrider.game.Input.*;
+import com.ashenrider.game.userinterface.DeathsWidget;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.controllers.Controller;
@@ -35,7 +38,8 @@ public class Scene {
     
     public Map map;
     SpriteBatch batch;
-    
+    private List<PlayerDeathListener> playerDeathListeners = new LinkedList<PlayerDeathListener>();
+
     public Scene(String filename) {
     	batch = new SpriteBatch();
         map = new Map(filename);
@@ -203,5 +207,15 @@ public class Scene {
 			}
 			batch.end();
 		}
+    }
+
+    public void addPlayerDeathListener(PlayerDeathListener playerDeathListener) {
+        this.playerDeathListeners.add(playerDeathListener);
+    }
+
+    public void reportPlayerDeath(Player aggressor, Player victim) {
+        for(PlayerDeathListener listener : playerDeathListeners) {
+            listener.onPlayerDeath(aggressor, victim);
+        }
     }
 }
