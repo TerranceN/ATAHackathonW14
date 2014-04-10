@@ -3,6 +3,7 @@ package com.ashenrider.game;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import com.ashenrider.game.Input.*;
 import com.badlogic.gdx.graphics.GL20;
@@ -28,6 +29,8 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.graphics.Pixmap;
 
 public class Scene {
+    Random random = new Random();
+
 	// map and entitity layers
 	int NUM_LAYERS = 5;
 	static int BACKGROUND_LAYER = 0;
@@ -206,7 +209,7 @@ public class Scene {
 
     public void respawnPlayer(Player player, boolean body) {
         //TODO: Random spawn points?
-        player.pos = spawnPoints.get(player.number % spawnPoints.size()).cpy().sub(new Vector2(player.size.x / 2.f, 0f));
+        player.pos = spawnPoints.get(Math.abs((player.number + random.nextInt()) % spawnPoints.size())).cpy().sub(new Vector2(player.size.x / 2.f, 0f));
     }
 
     public void testShaderCompilation(ShaderProgram program) {
