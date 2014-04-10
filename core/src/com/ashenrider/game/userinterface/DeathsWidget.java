@@ -38,7 +38,7 @@ public class DeathsWidget implements PlayerDeathListener {
         this.scene = scene;
         scene.addPlayerDeathListener(this);
 
-        attackIcon = new Texture("fire.png");
+        attackIcon = new Texture("fire-6.png");
 
         stage = new Stage();
         Table ui = new Table();
