@@ -6,7 +6,8 @@
  <tileset firstgid="2" name="TestTileset" tilewidth="32" tileheight="32">
   <image source="TileSet1.png" width="256" height="256"/>
   <terraintypes>
-   <terrain name="Red" tile="-1"/>
+   <terrain name="Red" tile="20"/>
+   <terrain name="Blue" tile="-1"/>
   </terraintypes>
   <tile id="0" terrain=",,,0"/>
   <tile id="1" terrain=",,0,0"/>
@@ -21,15 +22,32 @@
   <tile id="16" terrain=",0,,"/>
   <tile id="17" terrain="0,0,,"/>
   <tile id="18" terrain="0,,,"/>
+  <tile id="28" terrain="1,,1,"/>
+ </tileset>
+ <tileset firstgid="66" name="TestSprites2" tilewidth="32" tileheight="32">
+  <image source="TestSprites2.png" width="512" height="512"/>
+  <terraintypes>
+   <terrain name="Terrain" tile="-1"/>
+  </terraintypes>
+  <tile id="0" terrain=",,,0"/>
+  <tile id="1" terrain=",,0,0"/>
+  <tile id="2" terrain=",,0,"/>
+  <tile id="3" terrain="0,0,0,"/>
+  <tile id="4" terrain="0,0,,0"/>
+  <tile id="16" terrain=",0,,0"/>
+  <tile id="17" terrain="0,0,0,0"/>
+  <tile id="18" terrain="0,,0,"/>
+  <tile id="19" terrain="0,,0,0"/>
+  <tile id="20" terrain=",0,0,0"/>
+  <tile id="32" terrain=",0,,"/>
+  <tile id="33" terrain="0,0,,"/>
+  <tile id="34" terrain="0,,,"/>
+  <tile id="35" terrain="0,0,0,0"/>
+  <tile id="36" terrain="0,0,0,0"/>
  </tileset>
  <layer name="decoration_back" width="64" height="32">
   <data encoding="base64" compression="zlib">
    eJzt1zEOgDAIBdBewNHJ+9/T3cFgxVDie0m3hgSGXzoGd/aEe9EaAF+J5tBxOW/vP60HHWyL1Kjy9/4z9rrO/WfQf73K99nfiFn2ypgVMqaSjAE6kFVAhL2uhrkza7XZnVPeA4Y=
-  </data>
- </layer>
- <layer name="level" width="64" height="32">
-  <data encoding="base64" compression="zlib">
-   eJztWdEOwjAIJHOZiRpNpv//rY7EJqSWCdgMuvUSHrax2istB3MCgOeKvUCGucIYW+Oy2M17Eo7o/I/Ff1hsJNdH4485iuYi5H9f7ERsLLw3ZD4af8l4JZ8tgPyvmZX2Q8lP6i8ZD2PgsQY4D6pTZ+DnO8G3rnH+8+cZvlPSPqqV6Oe1BnN2zeUD7f00tkT301p57gM6Fy5emvuW35WsQZ6/S88988k/oGtg3VMpr7SqaSkvWPdU6/z/hYW/VO9bOFOJf17TrNUhUr1vYU9Z6hROv6P0sFztWYqnhX/U3jyB4ySN21r88vonIjhO0ePW0dGhw6/6fu+o1U917BuamigyrOddUxPVRO3vC9bz7lETIfcHtNML1QTlzn3T3Ctqcm9N3zXcJf+RRNR3bs5omrhre+8oeAPnow07
   </data>
  </layer>
  <layer name="decoration_front" width="64" height="32">
@@ -40,6 +58,11 @@
  <layer name="spawn" width="64" height="32">
   <data encoding="base64" compression="zlib">
    eJzt1jkKACAMBMD1/5+2sBexiERm6iA5IDEBSMaDuNO3AIAaP9zmH2pgMUsAAH+iavoN7HTdEV3z5t4E2uwADA==
+  </data>
+ </layer>
+ <layer name="level" width="64" height="32">
+  <data encoding="base64" compression="zlib">
+   eJztWQsOgyAM7dmc7gC67QBu8/5HmE1o0jCqBT985CXNolTkVXgtrAOA94J9QIdxhz7ORj/bI/YgIqLyvxb/ZraWXV+NP2oU1yLk/5ztxqx1PNdYPj7+mv5cPmegN/Y1NoB7PqDPZNrJbzIm+VOfS+2DMfwGMWKA4+B56w7yeDv4z2uS/2ja8BlX7rPfibGIEYPRupb0wPc+9a3J+xSrmPOAj0X6Xj73Q96rmQe2frvaY+rJFvAYhM4p0qlccxrpQuicIl3Nlf9WhPDX5vsc1hTyJx3V1ilr+Xspz6cG4s/rE6pbfPKXay+b6h6Wg/P/st+lOiwHXlr4nkHY9U9FRUVFLKzV96Vjr/1URdmQzuNyWzuh652fn/E69+gafe/zhdD1LtV5R2oHcn+BvJcoGZy7dKZZKog7rq+t3HPL7z7cNf+RpJjfpTGj+cx52ntjrLg2p64XP6hKX4U=
   </data>
  </layer>
 </map>

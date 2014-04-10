@@ -171,6 +171,17 @@ public class Player extends Entity {
 			falls = false;
 			dashing = true;
 			dashTime = DASH_TIME;
+
+            Random rand = new Random();
+            for (int i = 0; i<8; i++) {
+                float pX = pos.x + size.x * 0.5f + (rand.nextFloat() * size.x * 0.5f * ((speed.x < 0) ? -1 : 1) );
+                float pY = pos.y + rand.nextFloat() * size.y;
+                float pSize = 0.2f + rand.nextFloat() * 0.4f;
+                float pDuration = 0.4f + rand.nextFloat();
+                float pSpeed = 40 + rand.nextFloat() * 200;
+                Particle p = new Particle(new Vector2(pX,pY), new Vector2( (speed.x > 0) ? -1 : 1 ,0), pSpeed, pSize, pDuration, new Color(1.0f,1.0f, 1.0f, 1.0f));
+                scene.addEntity(p, Scene.PARTICLE_LAYER);
+            }
 		}
 		// accelerate
         float move = axisMap.get(Action.MOVE).getValue();
