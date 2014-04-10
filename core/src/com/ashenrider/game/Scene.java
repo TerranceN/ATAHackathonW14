@@ -24,6 +24,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.graphics.Pixmap;
 
 public class Scene {
 	// map and entitity layers
@@ -240,17 +242,48 @@ public class Scene {
         camera.update();
     }
 
+    public int getCollisionMaskValueAtPoint(float x, float y) {
+        Pixmap collisionMaskPixmap = ScreenUtils.getFrameBufferPixmap((int)x, (int)y, 1, 1);
+        return (collisionMaskPixmap.getPixel(0, 0) >> 24) & 0x0FF;
+    }
+
 	public void update(float dt) {
+        collisionMask.begin();
+        for (Player p : players) {
+            //System.out.println(getCollisionMaskValueAtPoint(p.pos.x, p.pos.y));
+        }
+        collisionMask.end();
+
+        //TODO: make player record which corners are texCollision > 0
+
+        // fade collision mask
+        batch.setShader(nullSphereFadeShader);
+        nullSphereFadeShader.begin();
+        collisionMask.begin();
+        batch.begin();
+        batch.setProjectionMatrix(mapCam.combined);
+        batch.draw(collisionMaskRegion, 0, 0, map.getWidth(), map.getHeight());
+        batch.end();
+        collisionMask.end();
+        nullSphereFadeShader.end();
+        batch.setShader(null);
+
+        //TODO: if a corner was texCollision > 0, but isn't now and is in the level, kill the player
+
 		for (Entity e : entities) {
 			if (!e.destroyed) {
 				e.update(dt);
 			}
 		}
+
+        collisionMask.begin();
 		for (Entity e : entities) {
 			if (!e.destroyed) {
 				e.handleCollision(map);
 			}
 		}
+        collisionMask.end();
+
 		for (Entity e : newEntities) {
 			entities.add(e);
 			entityLayers.get(e.layer).add(e);
@@ -284,9 +317,22 @@ public class Scene {
         shapeRenderer.begin(ShapeType.Filled);
         shapeRenderer.setProjectionMatrix(mapCam.combined);
         shapeRenderer.setColor(1, 0, 0, 1);
+        float radius = 100;
         for (Player p : players) {
             if (p.nullSphereEnabled) {
-                shapeRenderer.circle(p.pos.x + p.size.x / 2f, p.pos.y + p.size.y / 2f, 100, 20);
+                shapeRenderer.circle(p.pos.x + p.size.x / 2f, p.pos.y + p.size.y / 2f, radius, 20);
+
+                if (p.pos.x + p.size.x + radius > map.getWidth()) {
+                    shapeRenderer.circle(p.pos.x + p.size.x / 2f - map.getWidth(), p.pos.y + p.size.y / 2f, radius, 20);
+                } else if (p.pos.x - radius < 0) {
+                    shapeRenderer.circle(p.pos.x + p.size.x / 2f + map.getWidth(), p.pos.y + p.size.y / 2f, radius, 20);
+                }
+
+                if (p.pos.y + p.size.y + radius > map.getHeight()) {
+                    shapeRenderer.circle(p.pos.x + p.size.x / 2f, p.pos.y + p.size.y / 2f - map.getHeight(), radius, 20);
+                } else if (p.pos.y - radius < 0) {
+                    shapeRenderer.circle(p.pos.x + p.size.x / 2f, p.pos.y + p.size.y / 2f + map.getHeight(), radius, 20);
+                }
             }
         }
         shapeRenderer.end();
@@ -310,19 +356,6 @@ public class Scene {
 		}
 
         maskAndDrawTmpFrameBufferForLayer(FOREGROUND_LAYER);
-
-        // fade collision mask
-        batch.setShader(nullSphereFadeShader);
-        nullSphereFadeShader.begin();
-        collisionMask.begin();
-        batch.begin();
-        batch.setProjectionMatrix(mapCam.combined);
-        batch.draw(collisionMaskRegion, 0, 0, map.getWidth(), map.getHeight());
-        batch.end();
-        collisionMask.end();
-        nullSphereFadeShader.end();
-        batch.setShader(null);
-
     }
 
     void maskAndDrawTmpFrameBufferForLayer(int layer) {

@@ -2,6 +2,7 @@ package com.ashenrider.game;
 
 import java.util.HashMap;
 import java.util.Random;
+import java.util.ArrayList;
 
 import com.ashenrider.game.Input.*;
 import com.badlogic.gdx.Gdx;
@@ -343,35 +344,153 @@ public class Player extends Entity {
             }
         }
     }
-    
+
+    public void normalLevelCollision(Map map) {
+    	float velY = speed.y; // speed before collision
+
+        collisionCheck(map);
+        collisionCheck(map);
+
+        if (onGround) {
+            onWall = false;
+        }
+        // if falling quickly and hit the ground
+        if (onGround && velY < minLandedSpeed) {
+            landed = true;
+            animationTime = 0.0f;
+            landedTime = LAND_FRAME_DURATION * 4;
+            // spawn some smoke particles
+            Random rand = new Random();
+            for (int i = 0; i<5; i++) {
+                float pX = pos.x + rand.nextFloat() * size.x;
+                float pY = pos.y + rand.nextFloat() * 5;
+                float pSize = 0.2f + rand.nextFloat() * 0.2f;
+                float pDuration = 0.3f + rand.nextFloat() * 0.9f;
+                float pSpeed = 20 + rand.nextFloat() * 100;
+                float pAngle = rand.nextFloat() * (float) Math.PI;
+                Particle p = new Particle(new Vector2(pX,pY), new Vector2(1,0).setAngleRad(pAngle), pSpeed, pSize, pDuration, new Color(1.0f,1.0f, 1.0f, 1.0f));
+                scene.addEntity(p, Scene.PARTICLE_LAYER);
+            }
+        }
+    }
+
     @Override
     public void handleCollision(Map map) {
-    	float velY = speed.y; // speed before collision
         onGround = false;
         if (!nullSphereEnabled) {
-            collisionCheck(map);
-            collisionCheck(map);
+            //
+            ArrayList<Vector2> points = new ArrayList<Vector2>();
+            ArrayList<Boolean> texCollision = new ArrayList<Boolean>();
+            ArrayList<Boolean> levelCollision = new ArrayList<Boolean>();
 
-            if (onGround) {
-                onWall = false;
-            }
-            // if falling quickly and hit the ground
-            if (onGround && velY < minLandedSpeed) {
-                landed = true;
-                animationTime = 0.0f;
-                landedTime = LAND_FRAME_DURATION * 4;
-                // spawn some smoke particles
-                Random rand = new Random();
-                for (int i = 0; i<5; i++) {
-                    float pX = pos.x + rand.nextFloat() * size.x;
-                    float pY = pos.y + rand.nextFloat() * 5;
-                    float pSize = 0.2f + rand.nextFloat() * 0.2f;
-                    float pDuration = 0.3f + rand.nextFloat() * 0.9f;
-                    float pSpeed = 20 + rand.nextFloat() * 100;
-                    float pAngle = rand.nextFloat() * (float) Math.PI;
-                    Particle p = new Particle(new Vector2(pX,pY), new Vector2(1,0).setAngleRad(pAngle), pSpeed, pSize, pDuration, new Color(1.0f,1.0f, 1.0f, 1.0f));
-                    scene.addEntity(p, Scene.PARTICLE_LAYER);
+            points.add(pos);
+            points.add(pos.cpy().add(new Vector2(size.x, 0)));
+            points.add(pos.cpy().add(size));
+            points.add(pos.cpy().add(new Vector2(0, size.y)));
+
+            int numTexCollisionZero = 0;
+            int numTexCollisionGTZeroOrNotLevelCollision = 0;
+
+            for (Vector2 p : points) {
+                float modX = p.x % map.getWidth();
+                float modY = p.y % map.getHeight();
+
+                if (modX < 0) {
+                    modX += map.getWidth();
                 }
+                if (modY < 0) {
+                    modY += map.getHeight();
+                }
+
+                int textureValue = scene.getCollisionMaskValueAtPoint(modX, modY);
+                boolean insideLevel = map.isInsideLevel(modX, modY);
+
+                if (textureValue == 0) {
+                    numTexCollisionZero += 1;
+                }
+
+                if (textureValue > 0 || !insideLevel) {
+                    numTexCollisionGTZeroOrNotLevelCollision += 1;
+                }
+
+                texCollision.add(new Boolean(textureValue == 0));
+                levelCollision.add(new Boolean(insideLevel));
+            }
+            if (numTexCollisionZero == points.size()) {
+                //System.out.println("normal collision");
+                normalLevelCollision(map);
+            } else if (numTexCollisionGTZeroOrNotLevelCollision == points.size()) {
+                //System.out.println("no collision");
+                // do nothing
+            } else {
+                //System.out.println("circle collision");
+
+                int numPoints = 0;
+                Vector2 average = new Vector2(0, 0);
+
+                ArrayList<Vector2> collidingPoints = new ArrayList<Vector2>();
+
+                for (int i = 0; i < points.size(); i++) {
+                    if (texCollision.get(i) && levelCollision.get(i)) {
+                        Vector2 relPos = points.get(i).cpy().sub(pos);
+                        average.add(relPos);
+                        collidingPoints.add(points.get(i).cpy());
+                        numPoints++;
+                    }
+                }
+
+                average.scl(1f/numPoints);
+
+                Vector2 centre = size.cpy().scl(0.5f);
+                Vector2 diff = centre.cpy().sub(average);
+
+                float oldVel = speed.y;
+
+                if (diff.y > 0) {
+                    onGround = true;
+                    speed.y = 0;
+                }
+
+                if (Math.abs(diff.x) > 0) {
+                    speed.x = 0;
+                }
+
+
+                diff.nor();
+                float low = 0f;
+                float high = 1f;
+                boolean growing = true;
+                while (high - low > 0.5f && high < 1000) {
+                    boolean stillColliding = false;
+                    float mid;
+                    if (growing) {
+                        mid = high;
+                    } else {
+                        mid = (high + low) / 2f;
+                    }
+                    for (Vector2 p : collidingPoints) {
+                        Vector2 finishedPoint = p.cpy().add(diff.cpy().scl(mid));
+                        if (scene.getCollisionMaskValueAtPoint(finishedPoint.x, finishedPoint.y) == 0 && map.isInsideLevel(finishedPoint.x, finishedPoint.y)) {
+                            stillColliding = true;
+                            break;
+                        }
+                    }
+                    if (growing) {
+                        if (stillColliding) {
+                            low = high;
+                            high *= 2f;
+                        } else {
+                            growing = false;
+                        }
+                    } else {
+                        if (stillColliding) {
+                            low = mid;
+                        } else {
+                            high = mid;
+                        }
+                    }
+                }
+                pos.add(diff.cpy().scl(high));
             }
         }
     }
@@ -384,6 +503,12 @@ public class Player extends Entity {
         }
 
 		batch.draw(frame, pos.x + (animationOffset * scale), pos.y, frame.getRegionWidth() * scale, frame.getRegionHeight() * scale);
+        //if (Particle.BASE_PARTICLE != null) {
+        //    batch.draw(Particle.BASE_PARTICLE, pos.x - Particle.BASE_PARTICLE.getWidth() / 2f, pos.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
+        //    batch.draw(Particle.BASE_PARTICLE, pos.x + size.x - Particle.BASE_PARTICLE.getWidth() / 2f, pos.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
+        //    batch.draw(Particle.BASE_PARTICLE, pos.x + size.x - Particle.BASE_PARTICLE.getWidth() / 2f, pos.y + size.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
+        //    batch.draw(Particle.BASE_PARTICLE, pos.x - Particle.BASE_PARTICLE.getWidth() / 2f, pos.y + size.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
+        //}
 
         batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
