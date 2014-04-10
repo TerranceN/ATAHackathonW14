@@ -3,13 +3,13 @@ package com.ashenrider.game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 
-public class Rock extends Projectile {
+public class Plasma extends Projectile {
 	static Texture GUN_PROJECTILE = null;
 	
 	// frames per particle spawn
 	private int particleTimer = 0;
 	
-	public Rock(Vector2 initPosition, Vector2 direction, int playerNumber) {
+	public Plasma(Vector2 initPosition, Vector2 direction, int playerNumber) {
 		super(initPosition, direction, playerNumber);
 		size = new Vector2(16, 16);
 		if (GUN_PROJECTILE == null) {
@@ -21,7 +21,7 @@ public class Rock extends Projectile {
 		SPEED = 1400.0f;
 		speed = direction.nor().scl(SPEED);
 		//GRAVITY = -300.0f;
-		falls = false;
+		falls = true;
 		
 		BOUNCE_WALLS = false;
 		BOUNCE_CEILING = false;

@@ -176,8 +176,8 @@ public class Player extends Entity {
 		TextureRegion frame;
 		// pass a time to animation to get the right frame
 		if (landed) {
-			frame = facingRight ? landRightAnimation.getKeyFrame(animationTime, true)
-								: landLeftAnimation.getKeyFrame(animationTime, true);
+			frame = facingRight ? landRightAnimation.getKeyFrame(animationTime, false)
+								: landLeftAnimation.getKeyFrame(animationTime, false);
 		} else if (onWall) {
 			frame = facingRight ? wallHugRight : wallHugLeft;
 		} else if (!onGround) {
@@ -234,7 +234,7 @@ public class Player extends Entity {
 		// shoot
 		if (buttonMap.get(Action.SHOOT).isDown() && cooldown.get(Action.SHOOT) == 0.0f) {
 			Vector2 dir = new Vector2(axisMap.get(Action.AIM_HORIZONTAL).getValue(), axisMap.get(Action.AIM_VERTICAL).getValue());
-			Projectile p = new Rock(getCentre(), dir, number);
+			Projectile p = new Fireball(getCentre(), dir, number);
 			cooldown.put(Action.SHOOT, maxCooldown.get(Action.SHOOT));
 			scene.addEntity(p, Scene.SHOT_LAYER);
 		}
@@ -518,7 +518,8 @@ public class Player extends Entity {
             int playerId = projectile.getShotBy();
             scene.reportPlayerDeath(scene.players.get(playerId), this);
             lives--;
-            scene.addEntity(new PlayerBody(number, pos, speed.cpy(), 5.0f), Scene.PLAYER_LAYER);
+            scene.addEntity(new PlayerBody(number, pos, speed.cpy(), 5.0f, facingRight), Scene.PLAYER_LAYER);
+            scene.addEntity(new Blood(getCentre(), projectile.speed.cpy()), Scene.PARTICLE_LAYER);
             scene.respawnPlayer(this, true);
             onInvulnerable(INVULNERABILITY_LENGTH);
             return true;
