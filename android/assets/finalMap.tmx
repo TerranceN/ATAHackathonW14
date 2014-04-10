@@ -5,7 +5,14 @@
   <terraintypes>
    <terrain name="Purple" tile="-1"/>
    <terrain name="Green" tile="-1"/>
+   <terrain name="Background" tile="-1"/>
   </terraintypes>
+  <tile id="45" terrain=",2,,2"/>
+  <tile id="46" terrain="2,2,2,2"/>
+  <tile id="47" terrain="2,,2,"/>
+  <tile id="61" terrain=",2,,"/>
+  <tile id="62" terrain="2,2,,"/>
+  <tile id="63" terrain="2,,,"/>
   <tile id="64" terrain=",,,0"/>
   <tile id="65" terrain=",,0,0"/>
   <tile id="66" terrain=",,0,"/>
@@ -43,19 +50,24 @@
  <tileset firstgid="257" name="control" tilewidth="32" tileheight="32">
   <image source="controls.png" width="256" height="256"/>
  </tileset>
+ <layer name="background" width="38" height="25">
+  <data encoding="base64" compression="zlib">
+   eJztlUEKwCAMBPOi6P9fVy+CCLamLtmAGcgt7A6IKpIg0DalTWWLTLC9Vr1ML33pjerF5CYvRGZ6+WdYMnf7FKez1c30+uqLeMYCyEwvG1Yvr/+U7XV6p8d9lBfirRn3Pbz+ZN3ghaJnRfNC8wCHgRC3
+  </data>
+ </layer>
  <layer name="decoration_back" width="38" height="25">
   <data encoding="base64" compression="zlib">
-   eJztzrERABAUwFArazABxmaBXynCybtLn5REa/RAYNID0qFKDwQGPSBdJO8KPRHo9MDDMj0g6TsLTXcD3Q==
+   eJxjYBgFAwV8oHTFgLoCN+gYaAcMMaA00A4YBRignAw9MUAcS22HoIF2MvTkUN0VQxuYI7GNgNiKSuZaUMmcUUA8KATisoF2BA7QNtAOoCKgd9oupLN9IwHUAXE9EDcMsDvQQR8Q9wPxhIF2CBYwn0x95oSVoIDRumNwAABxeAq7
   </data>
  </layer>
  <layer name="level" width="38" height="25">
   <data encoding="base64" compression="zlib">
-   eJzlV9sNwjAMzBDtQDwWaOgCwAqdAJEN6AYMSizVkmXsvBSXDyxZKaW+XOJcnHjn3Bzdk9aT3xcn2yTEzMzxvYZBcXi/4M/oN8XvCt41EQMeCK6GIeEEMqbUeFptjf5qiMP5y42n1QC/Zbw4f1bWysvarHgdoh8VP0dfop8ScaMRLxhvSqegGy/EUX39Yt0i772thFdtniDHPPfSu715QY55bmtxLHhpOG/3PWearuD7wemaHNn/gPPYnmvyAnMYNm6oc2i1OpSrf5I+QwIvx43rvFd9zPEqXd9rZ16QdzyfSHil65Gen3rwyu2nNbwszzlSf6iTVB1DXlb1gpukI6lf63POvxmeVzRt19a1HgZ9wn6euw9Z6gVrCO7/WGNK7mnDFoNxiEPPj7m6hHlZSAzWIX5/pG2KF/1OujeW7EOTEAP+AWINYIg=
+   eJzlV20OwiAM5WrOXWC4C6hX2BHkBu4Gek9pQpOmtnyFzh82eWHiKA/KW4t3zq0RnrSe/L442RZhzMqA/ZoP6ofPC3hE3BTcFX/XzBhAIH41H5KfQNaUW0+v7RHPjnG4f6X19Br471kv7p+V9fKyNitep4g5YkrYEuYEeD4r4+D9txEvWG9Op6AbL4yj+vrFuUXeR1sNr9Y4QYx57KW+o3lBjHlsW/1Y8NL8vNz3nmm6wvdRk1tqUY/v9D/X66T40wz2MJC5UPNaHirlP0mfIeOvxI3rfFR+LPGqPd/7YF4Qd6xPJH+155HWTyN4lb6nLbws6xxpPtRJLo8hL6t8wU3SkTSvdZ3zb4b1iqbt1rw2wmBO+J6X7kOWeuE1H9Z0Nfc0zB00V2Eumkh/bl8xLjzP0Tug1OZ40feke2PNd2gRxgA+j0Blmg==
   </data>
  </layer>
  <layer name="decoration_front" width="38" height="25">
   <data encoding="base64" compression="zlib">
-   eJzt1tEOwBAMBVC/PEvwBds+2+tCp9WJRtzzSBr1cJVzoHUQa0lQ55n9s/NMiUdZ9xd319mCdQMfLusGNtCTHW3OYA2tNxZ4mnyUsyCOaKRBMosp99Aualaz2MouWZtxz3fu8JcBoGVmkQq/
+   eJxjYBgF5IJCJLYvCfqKCMgXE5CPA+J4EuyjJ8hH4xPyK71BGZHqrIFYiZYOQQNtdLRrpAJYfq0hU78VFjEjMs0aBYMbmAy0AwY5KCSsBANUAXE1Er+cSm5BBz1QuoJI9V1A3I3Eb6euczBAB5HqZgHxbBq5gZ7pm1B7ZrgAevsTX1uGmDYitvqMGoBQWwa9jTiSAKhNSSjvWdPDIcMcAADf1xBv
   </data>
  </layer>
  <layer name="spawn" width="38" height="25">

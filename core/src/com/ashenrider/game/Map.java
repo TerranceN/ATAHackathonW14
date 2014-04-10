@@ -13,6 +13,7 @@ public class Map {
     TiledMap tiledMap;
     OrthogonalTiledMapRenderer mapRenderer;
 
+    TiledMapTileLayer backgroundLayer;
     TiledMapTileLayer levelLayer;
     TiledMapTileLayer powerUpLayer;
     TiledMapTileLayer spawnLayer;
@@ -30,6 +31,7 @@ public class Map {
         spawnLayer = getLayerByName("spawn");
         powerUpLayer = getLayerByName("powerup");
         levelLayer = getLayerByName("level");
+        backgroundLayer = getLayerByName("background");
         decorationFrontLayer = getLayerByName("decoration_front");
         decorationBackLayer = getLayerByName("decoration_back");
 
@@ -129,6 +131,7 @@ public class Map {
     public void renderLayer(int layer, OrthographicCamera camera) {
         hideAllLayers();
         if (layer == Scene.BACKGROUND_LAYER) {
+            backgroundLayer.setVisible(true);
             decorationBackLayer.setVisible(true);
         } else if (layer == Scene.FOREGROUND_LAYER) {
             levelLayer.setVisible(true);
