@@ -375,6 +375,7 @@ public class Player extends Entity {
             int playerId = projectile.getShotBy();
             scene.reportPlayerDeath(scene.players.get(playerId), this);
             lives--;
+            scene.addEntity(new PlayerBody(number, pos, speed, 5.0f), Scene.PLAYER_LAYER);
             scene.respawnPlayer(this, true);
             onInvulnerable(INVULNERABILITY_LENGTH);
         }
