@@ -20,6 +20,7 @@ public class Map {
     TiledMapTileLayer decorationBackLayer;
 
     float tileSize = 1.f;
+    float mapScale = 1f;
 
     float width = 0f;
     float height = 0f;
@@ -34,12 +35,12 @@ public class Map {
 
         spawnLayer.setVisible(false);
 
-        tileSize = levelLayer.getTileWidth();
+        tileSize = levelLayer.getTileWidth() * mapScale;
 
         width = tileSize * levelLayer.getWidth();
         height = tileSize * levelLayer.getHeight();
 
-        mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, 1f);
+        mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, mapScale);
     }
 
     public float getWidth() {
