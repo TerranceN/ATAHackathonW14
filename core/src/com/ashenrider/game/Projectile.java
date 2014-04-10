@@ -13,6 +13,7 @@ public class Projectile extends Entity {
 	private float friendlyFireTimer;
 	
 	public float SPEED = 750.0f;
+	public float MAX_SPEED = 1000.0f;
 	
 	// frames per particle spawn
 	private int particleTimer = 0;
@@ -42,6 +43,10 @@ public class Projectile extends Entity {
 	@Override
 	public void update(float dt) {
 		super.update(dt);
+		if (speed.len() > MAX_SPEED) {
+			speed.scl(MAX_SPEED / speed.len());
+		}
+
 		friendlyFireTimer -= dt;
 	}
 
@@ -56,8 +61,8 @@ public class Projectile extends Entity {
             	if ((pen.y < 0 && BOUNCE_CEILING) || groundBounces > 0) {
                     pos.add(new Vector2(0, pen.y));
                     speed.y = speed.y * -ELASTICITY;
-                    if (pen.y < 0) {
-                    	groundBounces -= 1;
+                    if (pen.y > 0) {
+                    	groundBounces--;
                     }
             	} else {
             		destroy();

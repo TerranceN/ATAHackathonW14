@@ -68,8 +68,6 @@ public class Player extends Entity {
 		
 	public int number;
 	
-	private int NUM_FRAMES = 2;
-	
 	// every image is 70 wide and the middle 20 are the hitbox
 	int animationOffset = -27;
 	private float RUNNING_FRAME_DURATION = 0.12f;
@@ -102,7 +100,7 @@ public class Player extends Entity {
 		for (int i=0; i<5; i++) {
 			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 3) + "/run-0" + (i+1));
 			leftFrames[i] = new TextureRegion(rightFrames[i]);
-            leftFrames[i].flip(true, false);
+            rightFrames[i].flip(true, false);
 		}
 		walkLeftAnimation = new Animation(RUNNING_FRAME_DURATION, leftFrames);
 		walkRightAnimation = new Animation(RUNNING_FRAME_DURATION, rightFrames);
@@ -112,7 +110,7 @@ public class Player extends Entity {
 		for (int i=0; i<5; i++) {
 			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 3) + "/stand-0" + (i+1));
 			leftFrames[i] = new TextureRegion(rightFrames[i]);
-            leftFrames[i].flip(true, false);
+			rightFrames[i].flip(true, false);
 		}
 		idleLeftAnimation = new Animation(IDLE_FRAME_DURATION, leftFrames);
 		idleRightAnimation = new Animation(IDLE_FRAME_DURATION, rightFrames);
@@ -122,7 +120,7 @@ public class Player extends Entity {
 		for (int i=0; i<3; i++) {
 			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 3) + "/jump-0" + (i+1));
 			leftFrames[i] = new TextureRegion(rightFrames[i]);
-            leftFrames[i].flip(true, false);
+			rightFrames[i].flip(true, false);
 		}
 		jumpLeftAnimation = new Animation(JUMP_FRAME_DURATION, leftFrames);
 		jumpRightAnimation = new Animation(JUMP_FRAME_DURATION, rightFrames);
@@ -221,7 +219,7 @@ public class Player extends Entity {
 		// shoot
 		if (buttonMap.get(Action.SHOOT).isDown() && cooldown.get(Action.SHOOT) == 0.0f) {
 			Vector2 dir = new Vector2(axisMap.get(Action.AIM_HORIZONTAL).getValue(), axisMap.get(Action.AIM_VERTICAL).getValue());
-			Projectile p = new Rock(pos.cpy(), dir, number);
+			Projectile p = new Rock(getCentre(), dir, number);
 			cooldown.put(Action.SHOOT, maxCooldown.get(Action.SHOOT));
 			scene.addEntity(p, Scene.SHOT_LAYER);
 		}
@@ -276,7 +274,7 @@ public class Player extends Entity {
 				falls = true;
 			}
 		} else {
-			// max speed and friction
+			// max speed
 			if (Math.abs(speed.x) > MAX_SPEED) {
 				speed.scl(MAX_SPEED / Math.abs(speed.x), 1.0f);
 			}
