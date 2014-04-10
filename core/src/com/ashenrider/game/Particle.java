@@ -19,7 +19,7 @@ public class Particle extends Entity {
 	
 	public Particle(Vector2 initPosition, Vector2 direction, float pSpeed, float scale, float lifespan, Color col) {
 		super(initPosition);
-		speed = direction.nor().scl(pSpeed);
+		speed = direction.cpy().nor().scl(pSpeed);
 		
 		// the particle image is a white circle, so tint it to a variable color
 		color = col;
