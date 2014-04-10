@@ -7,19 +7,21 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 import java.util.LinkedList;
 import java.util.ListIterator;
 
 public class DeathsWidget implements PlayerDeathListener {
 
-    private static final float DISPLAY_TIME = 2.5f;
+    private static final float DISPLAY_TIME = 3.0f;
     private static final int DISPLAY_COUNT = 5;
 
     private LinkedList<DeathEvent> events = new LinkedList<DeathEvent>();
@@ -51,7 +53,7 @@ public class DeathsWidget implements PlayerDeathListener {
             aggressorImages[i] = new Image();
             aggressorImages[i].setVisible(false);
             ui.add(aggressorImages[i]);
-            attackImages[i] = new Image(attackIcon);
+            attackImages[i] = new Image(new SpriteDrawable(new Sprite(attackIcon)));
             attackImages[i].setVisible(false);
             ui.add(attackImages[i]).padLeft(10);
             victimImages[i] = new Image();
@@ -91,6 +93,9 @@ public class DeathsWidget implements PlayerDeathListener {
                     ((SpriteDrawable)victimImages[i].getDrawable()).getSprite().setTexture(events.get(i).victim.getSprite().getTexture());
                     ((SpriteDrawable)victimImages[i].getDrawable()).getSprite().setRegion(events.get(i).victim.getSprite());
                 }
+                ((SpriteDrawable)aggressorImages[i].getDrawable()).getSprite().setAlpha((events.get(i).time > 1.0f) ? 1.0f : events.get(i).time);
+                ((SpriteDrawable)attackImages[i].getDrawable()).getSprite().setAlpha((events.get(i).time > 1.0f) ? 1.0f : events.get(i).time);
+                ((SpriteDrawable)victimImages[i].getDrawable()).getSprite().setAlpha((events.get(i).time > 1.0f) ? 1.0f : events.get(i).time);
             }
         }
 

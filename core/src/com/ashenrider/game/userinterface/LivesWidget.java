@@ -60,7 +60,6 @@ public class LivesWidget {
         for(int i=0; i<playersList.size(); i++) {
             Player player = playersList.get(i);
             ((SpriteDrawable)playerImageList.get(i).getDrawable()).getSprite().setRegion(player.getSprite());
-            
             playerLivesList.get(i).setText("x" + player.getLives());
         }
 
