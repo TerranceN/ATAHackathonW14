@@ -356,6 +356,20 @@ public class Player extends Entity {
         collisionCheck(map);
         collisionCheck(map);
 
+        if (pos.x + size.x > map.getWidth()) {
+            pos.x -= map.getWidth();
+            collisionCheck(map);
+            collisionCheck(map);
+            pos.x += map.getWidth();
+        }
+
+        if (pos.y + size.y > map.getHeight()) {
+            pos.y -= map.getHeight();
+            collisionCheck(map);
+            collisionCheck(map);
+            pos.y += map.getHeight();
+        }
+
         if (onGround) {
             onWall = false;
         }
