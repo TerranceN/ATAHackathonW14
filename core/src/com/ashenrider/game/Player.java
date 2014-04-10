@@ -74,10 +74,10 @@ public class Player extends Entity {
 	
 	// every image is 70 wide and the middle 20 are the hitbox
 	int animationOffset = -27;
-	private float RUNNING_FRAME_DURATION = 0.12f;
+	private float RUNNING_FRAME_DURATION = 0.06f;
 	private float JUMP_FRAME_DURATION = 0.12f;
 	private float LAND_FRAME_DURATION = 0.12f;
-	private float IDLE_FRAME_DURATION = 0.12f;
+	private float IDLE_FRAME_DURATION = 0.16f;
 
 	private Animation walkLeftAnimation;
     private Animation walkRightAnimation;
