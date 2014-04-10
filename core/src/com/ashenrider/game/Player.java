@@ -30,7 +30,7 @@ public class Player extends Entity {
     float MAX_FALL_SPEED = 800.0f;
 	
 	float DASH_SPEED = 800.0f;
-	float DASH_TIME = 0.125f;
+	float DASH_TIME = 0.13f;
 	float dashTime = 0.0f;
 
     boolean jumpPressedLastFrame = false;
@@ -72,6 +72,8 @@ public class Player extends Entity {
 	HashMap<Action, Float> maxCooldown;
 		
 	public int number;
+
+    ArrayList<Boolean> texCollidedBeforeUpdate;
 	
 	// every image is 70 wide and the middle 20 are the hitbox
 	int animationOffset = -27;
@@ -94,7 +96,7 @@ public class Player extends Entity {
 	public Player(int playerNumber, Vector2 initPosition, InputAxis moveAxis, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton dash, InputButton nullSphere) {
 		super(initPosition);
 		number = playerNumber;
-		//img = new Texture("p" + (playerNumber % 3) + ".png");
+		//img = new Texture("p" + (playerNumber % 4) + ".png");
 		// 16x32 regions
 		TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/animations.atlas"));
 		// death 1-10
@@ -103,7 +105,7 @@ public class Player extends Entity {
 		TextureRegion[] leftFrames = new TextureRegion[5];
 		TextureRegion[] rightFrames = new TextureRegion[5];
 		for (int i=0; i<5; i++) {
-			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 3) + "/run-0" + (i+1));
+			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/run-0" + (i+1));
 			leftFrames[i] = new TextureRegion(rightFrames[i]);
             rightFrames[i].flip(true, false);
 		}
@@ -113,7 +115,7 @@ public class Player extends Entity {
 		leftFrames = new TextureRegion[5];
 		rightFrames = new TextureRegion[5];
 		for (int i=0; i<5; i++) {
-			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 3) + "/stand-0" + (i+1));
+			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/stand-0" + (i+1));
 			leftFrames[i] = new TextureRegion(rightFrames[i]);
 			rightFrames[i].flip(true, false);
 		}
@@ -123,7 +125,7 @@ public class Player extends Entity {
 		leftFrames = new TextureRegion[3];
 		rightFrames = new TextureRegion[3];
 		for (int i=0; i<3; i++) {
-			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 3) + "/jump-0" + (i+1));
+			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/jump-0" + (i+1));
 			leftFrames[i] = new TextureRegion(rightFrames[i]);
 			rightFrames[i].flip(true, false);
 		}
@@ -133,14 +135,14 @@ public class Player extends Entity {
 		leftFrames = new TextureRegion[4];
 		rightFrames = new TextureRegion[4];
 		for (int i=0; i<4; i++) {
-			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 3) + "/land-0" + (i+2));
+			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/land-0" + (i+2));
 			leftFrames[i] = new TextureRegion(rightFrames[i]);
             rightFrames[i].flip(true, false);
 		}
 		landLeftAnimation = new Animation(LAND_FRAME_DURATION, leftFrames);
 		landRightAnimation = new Animation(LAND_FRAME_DURATION, rightFrames);
 		// wallhug 1
-		wallHugRight = atlas.findRegion("p0/wallhug-01");
+		wallHugRight = atlas.findRegion("p" + (playerNumber % 4) + "/wallhug-01");
 		wallHugLeft = new TextureRegion(wallHugRight);
 		wallHugRight.flip(true, false);
 		
@@ -165,9 +167,64 @@ public class Player extends Entity {
 		cooldown.put(Action.DASH, 0.0f);
 		maxCooldown = new HashMap<Action, Float>();
 		maxCooldown.put(Action.JUMP, 0.0f);
-		maxCooldown.put(Action.SHOOT, 0.3f);
-		maxCooldown.put(Action.DASH, DASH_TIME + 0.5f);
+		maxCooldown.put(Action.SHOOT, 0.8f);
+		maxCooldown.put(Action.DASH, DASH_TIME + 0.2f);
 	}
+
+    public ArrayList<Vector2> getPoints() {
+        ArrayList<Vector2> points = new ArrayList<Vector2>();
+
+        points.add(pos);
+        points.add(pos.cpy().add(new Vector2(size.x, 0)));
+        points.add(pos.cpy().add(size));
+        points.add(pos.cpy().add(new Vector2(0, size.y)));
+
+        return points;
+    }
+
+    public void recordTexCollision() {
+        ArrayList<Vector2> points = getPoints();
+        texCollidedBeforeUpdate = new ArrayList<Boolean>();
+
+        for (Vector2 p : points) {
+            float modX = p.x % scene.map.getWidth();
+            float modY = p.y % scene.map.getHeight();
+
+            if (modX < 0) {
+                modX += scene.map.getWidth();
+            }
+            if (modY < 0) {
+                modY += scene.map.getHeight();
+            }
+
+            int textureValue = scene.getCollisionMaskValueAtPoint(modX, modY);
+            texCollidedBeforeUpdate.add(textureValue != 0);
+        }
+    }
+
+    public void texCollisionResolve() {
+        ArrayList<Vector2> points = getPoints();
+
+        for (int i = 0; i < points.size(); i++) {
+            if (texCollidedBeforeUpdate.get(i)) {
+                float modX = points.get(i).x % scene.map.getWidth();
+                float modY = points.get(i).y % scene.map.getHeight();
+
+                if (modX < 0) {
+                    modX += scene.map.getWidth();
+                }
+                if (modY < 0) {
+                    modY += scene.map.getHeight();
+                }
+
+                int textureValue = scene.getCollisionMaskValueAtPoint(modX, modY);
+
+                if (textureValue == 0 && scene.map.isInsideLevel(modX, modY)) {
+                    killPlayer(number);
+                }
+            }
+        }
+    }
 
     public int getLives() {
         return lives;
@@ -219,8 +276,16 @@ public class Player extends Entity {
             float pSize = 0.2f + rand.nextFloat() * 0.4f;
             float pDuration = 0.4f + rand.nextFloat();
             float pSpeed = (40 + rand.nextFloat() * 200);
-            Particle p = new Particle(new Vector2(pX,pY), new Vector2(wallDir ,0), pSpeed, pSize, pDuration, new Color(1.0f,1.0f, 1.0f, 1.0f));
-            scene.addEntity(p, Scene.PARTICLE_LAYER);
+
+            float smokeThreshold = 200f;
+
+            if (speed.y < -smokeThreshold) {
+                AirSmoke smoke = new AirSmoke(new Vector2(pX,pY), 90, wallDir == 1);
+                scene.addEntity(smoke, Scene.PARTICLE_LAYER);
+            } else if (speed.y > smokeThreshold) {
+                AirSmoke smoke = new AirSmoke(new Vector2(pX,pY), 270, wallDir == -1);
+                scene.addEntity(smoke, Scene.PARTICLE_LAYER);
+            }
             
             boolean nextToWall = false;
             if (wallDir == 1) {
@@ -247,6 +312,12 @@ public class Player extends Entity {
 	        if (Math.abs(xAxis) > 0.25) {
 	        	dir = Math.signum(xAxis);
 	        }
+	        float a = dir == 1 ? 180 : 00;
+            scene.addEntity(new AirSmoke(getCentre(), a + 45, false), Scene.PARTICLE_LAYER);
+            scene.addEntity(new AirSmoke(getCentre(), a -45, true), Scene.PARTICLE_LAYER);
+            scene.addEntity(new AirSmoke(getCentre(), a + 22.5f, false), Scene.PARTICLE_LAYER);
+            scene.addEntity(new AirSmoke(getCentre(), a -22.5f, true), Scene.PARTICLE_LAYER);
+
 			speed = new Vector2(DASH_SPEED * dir, 0.0f);
 			cooldown.put(Action.DASH, maxCooldown.get(Action.DASH));
 			airDashes--;
@@ -255,16 +326,16 @@ public class Player extends Entity {
 			animationTime = 0.0f;
 			dashTime = DASH_TIME;
 
-            Random rand = new Random();
-            for (int i = 0; i<8; i++) {
-                float pX = pos.x + size.x * 0.5f + (rand.nextFloat() * size.x * 0.5f * ((speed.x < 0) ? -1 : 1) );
-                float pY = pos.y + rand.nextFloat() * size.y;
-                float pSize = 0.2f + rand.nextFloat() * 0.4f;
-                float pDuration = 0.4f + rand.nextFloat();
-                float pSpeed = 40 + rand.nextFloat() * 200;
-                Particle p = new Particle(new Vector2(pX,pY), new Vector2( (speed.x > 0) ? -1 : 1 ,0), pSpeed, pSize, pDuration, new Color(1.0f,1.0f, 1.0f, 1.0f));
-                scene.addEntity(p, Scene.PARTICLE_LAYER);
-            }
+//            Random rand = new Random();
+//            for (int i = 0; i<8; i++) {
+//                float pX = pos.x + size.x * 0.5f + (rand.nextFloat() * size.x * 0.5f * ((speed.x < 0) ? -1 : 1) );
+//                float pY = pos.y + rand.nextFloat() * size.y;
+//                float pSize = 0.2f + rand.nextFloat() * 0.4f;
+//                float pDuration = 0.4f + rand.nextFloat();
+//                float pSpeed = 40 + rand.nextFloat() * 200;
+//                Particle p = new Particle(new Vector2(pX,pY), new Vector2( (speed.x > 0) ? -1 : 1 ,0), pSpeed, pSize, pDuration, new Color(1.0f,1.0f, 1.0f, 1.0f));
+//                scene.addEntity(p, Scene.PARTICLE_LAYER);
+//            }
 		}
 		// accelerate
         float move = axisMap.get(Action.MOVE).getValue();
@@ -401,14 +472,9 @@ public class Player extends Entity {
         onGround = false;
         if (!nullSphereEnabled) {
             //
-            ArrayList<Vector2> points = new ArrayList<Vector2>();
+            ArrayList<Vector2> points = getPoints();
             ArrayList<Boolean> texCollision = new ArrayList<Boolean>();
             ArrayList<Boolean> levelCollision = new ArrayList<Boolean>();
-
-            points.add(pos);
-            points.add(pos.cpy().add(new Vector2(size.x, 0)));
-            points.add(pos.cpy().add(size));
-            points.add(pos.cpy().add(new Vector2(0, size.y)));
 
             int numTexCollisionZero = 0;
             int numTexCollisionGTZeroOrNotLevelCollision = 0;
@@ -528,13 +594,11 @@ public class Player extends Entity {
         batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 
-    public boolean onShot(Projectile projectile) {
+    public boolean killPlayer(int murderer) {
         if(invulnerableTime <= 0.0f && !destroyed) {
             lives--;
-            int playerId = projectile.getShotBy();
             scene.addEntity(new PlayerBody(number, pos, speed.cpy(), 5.0f, facingRight), Scene.PLAYER_LAYER);
-            scene.addEntity(new Blood(getCentre(), projectile.speed.cpy()), Scene.PARTICLE_LAYER);
-            scene.reportPlayerDeath(scene.players.get(playerId), this);
+            scene.reportPlayerDeath(scene.players.get(murderer), this);
             if(lives > 0) {
                 scene.respawnPlayer(this, true);
                 onInvulnerable(INVULNERABILITY_LENGTH);
@@ -543,6 +607,15 @@ public class Player extends Entity {
             }
             return true;
         }
+        return false;
+    }
+
+    public boolean onShot(Projectile projectile) {
+        if (killPlayer(projectile.getShotBy())) {
+            scene.addEntity(new Blood(getCentre(), projectile.speed.cpy()), Scene.PARTICLE_LAYER);
+            return true;
+        }
+
         return false;
     }
 

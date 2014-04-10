@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Random;
 
 public abstract class PowerUp extends Entity {
-    float scale = 0.7f;
+    float scale = 2.5f;
 
     Random rand = new Random();
     final float respawnTime;
@@ -24,7 +24,7 @@ public abstract class PowerUp extends Entity {
         this.respawnTime = respawnTime;
         falls = false;
         img = new Texture(texture);
-        size = new Vector2(img.getWidth(), img.getHeight());
+        size = new Vector2(img.getWidth(), img.getHeight()).scl(scale);
 
         respawn();
     }
