@@ -22,7 +22,8 @@ public class Player extends Entity {
 
     int lives = 10;
 
-	float JUMP = 400.0f;
+	float JUMP = 550.0f;
+	float AIR_JUMP = 400.0f;
 	float ACCEL = 4000.0f;
 	float MAX_SPEED = 400.0f; // while not dashing
 	
@@ -198,14 +199,22 @@ public class Player extends Entity {
                     airJumps--;
                 }
             } else if (onWall) {
-                speed.y = JUMP * 1.25f;
-                speed.x = wallDir * JUMP * 0.75f;
+                speed = new Vector2(wallDir * 0.75f, 1.25f).scl(AIR_JUMP);
                 cooldown.put(Action.JUMP, maxCooldown.get(Action.JUMP));
                 onWall = false;
             }
 		}
 		// if was on wall, am I still on the wall?
 		if (onWall) {
+            Random rand = new Random();
+            float pX = pos.x + size.x * (0.5f - 0.5f * wallDir);
+            float pY = pos.y + (0.25f + 0.5f * rand.nextFloat()) * size.y;
+            float pSize = 0.2f + rand.nextFloat() * 0.4f;
+            float pDuration = 0.4f + rand.nextFloat();
+            float pSpeed = (40 + rand.nextFloat() * 200);
+            Particle p = new Particle(new Vector2(pX,pY), new Vector2(wallDir ,0), pSpeed, pSize, pDuration, new Color(1.0f,1.0f, 1.0f, 1.0f));
+            scene.addEntity(p, Scene.PARTICLE_LAYER);
+            
             boolean nextToWall = false;
             if (wallDir == 1) {
                 Vector2 tileCoords = scene.map.getTileCoords(pos.cpy().add(new Vector2(0, size.y/4)));
@@ -226,11 +235,12 @@ public class Player extends Entity {
 		// dash quickly in the currently facing direction
 		// (or in the aimed direction)
 		if (buttonMap.get(Action.DASH).isDown() && cooldown.get(Action.DASH) == 0.0f && airDashes > 0) {
-			speed.scl(DASH_SPEED/Math.abs(speed.x), 0.0f);
+			speed = new Vector2(DASH_SPEED * Math.signum(speed.x), 0.0f);
 			cooldown.put(Action.DASH, maxCooldown.get(Action.DASH));
 			airDashes--;
 			falls = false;
 			dashing = true;
+			animationTime = 0.0f;
 			dashTime = DASH_TIME;
 
             Random rand = new Random();
@@ -342,6 +352,7 @@ public class Player extends Entity {
         // if falling quickly and hit the ground
         if (onGround && velY < minLandedSpeed) {
         	landed = true;
+        	animationTime = 0.0f;
         	landedTime = 0.125f;
         	// spawn some smoke particles
         	Random rand = new Random();

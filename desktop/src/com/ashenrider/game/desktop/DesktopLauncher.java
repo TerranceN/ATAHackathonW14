@@ -14,6 +14,8 @@ public class DesktopLauncher {
         TexturePacker.process(settings, "animations", "pack", "animations");
 
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+		config.width = 1280;
+		config.height = 720;
 		new LwjglApplication(new HackathonApp(), config);
 	}
 }
