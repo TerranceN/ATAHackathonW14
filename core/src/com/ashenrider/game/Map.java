@@ -117,7 +117,9 @@ public class Map {
         } else {
         	return;
         }
-        mapRenderer.setView(camera);
+        if (camera != null) {
+            mapRenderer.setView(camera);
+        }
         mapRenderer.render();
     }
 

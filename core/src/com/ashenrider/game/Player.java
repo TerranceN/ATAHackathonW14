@@ -25,7 +25,8 @@ public class Player extends Entity {
 	float JUMP = 550.0f;
 	float AIR_JUMP = 400.0f;
 	float ACCEL = 4000.0f;
-	float MAX_SPEED = 400.0f; // while not dashing
+	float MAX_MOVE_SPEED = 300.0f; // while not dashing
+    float MAX_FALL_SPEED = 800.0f;
 	
 	float DASH_SPEED = 800.0f;
 	float DASH_TIME = 0.125f;
@@ -52,7 +53,7 @@ public class Player extends Entity {
     boolean onWall = false;
     int wallDir = 0;
 
-	float minLandedSpeed = -20.0f;
+	float minLandedSpeed = -400.0f;
 	float landedTime = 0.0f;
 
     float invulnerableTime;
@@ -285,11 +286,11 @@ public class Player extends Entity {
 			}
 		} else {
 			// max speed
-			if (Math.abs(speed.x) > MAX_SPEED) {
-				speed.scl(MAX_SPEED / Math.abs(speed.x), 1.0f);
+			if (Math.abs(speed.x) > MAX_MOVE_SPEED) {
+				speed.scl(MAX_MOVE_SPEED / Math.abs(speed.x), 1.0f);
 			}
-			if (Math.abs(speed.y) > MAX_SPEED) {
-				speed.scl(1.0f, MAX_SPEED / Math.abs(speed.y));
+			if (Math.abs(speed.y) > MAX_FALL_SPEED) {
+				speed.scl(1.0f, MAX_FALL_SPEED / Math.abs(speed.y));
 			}
 		}
         if(invulnerableTime > 0.0f) {
@@ -318,7 +319,7 @@ public class Player extends Entity {
     }
 
     public void collisionCheck(Map map) {
-        Vector2 pen = map.getLeastPenetration(speed, pos, pos.cpy().add(size));
+        Vector2 pen = map.getLeastPenetration(speed.cpy(), pos.cpy(), pos.cpy().add(size));
 
         if (pen.len() > 0) {
             if (pen.y != 0 && (pen.x == 0 || Math.abs(pen.x) > Math.abs(pen.y))) {
@@ -386,7 +387,7 @@ public class Player extends Entity {
             int playerId = projectile.getShotBy();
             scene.reportPlayerDeath(scene.players.get(playerId), this);
             lives--;
-            scene.addEntity(new PlayerBody(number, pos, speed, 5.0f), Scene.PLAYER_LAYER);
+            scene.addEntity(new PlayerBody(number, pos, speed.cpy(), 5.0f), Scene.PLAYER_LAYER);
             scene.respawnPlayer(this, true);
             onInvulnerable(INVULNERABILITY_LENGTH);
             return true;

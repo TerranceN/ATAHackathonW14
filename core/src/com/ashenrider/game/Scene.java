@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.ashenrider.game.Input.*;
 import com.ashenrider.game.userinterface.DeathsWidget;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.controllers.Controller;
@@ -18,6 +19,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
 public class Scene {
 	// map and entitity layers
@@ -29,6 +38,7 @@ public class Scene {
 	static int FOREGROUND_LAYER = 4;
 	
     OrthographicCamera camera;
+    OrthographicCamera mapCam;
     public ArrayList<Entity> newEntities;
     public ArrayList<Entity> entities;
     // list of lists of entities
@@ -42,10 +52,41 @@ public class Scene {
     Texture background;
     private List<PlayerDeathListener> playerDeathListeners = new LinkedList<PlayerDeathListener>();
 
+    ShapeRenderer shapeRenderer;
+
+    float unitScale = 1f;
+
+    ShaderProgram nullSphereMaskingShader;
+    ShaderProgram nullSphereFadeShader;
+
+    Player player;
+
+    FrameBuffer collisionMask;
+    TextureRegion collisionMaskRegion;
+
+    FrameBuffer tmpMapBuffer;
+    TextureRegion tmpMapBufferRegion;
+    
     public Scene(String filename) {
     	batch = new SpriteBatch();
         map = new Map(filename);
         camera = new OrthographicCamera();
+        mapCam = new OrthographicCamera();
+        mapCam.setToOrtho(false, map.getWidth(), map.getHeight());
+
+        collisionMask = new FrameBuffer(Format.RGB888, (int)map.getWidth(), (int)map.getHeight(), false);
+        collisionMaskRegion = new TextureRegion(collisionMask.getColorBufferTexture());
+        collisionMaskRegion.flip(false, true);
+
+        // clear the mask at the beginning
+        collisionMask.begin();
+        Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        collisionMask.end();
+
+        tmpMapBuffer = new FrameBuffer(Format.RGBA8888, (int)map.getWidth(), (int)map.getHeight(), false);
+        tmpMapBufferRegion = new TextureRegion(tmpMapBuffer.getColorBufferTexture());
+        tmpMapBufferRegion.flip(false, true);
 
         background = new Texture("background.png");
 
@@ -66,6 +107,7 @@ public class Scene {
         		  new KeyboardButton(Keys.W),
         		  new MouseButton(Buttons.LEFT),
         		  new KeyboardButton(Keys.S));
+        player = p;
         p.axisMap.put(Player.Action.AIM_HORIZONTAL, new MouseAxis(p, camera, true));
         p.axisMap.put(Player.Action.AIM_VERTICAL, new MouseAxis(p, camera, false));
 
@@ -141,6 +183,13 @@ public class Scene {
         }
 
         addEntity(new InvulnerabilityPowerUp(new Vector2(100.0f, 100.0f)), PLAYER_LAYER);
+
+        loadShaders();
+
+        shapeRenderer = new ShapeRenderer();
+
+        //batch.setShader(nullSphereMaskingShader);
+        //map.mapRenderer.getSpriteBatch().setShader(nullSphereMaskingShader);
     }
 
     public void respawnPlayer(Player player, boolean body) {
@@ -150,18 +199,43 @@ public class Scene {
         //TODO Spawn a body.
     }
 
+    public void testShaderCompilation(ShaderProgram program) {
+        if (!program.isCompiled()) {
+            System.out.println(program.getLog());
+            System.exit(0);
+        }
+    }
+
+    public void loadShaders() {
+        nullSphereMaskingShader = new ShaderProgram(
+                Gdx.files.internal("shaders/nullSphereMasking.vert").readString(),
+                Gdx.files.internal("shaders/nullSphereMasking.frag").readString());
+        testShaderCompilation(nullSphereMaskingShader);
+
+        nullSphereFadeShader = new ShaderProgram(
+                Gdx.files.internal("shaders/nullSphereFade.vert").readString(),
+                Gdx.files.internal("shaders/nullSphereFade.frag").readString());
+        testShaderCompilation(nullSphereFadeShader);
+    }
+
     public void onResize() {
         float screenRatio = (float)Gdx.graphics.getWidth() / Gdx.graphics.getHeight();
         float tileRatio = (float)map.levelLayer.getWidth() / map.levelLayer.getHeight();
-        float unitScale = 1f;
 
         if (screenRatio <= tileRatio) {
-            unitScale = Gdx.graphics.getWidth() / (map.levelLayer.getWidth() * map.tileSize);
+            unitScale = Gdx.graphics.getWidth() / map.getWidth();
         } else {
-            unitScale = Gdx.graphics.getHeight() / (map.levelLayer.getHeight() * map.tileSize);
+            unitScale = Gdx.graphics.getHeight() / map.getHeight();
         }
 
         camera.setToOrtho(false, Gdx.graphics.getWidth() / unitScale, Gdx.graphics.getHeight() / unitScale);
+
+        if (screenRatio <= tileRatio) {
+            camera.translate(0f, -(Gdx.graphics.getHeight() / unitScale - map.getHeight()) / 2f);
+        } else {
+            camera.translate(-(Gdx.graphics.getWidth() / unitScale - map.getWidth()) / 2f, 0f);
+        }
+
         camera.update();
     }
 
@@ -204,11 +278,28 @@ public class Scene {
 	}
 	
     public void render() {
+        // render circles onto collisionMask
+        collisionMask.begin();
+        shapeRenderer.begin(ShapeType.Filled);
+        shapeRenderer.setProjectionMatrix(mapCam.combined);
+        shapeRenderer.setColor(1, 0, 0, 1);
+		for (int layer =0; layer < NUM_LAYERS; layer++) {
+			for (Entity e : entityLayers.get(layer)) {
+                //shapeRenderer.circle(e.pos.x, e.pos.y, 100, 20);
+			}
+		}
+        shapeRenderer.end();
+        collisionMask.end();
+
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         batch.draw(background, 0, 0, map.getWidth(), map.getHeight());
         batch.end();
-		for (int layer =0; layer < NUM_LAYERS; layer++) {
+
+        maskAndDrawTmpFrameBufferForLayer(BACKGROUND_LAYER);
+
+        batch.setProjectionMatrix(camera.combined);
+		for (int layer = 0; layer < FOREGROUND_LAYER; layer++) {
 	        map.renderLayer(layer, camera);
 			batch.begin();
 			for (Entity e : entityLayers.get(layer)) {
@@ -216,6 +307,58 @@ public class Scene {
 			}
 			batch.end();
 		}
+
+        maskAndDrawTmpFrameBufferForLayer(FOREGROUND_LAYER);
+
+        // fade collision mask
+        batch.setShader(nullSphereFadeShader);
+        nullSphereFadeShader.begin();
+        collisionMask.begin();
+        batch.begin();
+        batch.setProjectionMatrix(mapCam.combined);
+        batch.draw(collisionMaskRegion, 0, 0, map.getWidth(), map.getHeight());
+        batch.end();
+        collisionMask.end();
+        nullSphereFadeShader.end();
+        batch.setShader(null);
+
+    }
+
+    void maskAndDrawTmpFrameBufferForLayer(int layer) {
+        tmpMapBuffer.begin();
+        map.renderLayer(layer, mapCam);
+        tmpMapBuffer.end();
+
+        maskTmpFrameBuffer();
+
+        batch.begin();
+        batch.setProjectionMatrix(camera.combined);
+        batch.draw(tmpMapBufferRegion, 0, 0, map.getWidth(), map.getHeight());
+        batch.end();
+    }
+
+    void maskTmpFrameBuffer() {
+        int oldSrcFunc = batch.getBlendSrcFunc();
+        int oldDstFunc = batch.getBlendDstFunc();
+
+        batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ZERO);
+
+        batch.setShader(nullSphereMaskingShader);
+        nullSphereMaskingShader.begin();
+        Texture collisionTexture = collisionMaskRegion.getTexture();
+        collisionTexture.bind(1);
+        nullSphereMaskingShader.setUniformi("u_maskTexture", 1);
+        Gdx.graphics.getGL20().glActiveTexture(GL20.GL_TEXTURE0);
+        tmpMapBuffer.begin();
+        batch.begin();
+        batch.setProjectionMatrix(mapCam.combined);
+        batch.draw(tmpMapBufferRegion, 0, 0, map.getWidth(), map.getHeight());
+        batch.end();
+        tmpMapBuffer.end();
+        nullSphereMaskingShader.end();
+        batch.setShader(null);
+
+        batch.setBlendFunction(oldSrcFunc, oldDstFunc);
     }
 
     public void addPlayerDeathListener(PlayerDeathListener playerDeathListener) {
