@@ -219,7 +219,7 @@ public class Player extends Entity {
 
                 int textureValue = scene.getCollisionMaskValueAtPoint(modX, modY);
 
-                if (textureValue == 0) {
+                if (textureValue == 0 && scene.map.isInsideLevel(modX, modY)) {
                     killPlayer(number);
                 }
             }
