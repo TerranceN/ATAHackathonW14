@@ -107,19 +107,6 @@ public class Scene {
         }
         
         players = new ArrayList<Player>();
-        Player p = addPlayer(new Vector2(100, 100),
-        		  new KeyboardAxis(Keys.A, Keys.D),
-        		  // mouseAxis needs a reference to the player
-        		  null,
-        		  null,
-        		  new KeyboardButton(Keys.W),
-        		  new MouseButton(Buttons.LEFT),
-        		  new KeyboardButton(Keys.S),
-                  new KeyboardButton(Keys.SHIFT_LEFT));
-        player = p;
-        p.axisMap.put(Player.Action.AIM_HORIZONTAL, new MouseAxis(p, camera, true));
-        p.axisMap.put(Player.Action.AIM_VERTICAL, new MouseAxis(p, camera, false));
-
         boolean controllerDebug = false;
 
         for(Controller controller : Controllers.getControllers()) {
@@ -183,6 +170,21 @@ public class Scene {
                     }
                 });
             }
+        }
+        
+        for (int i = players.size(); i < 4; i++) {
+			Player p = addPlayer(new Vector2(100, 100),
+				  new KeyboardAxis(Keys.A, Keys.D),
+				  // mouseAxis needs a reference to the player
+			  		  null,
+			  		  null,
+			  		  new KeyboardButton(Keys.W),
+			  		  new MouseButton(Buttons.LEFT),
+			  		  new KeyboardButton(Keys.S),
+			            new KeyboardButton(Keys.SHIFT_LEFT));
+			player = p;
+			p.axisMap.put(Player.Action.AIM_HORIZONTAL, new MouseAxis(p, camera, true));
+			p.axisMap.put(Player.Action.AIM_VERTICAL, new MouseAxis(p, camera, false));
         }
 
         spawnPoints = map.getSpawnPoints();

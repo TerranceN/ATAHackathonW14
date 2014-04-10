@@ -29,7 +29,7 @@ public class PlayerBody extends Entity {
         TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/animations.atlas"));
         TextureRegion[] deathFrames = new TextureRegion[10];
         for (int i=0; i<10; i++) {
-            deathFrames[i] = atlas.findRegion(String.format("p%d/death-%02d", (playerNumber % 3), i+1));
+            deathFrames[i] = atlas.findRegion(String.format("p%d/death-%02d", (playerNumber % 4), i+1));
             if (facingRight) {
             	deathFrames[i].flip(true,  false);
             }
