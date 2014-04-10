@@ -387,14 +387,14 @@ public class Scene {
 			for (Entity e : entityLayers.get(layer)) {
                 if(!e.destroyed) {
                     e.renderWithWrapAround(batch);
-                    if (Particle.BASE_PARTICLE == null) {
-                        Particle.BASE_PARTICLE = new Texture("particle.png");
-                    } else if (Particle.BASE_PARTICLE != null) {
-                        batch.draw(Particle.BASE_PARTICLE, e.pos.x - Particle.BASE_PARTICLE.getWidth() / 2f, e.pos.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
-                        batch.draw(Particle.BASE_PARTICLE, e.pos.x + e.size.x - Particle.BASE_PARTICLE.getWidth() / 2f, e.pos.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
-                        batch.draw(Particle.BASE_PARTICLE, e.pos.x + e.size.x - Particle.BASE_PARTICLE.getWidth() / 2f, e.pos.y + e.size.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
-                        batch.draw(Particle.BASE_PARTICLE, e.pos.x - Particle.BASE_PARTICLE.getWidth() / 2f, e.pos.y + e.size.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
-                    }
+                    //if (Particle.BASE_PARTICLE == null) {
+                    //	Particle.BASE_PARTICLE = new Texture("particle.png");
+                    //} else if (Particle.BASE_PARTICLE != null) {
+                    //    batch.draw(Particle.BASE_PARTICLE, e.pos.x - Particle.BASE_PARTICLE.getWidth() / 2f, e.pos.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
+                    //    batch.draw(Particle.BASE_PARTICLE, e.pos.x + e.size.x - Particle.BASE_PARTICLE.getWidth() / 2f, e.pos.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
+                    //    batch.draw(Particle.BASE_PARTICLE, e.pos.x + e.size.x - Particle.BASE_PARTICLE.getWidth() / 2f, e.pos.y + e.size.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
+                    //    batch.draw(Particle.BASE_PARTICLE, e.pos.x - Particle.BASE_PARTICLE.getWidth() / 2f, e.pos.y + e.size.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
+                    //}
                 }
 			}
 			batch.end();
