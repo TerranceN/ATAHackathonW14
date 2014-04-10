@@ -13,7 +13,7 @@ public class AirSmoke extends Entity {
 
     private float lifeTime;
 
-    float scale = 2.5f;
+    float scale = 2.0f;
     float animationTime = 0.0f;
 
     private float FRAME_DURATION = 0.025f;
@@ -70,9 +70,9 @@ public class AirSmoke extends Entity {
         float oX = 52;
         float oY = 0;
         if (flipped) {
-            batch.draw(frame, pos.x + size.x/2, pos.y + size.y/2, oX, oY, w, h, scale, -scale, 0.0f);
+            batch.draw(frame, pos.x + size.x/2 -oX, pos.y + size.y/2, oX, oY, w, h, -scale, -scale, angle);
         } else {
-            batch.draw(frame, pos.x + size.x/2, pos.y + size.y/2, oX, oY, w, h, scale, scale, 0.0f);
+            batch.draw(frame, pos.x + size.x/2 -oX, pos.y + size.y/2, oX, oY, w, h, -scale, scale, angle);
         }
     }
 }

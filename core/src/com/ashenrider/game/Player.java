@@ -30,7 +30,7 @@ public class Player extends Entity {
     float MAX_FALL_SPEED = 800.0f;
 	
 	float DASH_SPEED = 800.0f;
-	float DASH_TIME = 0.125f;
+	float DASH_TIME = 0.13f;
 	float dashTime = 0.0f;
 
     boolean jumpPressedLastFrame = false;
@@ -165,8 +165,8 @@ public class Player extends Entity {
 		cooldown.put(Action.DASH, 0.0f);
 		maxCooldown = new HashMap<Action, Float>();
 		maxCooldown.put(Action.JUMP, 0.0f);
-		maxCooldown.put(Action.SHOOT, 0.3f);
-		maxCooldown.put(Action.DASH, DASH_TIME + 0.5f);
+		maxCooldown.put(Action.SHOOT, 0.8f);
+		maxCooldown.put(Action.DASH, DASH_TIME + 0.2f);
 	}
 
     public int getLives() {
@@ -247,6 +247,12 @@ public class Player extends Entity {
 	        if (Math.abs(xAxis) > 0.25) {
 	        	dir = Math.signum(xAxis);
 	        }
+	        float a = dir == 1 ? 180 : 00;
+            scene.addEntity(new AirSmoke(getCentre(), a + 45, false), Scene.PARTICLE_LAYER);
+            scene.addEntity(new AirSmoke(getCentre(), a -45, true), Scene.PARTICLE_LAYER);
+            scene.addEntity(new AirSmoke(getCentre(), a + 22.5f, false), Scene.PARTICLE_LAYER);
+            scene.addEntity(new AirSmoke(getCentre(), a -22.5f, true), Scene.PARTICLE_LAYER);
+
 			speed = new Vector2(DASH_SPEED * dir, 0.0f);
 			cooldown.put(Action.DASH, maxCooldown.get(Action.DASH));
 			airDashes--;
@@ -255,16 +261,16 @@ public class Player extends Entity {
 			animationTime = 0.0f;
 			dashTime = DASH_TIME;
 
-            Random rand = new Random();
-            for (int i = 0; i<8; i++) {
-                float pX = pos.x + size.x * 0.5f + (rand.nextFloat() * size.x * 0.5f * ((speed.x < 0) ? -1 : 1) );
-                float pY = pos.y + rand.nextFloat() * size.y;
-                float pSize = 0.2f + rand.nextFloat() * 0.4f;
-                float pDuration = 0.4f + rand.nextFloat();
-                float pSpeed = 40 + rand.nextFloat() * 200;
-                Particle p = new Particle(new Vector2(pX,pY), new Vector2( (speed.x > 0) ? -1 : 1 ,0), pSpeed, pSize, pDuration, new Color(1.0f,1.0f, 1.0f, 1.0f));
-                scene.addEntity(p, Scene.PARTICLE_LAYER);
-            }
+//            Random rand = new Random();
+//            for (int i = 0; i<8; i++) {
+//                float pX = pos.x + size.x * 0.5f + (rand.nextFloat() * size.x * 0.5f * ((speed.x < 0) ? -1 : 1) );
+//                float pY = pos.y + rand.nextFloat() * size.y;
+//                float pSize = 0.2f + rand.nextFloat() * 0.4f;
+//                float pDuration = 0.4f + rand.nextFloat();
+//                float pSpeed = 40 + rand.nextFloat() * 200;
+//                Particle p = new Particle(new Vector2(pX,pY), new Vector2( (speed.x > 0) ? -1 : 1 ,0), pSpeed, pSize, pDuration, new Color(1.0f,1.0f, 1.0f, 1.0f));
+//                scene.addEntity(p, Scene.PARTICLE_LAYER);
+//            }
 		}
 		// accelerate
         float move = axisMap.get(Action.MOVE).getValue();

@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public abstract class PowerUp extends Entity {
-    float scale = 0.7f;
+    float scale = 2.5f;
 
     final float respawnTime;
     float respawnTimer;
@@ -19,7 +19,7 @@ public abstract class PowerUp extends Entity {
         this.respawnTime = respawnTime;
         falls = false;
         img = new Texture(texture);
-        size = new Vector2(img.getWidth(), img.getHeight());
+        size = new Vector2(img.getWidth(), img.getHeight()).scl(scale);
     }
 
     public void onPickup(Player player) {
