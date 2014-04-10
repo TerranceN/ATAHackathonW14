@@ -399,6 +399,8 @@ public class Scene {
 
     void maskAndDrawTmpFrameBufferForLayer(int layer) {
         tmpMapBuffer.begin();
+        Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         map.renderLayer(layer, mapCam);
         tmpMapBuffer.end();
 
