@@ -13,6 +13,7 @@ import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.Input.Keys;
@@ -38,12 +39,15 @@ public class Scene {
     
     public Map map;
     SpriteBatch batch;
+    Texture background;
     private List<PlayerDeathListener> playerDeathListeners = new LinkedList<PlayerDeathListener>();
 
     public Scene(String filename) {
     	batch = new SpriteBatch();
         map = new Map(filename);
         camera = new OrthographicCamera();
+
+        background = new Texture("background.png");
 
         onResize();
         newEntities = new ArrayList<Entity>();
@@ -199,6 +203,9 @@ public class Scene {
 	
     public void render() {
         batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        batch.draw(background, 0, 0, map.getWidth(), map.getHeight());
+        batch.end();
 		for (int layer =0; layer < NUM_LAYERS; layer++) {
 	        map.renderLayer(layer, camera);
 			batch.begin();

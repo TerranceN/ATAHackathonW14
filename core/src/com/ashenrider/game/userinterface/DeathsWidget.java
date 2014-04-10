@@ -19,7 +19,7 @@ import java.util.ListIterator;
 
 public class DeathsWidget implements PlayerDeathListener {
 
-    private static final int DISPLAY_TIME = 2500;
+    private static final float DISPLAY_TIME = 2.5f;
     private static final int DISPLAY_COUNT = 5;
 
     private LinkedList<DeathEvent> events = new LinkedList<DeathEvent>();
@@ -66,7 +66,6 @@ public class DeathsWidget implements PlayerDeathListener {
         for(ListIterator<DeathEvent> iter = events.listIterator(); iter.hasNext(); ) {
             DeathEvent event = iter.next();
             event.time -= delta;
-            Gdx.app.log("DeathMessage", "Time: " + event.time);
             if(event.time < 0) iter.remove();
         }
 
