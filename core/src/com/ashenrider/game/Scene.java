@@ -358,11 +358,30 @@ public class Scene {
         batch.end();
         levelBuffer.end();
 
+        renderLayers(0, BACKGROUND_LAYER - 1);
         maskAndDrawTmpFrameBufferForLayer(BACKGROUND_LAYER);
+        renderLayers(BACKGROUND_LAYER + 1, FOREGROUND_LAYER - 1);
+        maskAndDrawTmpFrameBufferForLayer(FOREGROUND_LAYER);
+        renderLayers(FOREGROUND_LAYER + 1, NUM_LAYERS - 1);
 
+        batch.setShader(nullSphereFilterShader);
+        nullSphereFilterShader.begin();
+        Texture collisionTexture = collisionMaskRegion.getTexture();
+        collisionTexture.bind(1);
+        nullSphereMaskingShader.setUniformi("u_maskTexture", 1);
+        Gdx.graphics.getGL20().glActiveTexture(GL20.GL_TEXTURE0);
+        batch.begin();
+        batch.setProjectionMatrix(camera.combined);
+        batch.draw(levelBufferRegion, 0, 0, map.getWidth(), map.getHeight());
+        batch.end();
+        nullSphereFilterShader.end();
+        batch.setShader(null);
+    }
+
+    void renderLayers(int start, int end) {
         levelBuffer.begin();
         batch.setProjectionMatrix(mapCam.combined);
-		for (int layer = BACKGROUND_LAYER + 1; layer < FOREGROUND_LAYER; layer++) {
+		for (int layer = start; layer <= end; layer++) {
 	        map.renderLayer(layer, mapCam);
 			batch.begin();
 			for (Entity e : entityLayers.get(layer)) {
@@ -379,21 +398,6 @@ public class Scene {
 			batch.end();
 		}
         levelBuffer.end();
-
-        maskAndDrawTmpFrameBufferForLayer(FOREGROUND_LAYER);
-
-        batch.setShader(nullSphereFilterShader);
-        nullSphereFilterShader.begin();
-        Texture collisionTexture = collisionMaskRegion.getTexture();
-        collisionTexture.bind(1);
-        nullSphereMaskingShader.setUniformi("u_maskTexture", 1);
-        Gdx.graphics.getGL20().glActiveTexture(GL20.GL_TEXTURE0);
-        batch.begin();
-        batch.setProjectionMatrix(camera.combined);
-        batch.draw(levelBufferRegion, 0, 0, map.getWidth(), map.getHeight());
-        batch.end();
-        nullSphereFilterShader.end();
-        batch.setShader(null);
     }
 
     void maskAndDrawTmpFrameBufferForLayer(int layer) {
