@@ -16,6 +16,8 @@ public class Explosion extends Entity {
     float scale = 3.0f;
     float animationTime = 0.0f;
 
+    private static Animation staticAnim;
+
     private float FRAME_DURATION = 0.025f;
     private Animation anim;
     
@@ -25,17 +27,18 @@ public class Explosion extends Entity {
         super(initPosition);
         Random rand = new Random();
         angle = 360 * rand.nextFloat();
-        boolean flipped = false;
         
-        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/fx.atlas"));
-        TextureRegion[] frames = new TextureRegion[43];
-        for (int i=0; i<43; i++) {
-            frames[i] = atlas.findRegion("explosion/explosion-" + (i+1));
-            if (flipped) {
-            	frames[i].flip(true,  false);
+        if (staticAnim == null) {
+            TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/fx.atlas"));
+            TextureRegion[] frames = new TextureRegion[43];
+            for (int i=0; i<43; i++) {
+                frames[i] = atlas.findRegion("explosion/explosion-" + (i+1));
             }
+            anim = new Animation(FRAME_DURATION, frames);
+            staticAnim = anim;
+        } else {
+            anim = staticAnim;
         }
-        anim = new Animation(FRAME_DURATION, frames);
 
         size = new Vector2(16.0f, 16.0f).scl(scale);
         pos = initPosition.cpy().sub(size.cpy().scl(0.5f));

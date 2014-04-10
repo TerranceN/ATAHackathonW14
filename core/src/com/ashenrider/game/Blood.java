@@ -14,6 +14,8 @@ public class Blood extends Entity {
     float scale = 2.0f;
     float animationTime = 0.0f;
 
+    private static Animation staticAnim;
+
     private float FRAME_DURATION = 0.15f;
     private Animation anim;
     
@@ -23,15 +25,17 @@ public class Blood extends Entity {
         super(initPosition);
         angle = direction.angle();
 
-        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/fx.atlas"));
-        TextureRegion[] frames = new TextureRegion[9];
-        for (int i=0; i<9; i++) {
-            frames[i] = atlas.findRegion("blood/blood-" + (i+1));
-            //if (direction.x < 0) {
-            //	frames[i].flip(true,  false);
-            //}
+        if (staticAnim == null) {
+            TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/fx.atlas"));
+            TextureRegion[] frames = new TextureRegion[9];
+            for (int i=0; i<9; i++) {
+                frames[i] = atlas.findRegion("blood/blood-" + (i+1));
+            }
+            anim = new Animation(FRAME_DURATION, frames);
+            staticAnim = anim;
+        } else {
+            anim = staticAnim;
         }
-        anim = new Animation(FRAME_DURATION, frames);
 
         size = new Vector2(16.0f, 16.0f).scl(scale);
         pos = initPosition.cpy().sub(size.cpy().scl(0.5f));
