@@ -83,8 +83,9 @@ public class Projectile extends Entity {
         		Rectangle shotBox = getBounds();
         		Rectangle playerBox = p.getBounds();
         		if (shotBox.overlaps(playerBox)) {
-                	destroy();
-                    p.onShot(this);
+                    if(p.onShot(this)) {
+                        destroy();
+                    }
         		}
         	}
         }

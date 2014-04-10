@@ -139,6 +139,8 @@ public class Scene {
             Player player = players.get(i);
             respawnPlayer(player, false);
         }
+
+        addEntity(new InvulnerabilityPowerUp(new Vector2(100.0f, 100.0f)), PLAYER_LAYER);
     }
 
     public void respawnPlayer(Player player, boolean body) {

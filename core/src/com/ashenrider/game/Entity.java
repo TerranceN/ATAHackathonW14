@@ -22,6 +22,7 @@ public abstract class Entity {
 	public Entity(Vector2 initPosition) {
 		pos = initPosition;
 		speed = new Vector2(0,0);
+        size = new Vector2(0,0);
 	}
 	
 	public void update(float dt) {

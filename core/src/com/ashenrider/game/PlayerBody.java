@@ -7,8 +7,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-import java.util.Random;
-
 public class PlayerBody extends Entity {
 
     private float lifeTime = 5.0f;

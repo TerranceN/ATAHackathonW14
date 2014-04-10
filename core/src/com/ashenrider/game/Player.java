@@ -381,7 +381,7 @@ public class Player extends Entity {
         batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 
-    public void onShot(Projectile projectile) {
+    public boolean onShot(Projectile projectile) {
         if(invulnerableTime <= 0.0f) {
             int playerId = projectile.getShotBy();
             scene.reportPlayerDeath(scene.players.get(playerId), this);
@@ -389,7 +389,9 @@ public class Player extends Entity {
             scene.addEntity(new PlayerBody(number, pos, speed, 5.0f), Scene.PLAYER_LAYER);
             scene.respawnPlayer(this, true);
             onInvulnerable(INVULNERABILITY_LENGTH);
+            return true;
         }
+        return false;
     }
 
     public void onInvulnerable(float time) {
