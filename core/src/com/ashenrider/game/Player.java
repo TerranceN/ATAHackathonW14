@@ -96,7 +96,7 @@ public class Player extends Entity {
 	public Player(int playerNumber, Vector2 initPosition, InputAxis moveAxis, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton dash, InputButton nullSphere) {
 		super(initPosition);
 		number = playerNumber;
-		//img = new Texture("p" + (playerNumber % 3) + ".png");
+		//img = new Texture("p" + (playerNumber % 4) + ".png");
 		// 16x32 regions
 		TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/animations.atlas"));
 		// death 1-10
@@ -105,7 +105,7 @@ public class Player extends Entity {
 		TextureRegion[] leftFrames = new TextureRegion[5];
 		TextureRegion[] rightFrames = new TextureRegion[5];
 		for (int i=0; i<5; i++) {
-			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 3) + "/run-0" + (i+1));
+			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/run-0" + (i+1));
 			leftFrames[i] = new TextureRegion(rightFrames[i]);
             rightFrames[i].flip(true, false);
 		}
@@ -115,7 +115,7 @@ public class Player extends Entity {
 		leftFrames = new TextureRegion[5];
 		rightFrames = new TextureRegion[5];
 		for (int i=0; i<5; i++) {
-			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 3) + "/stand-0" + (i+1));
+			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/stand-0" + (i+1));
 			leftFrames[i] = new TextureRegion(rightFrames[i]);
 			rightFrames[i].flip(true, false);
 		}
@@ -125,7 +125,7 @@ public class Player extends Entity {
 		leftFrames = new TextureRegion[3];
 		rightFrames = new TextureRegion[3];
 		for (int i=0; i<3; i++) {
-			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 3) + "/jump-0" + (i+1));
+			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/jump-0" + (i+1));
 			leftFrames[i] = new TextureRegion(rightFrames[i]);
 			rightFrames[i].flip(true, false);
 		}
@@ -135,14 +135,14 @@ public class Player extends Entity {
 		leftFrames = new TextureRegion[4];
 		rightFrames = new TextureRegion[4];
 		for (int i=0; i<4; i++) {
-			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 3) + "/land-0" + (i+2));
+			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/land-0" + (i+2));
 			leftFrames[i] = new TextureRegion(rightFrames[i]);
             rightFrames[i].flip(true, false);
 		}
 		landLeftAnimation = new Animation(LAND_FRAME_DURATION, leftFrames);
 		landRightAnimation = new Animation(LAND_FRAME_DURATION, rightFrames);
 		// wallhug 1
-		wallHugRight = atlas.findRegion("p0/wallhug-01");
+		wallHugRight = atlas.findRegion("p" + (playerNumber % 4) + "/wallhug-01");
 		wallHugLeft = new TextureRegion(wallHugRight);
 		wallHugRight.flip(true, false);
 		
