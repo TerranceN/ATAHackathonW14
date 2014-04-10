@@ -76,7 +76,7 @@ public class Player extends Entity {
 	int animationOffset = -27;
 	private float RUNNING_FRAME_DURATION = 0.06f;
 	private float JUMP_FRAME_DURATION = 0.12f;
-	private float LAND_FRAME_DURATION = 0.12f;
+	private float LAND_FRAME_DURATION = 0.08f;
 	private float IDLE_FRAME_DURATION = 0.16f;
 
 	private Animation walkLeftAnimation;
@@ -129,10 +129,10 @@ public class Player extends Entity {
 		jumpLeftAnimation = new Animation(JUMP_FRAME_DURATION, leftFrames);
 		jumpRightAnimation = new Animation(JUMP_FRAME_DURATION, rightFrames);
 		// land 1-5
-		leftFrames = new TextureRegion[5];
-		rightFrames = new TextureRegion[5];
-		for (int i=0; i<5; i++) {
-			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 3) + "/land-0" + (i+1));
+		leftFrames = new TextureRegion[4];
+		rightFrames = new TextureRegion[4];
+		for (int i=0; i<4; i++) {
+			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 3) + "/land-0" + (i+2));
 			leftFrames[i] = new TextureRegion(rightFrames[i]);
             rightFrames[i].flip(true, false);
 		}
@@ -359,7 +359,7 @@ public class Player extends Entity {
             if (onGround && velY < minLandedSpeed) {
                 landed = true;
                 animationTime = 0.0f;
-                landedTime = 0.125f;
+                landedTime = LAND_FRAME_DURATION * 4;
                 // spawn some smoke particles
                 Random rand = new Random();
                 for (int i = 0; i<5; i++) {
