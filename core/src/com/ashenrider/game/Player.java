@@ -208,6 +208,7 @@ public class Player extends Entity {
                 speed = new Vector2(wallDir * 0.75f, 1.25f).scl(AIR_JUMP);
                 cooldown.put(Action.JUMP, maxCooldown.get(Action.JUMP));
                 onWall = false;
+                airDashes = NUM_AIRDASHES;
             }
 		}
 		// if was on wall, am I still on the wall?
