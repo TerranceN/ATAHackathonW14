@@ -15,6 +15,8 @@ public class Fireball extends Projectile {
     
     float animationTime = 0.0f;
 
+    private static Animation staticAnim;
+
     private float FRAME_DURATION = 0.05f;
     private Animation anim;
     float angle;
@@ -24,15 +26,20 @@ public class Fireball extends Projectile {
         angle = direction.angle();
         boolean flipped = true;
 
-        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/fx.atlas"));
-        TextureRegion[] frames = new TextureRegion[15];
-        for (int i=0; i<15; i++) {
-            frames[i] = atlas.findRegion("fire/fire-" + (i+1));
-            if (flipped) {
-            	frames[i].flip(true,  false);
+        if (staticAnim == null) {
+            TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/fx.atlas"));
+            TextureRegion[] frames = new TextureRegion[15];
+            for (int i=0; i<15; i++) {
+                frames[i] = atlas.findRegion("fire/fire-" + (i+1));
+                if (flipped) {
+                    frames[i].flip(true,  false);
+                }
             }
+            anim = new Animation(FRAME_DURATION, frames);
+            staticAnim = anim;
+        } else {
+            anim = staticAnim;
         }
-        anim = new Animation(FRAME_DURATION, frames);
         
 		size = new Vector2(16, 16);
         pos = initPosition.cpy().sub(size.cpy().scl(0.5f));

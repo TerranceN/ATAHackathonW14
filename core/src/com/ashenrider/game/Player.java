@@ -92,6 +92,8 @@ public class Player extends Entity {
 	private Animation landRightAnimation;
 	private TextureRegion wallHugLeft;
 	private TextureRegion wallHugRight;
+	
+	private Texture head;
     
 	public Player(int playerNumber, Vector2 initPosition, InputAxis moveAxis, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton dash, InputButton nullSphere) {
 		super(initPosition);
@@ -145,6 +147,8 @@ public class Player extends Entity {
 		wallHugRight = atlas.findRegion("p" + (playerNumber % 4) + "/wallhug-01");
 		wallHugLeft = new TextureRegion(wallHugRight);
 		wallHugRight.flip(true, false);
+		
+		head = new Texture("head" + playerNumber % 4 + ".png");
 		
 		// approximate size of the player
 		size = new Vector2(16.0f, 48.0f).scl(scale);
@@ -229,6 +233,11 @@ public class Player extends Entity {
     public int getLives() {
         return lives;
     }
+    
+    public Texture getHead() {
+    	return head;
+    }
+    
 	public TextureRegion getSprite() {
 		TextureRegion frame;
 		// pass a time to animation to get the right frame

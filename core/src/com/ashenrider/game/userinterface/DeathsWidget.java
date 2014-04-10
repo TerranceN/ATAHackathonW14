@@ -38,14 +38,14 @@ public class DeathsWidget implements PlayerDeathListener {
         this.scene = scene;
         scene.addPlayerDeathListener(this);
 
-        attackIcon = new Texture("death_icon.png");
+        attackIcon = new Texture("fire.png");
 
         stage = new Stage();
         Table ui = new Table();
         ui.setFillParent(true);
         stage.addActor(ui);
 
-        ui.left().top();
+        ui.right().top();
         for(int i=0; i<DISPLAY_COUNT; i++) {
             Image image = new Image();
             image.setVisible(false);
@@ -80,18 +80,18 @@ public class DeathsWidget implements PlayerDeathListener {
             else {
                 aggressorImages[i].setVisible(true);
                 if(aggressorImages[i].getDrawable() == null) {
-                    aggressorImages[i].setDrawable(new SpriteDrawable(new Sprite(events.get(i).aggressor.getSprite())));
+                    aggressorImages[i].setDrawable(new SpriteDrawable(new Sprite(events.get(i).aggressor.getHead())));
                 } else {
-                    ((SpriteDrawable)aggressorImages[i].getDrawable()).getSprite().setTexture(events.get(i).aggressor.getSprite().getTexture());
-                    ((SpriteDrawable)aggressorImages[i].getDrawable()).getSprite().setRegion(events.get(i).aggressor.getSprite());
+                    ((SpriteDrawable)aggressorImages[i].getDrawable()).getSprite().setTexture(events.get(i).aggressor.getHead());
+                    //((SpriteDrawable)aggressorImages[i].getDrawable()).getSprite().setRegion(events.get(i).aggressor.getSprite());
                 }
                 attackImages[i].setVisible(true);
                 victimImages[i].setVisible(true);
                 if(victimImages[i].getDrawable() == null) {
-                    victimImages[i].setDrawable(new SpriteDrawable(new Sprite(events.get(i).victim.getSprite())));
+                    victimImages[i].setDrawable(new SpriteDrawable(new Sprite(events.get(i).victim.getHead())));
                 } else {
-                    ((SpriteDrawable)victimImages[i].getDrawable()).getSprite().setTexture(events.get(i).victim.getSprite().getTexture());
-                    ((SpriteDrawable)victimImages[i].getDrawable()).getSprite().setRegion(events.get(i).victim.getSprite());
+                    ((SpriteDrawable)victimImages[i].getDrawable()).getSprite().setTexture(events.get(i).victim.getHead());
+                    //((SpriteDrawable)victimImages[i].getDrawable()).getSprite().setRegion(events.get(i).victim.getSprite());
                 }
                 ((SpriteDrawable)aggressorImages[i].getDrawable()).getSprite().setAlpha((events.get(i).time > 1.0f) ? 1.0f : events.get(i).time);
                 ((SpriteDrawable)attackImages[i].getDrawable()).getSprite().setAlpha((events.get(i).time > 1.0f) ? 1.0f : events.get(i).time);
