@@ -106,7 +106,8 @@ public class Scene {
         		  null,
         		  new KeyboardButton(Keys.W),
         		  new MouseButton(Buttons.LEFT),
-        		  new KeyboardButton(Keys.S));
+        		  new KeyboardButton(Keys.S),
+                  new KeyboardButton(Keys.SHIFT_LEFT));
         player = p;
         p.axisMap.put(Player.Action.AIM_HORIZONTAL, new MouseAxis(p, camera, true));
         p.axisMap.put(Player.Action.AIM_VERTICAL, new MouseAxis(p, camera, false));
@@ -120,7 +121,8 @@ public class Scene {
                     new ControllerAxis(controller, Xbox.AXIS_RIGHT_STICK_VERTICAL, true),
                     new ControllerButton(controller, Xbox.BTN_A),
                     new ControllerAxisButton(controller, Xbox.AXIS_RIGHT_TRIGGER),
-                    new ControllerAxisButton(controller, Xbox.AXIS_LEFT_TRIGGER));
+                    new ControllerAxisButton(controller, Xbox.AXIS_LEFT_TRIGGER),
+                    new ControllerButton(controller, Xbox.BTN_B));
 
 
             if (controllerDebug) {
@@ -264,8 +266,8 @@ public class Scene {
 		newEntities.clear();
 	}
 	
-	public Player addPlayer(Vector2 position,  InputAxis moveAxis, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton dash) {
-		Player p = new Player(players.size(), position, moveAxis, aimH, aimV, jump, shoot, dash);
+	public Player addPlayer(Vector2 position,  InputAxis moveAxis, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton dash, InputButton nullSphere) {
+		Player p = new Player(players.size(), position, moveAxis, aimH, aimV, jump, shoot, dash, nullSphere);
         players.add(p);
         addEntity(p, PLAYER_LAYER);
         return p;
@@ -283,11 +285,11 @@ public class Scene {
         shapeRenderer.begin(ShapeType.Filled);
         shapeRenderer.setProjectionMatrix(mapCam.combined);
         shapeRenderer.setColor(1, 0, 0, 1);
-		for (int layer =0; layer < NUM_LAYERS; layer++) {
-			for (Entity e : entityLayers.get(layer)) {
-                //shapeRenderer.circle(e.pos.x, e.pos.y, 100, 20);
-			}
-		}
+        for (Player p : players) {
+            if (p.nullSphereEnabled) {
+                shapeRenderer.circle(p.pos.x + p.size.x / 2f, p.pos.y + p.size.y / 2f, 100, 20);
+            }
+        }
         shapeRenderer.end();
         collisionMask.end();
 

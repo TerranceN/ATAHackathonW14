@@ -33,6 +33,8 @@ public class Player extends Entity {
 	float dashTime = 0.0f;
 
     boolean jumpPressedLastFrame = false;
+
+    boolean nullSphereEnabled = false;
 	
 	// current
 	int airJumps = 0;
@@ -59,7 +61,7 @@ public class Player extends Entity {
     float invulnerableTime;
 	
 	public enum Action {
-		MOVE, AIM_HORIZONTAL, AIM_VERTICAL, JUMP, SHOOT, DASH
+		MOVE, AIM_HORIZONTAL, AIM_VERTICAL, JUMP, SHOOT, DASH, NULL_SPHERE
 	}
 	
 	HashMap<Action, InputButton> buttonMap;
@@ -88,7 +90,7 @@ public class Player extends Entity {
 	private TextureRegion wallHugLeft;
 	private TextureRegion wallHugRight;
     
-	public Player(int playerNumber, Vector2 initPosition, InputAxis moveAxis, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton dash) {
+	public Player(int playerNumber, Vector2 initPosition, InputAxis moveAxis, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton dash, InputButton nullSphere) {
 		super(initPosition);
 		number = playerNumber;
 		//img = new Texture("p" + (playerNumber % 3) + ".png");
@@ -154,6 +156,7 @@ public class Player extends Entity {
 		buttonMap.put(Action.JUMP, jump);
 		buttonMap.put(Action.SHOOT, shoot);
 		buttonMap.put(Action.DASH, dash);
+		buttonMap.put(Action.NULL_SPHERE, nullSphere);
 		
 		cooldown = new HashMap<Action, Float>();
 		cooldown.put(Action.JUMP, 0.0f);
@@ -192,6 +195,7 @@ public class Player extends Entity {
 	@Override
 	public void update(float dt) {
 		// jump
+		nullSphereEnabled = buttonMap.get(Action.NULL_SPHERE).isDown();
 		if (!jumpPressedLastFrame && buttonMap.get(Action.JUMP).isDown() && cooldown.get(Action.JUMP) == 0.0f) {
             if (onGround || airJumps > 0) {
                 speed.y = JUMP;
@@ -344,29 +348,31 @@ public class Player extends Entity {
     public void handleCollision(Map map) {
     	float velY = speed.y; // speed before collision
         onGround = false;
-		collisionCheck(map);
-		collisionCheck(map);
+        if (!nullSphereEnabled) {
+            collisionCheck(map);
+            collisionCheck(map);
 
-        if (onGround) {
-            onWall = false;
-        }
-        // if falling quickly and hit the ground
-        if (onGround && velY < minLandedSpeed) {
-        	landed = true;
-        	animationTime = 0.0f;
-        	landedTime = 0.125f;
-        	// spawn some smoke particles
-        	Random rand = new Random();
-        	for (int i = 0; i<5; i++) {
-        		float pX = pos.x + rand.nextFloat() * size.x;
-        		float pY = pos.y + rand.nextFloat() * 5;
-        		float pSize = 0.2f + rand.nextFloat() * 0.2f;
-        		float pDuration = 0.3f + rand.nextFloat() * 0.9f;
-        		float pSpeed = 20 + rand.nextFloat() * 100;
-        		float pAngle = rand.nextFloat() * (float) Math.PI;
-        		Particle p = new Particle(new Vector2(pX,pY), new Vector2(1,0).setAngleRad(pAngle), pSpeed, pSize, pDuration, new Color(1.0f,1.0f, 1.0f, 1.0f));
-        		scene.addEntity(p, Scene.PARTICLE_LAYER);
-        	}
+            if (onGround) {
+                onWall = false;
+            }
+            // if falling quickly and hit the ground
+            if (onGround && velY < minLandedSpeed) {
+                landed = true;
+                animationTime = 0.0f;
+                landedTime = 0.125f;
+                // spawn some smoke particles
+                Random rand = new Random();
+                for (int i = 0; i<5; i++) {
+                    float pX = pos.x + rand.nextFloat() * size.x;
+                    float pY = pos.y + rand.nextFloat() * 5;
+                    float pSize = 0.2f + rand.nextFloat() * 0.2f;
+                    float pDuration = 0.3f + rand.nextFloat() * 0.9f;
+                    float pSpeed = 20 + rand.nextFloat() * 100;
+                    float pAngle = rand.nextFloat() * (float) Math.PI;
+                    Particle p = new Particle(new Vector2(pX,pY), new Vector2(1,0).setAngleRad(pAngle), pSpeed, pSize, pDuration, new Color(1.0f,1.0f, 1.0f, 1.0f));
+                    scene.addEntity(p, Scene.PARTICLE_LAYER);
+                }
+            }
         }
     }
 	
