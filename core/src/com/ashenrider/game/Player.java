@@ -65,34 +65,80 @@ public class Player extends Entity {
 	public int number;
 	
 	private int NUM_FRAMES = 2;
-	private float RUNNING_FRAME_DURATION = 0.12f;
 	
+	// every image is 70 wide and the middle 20 are the hitbox
+	int animationOffset = -27;
+	private float RUNNING_FRAME_DURATION = 0.12f;
+	private float JUMP_FRAME_DURATION = 0.12f;
+	private float LAND_FRAME_DURATION = 0.12f;
+	private float IDLE_FRAME_DURATION = 0.12f;
+
 	private Animation walkLeftAnimation;
     private Animation walkRightAnimation;
-	private TextureRegion landLeft;
-	private TextureRegion landRight;
+	private Animation jumpLeftAnimation;
+    private Animation jumpRightAnimation;
+	private Animation idleLeftAnimation;
+    private Animation idleRightAnimation;
+	private Animation landLeftAnimation;
+	private Animation landRightAnimation;
+	private TextureRegion wallHugLeft;
+	private TextureRegion wallHugRight;
     
 	public Player(int playerNumber, Vector2 initPosition, InputAxis moveAxis, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton dash) {
 		super(initPosition);
-
 		number = playerNumber;
 		//img = new Texture("p" + (playerNumber % 3) + ".png");
 		// 16x32 regions
 		TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/animations.atlas"));
-		TextureRegion[] leftFrames = new TextureRegion[2];
-		TextureRegion[] rightFrames = new TextureRegion[2];
-		for (int i=0; i<NUM_FRAMES; i++) {
-			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 3) + "-" + i);
+		// death 1-10
+		// (unused)
+		// run 1-5
+		TextureRegion[] leftFrames = new TextureRegion[5];
+		TextureRegion[] rightFrames = new TextureRegion[5];
+		for (int i=0; i<5; i++) {
+			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 3) + "/run-0" + (i+1));
 			leftFrames[i] = new TextureRegion(rightFrames[i]);
             leftFrames[i].flip(true, false);
 		}
-		landLeft = leftFrames[1];
-		landRight = rightFrames[1];
 		walkLeftAnimation = new Animation(RUNNING_FRAME_DURATION, leftFrames);
 		walkRightAnimation = new Animation(RUNNING_FRAME_DURATION, rightFrames);
-
-		size = new Vector2(landLeft.getRegionWidth() * scale, landLeft.getRegionHeight() * scale);
-		//size = new Vector2(img.getWidth(), img.getHeight());
+		// stand 1-5
+		leftFrames = new TextureRegion[5];
+		rightFrames = new TextureRegion[5];
+		for (int i=0; i<5; i++) {
+			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 3) + "/stand-0" + (i+1));
+			leftFrames[i] = new TextureRegion(rightFrames[i]);
+            leftFrames[i].flip(true, false);
+		}
+		idleLeftAnimation = new Animation(IDLE_FRAME_DURATION, leftFrames);
+		idleRightAnimation = new Animation(IDLE_FRAME_DURATION, rightFrames);
+		// jump 1-3
+		leftFrames = new TextureRegion[3];
+		rightFrames = new TextureRegion[3];
+		for (int i=0; i<3; i++) {
+			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 3) + "/jump-0" + (i+1));
+			leftFrames[i] = new TextureRegion(rightFrames[i]);
+            leftFrames[i].flip(true, false);
+		}
+		jumpLeftAnimation = new Animation(JUMP_FRAME_DURATION, leftFrames);
+		jumpRightAnimation = new Animation(JUMP_FRAME_DURATION, rightFrames);
+		// land 1-5
+		leftFrames = new TextureRegion[5];
+		rightFrames = new TextureRegion[5];
+		for (int i=0; i<5; i++) {
+			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 3) + "/land-0" + (i+1));
+			leftFrames[i] = new TextureRegion(rightFrames[i]);
+            rightFrames[i].flip(true, false);
+		}
+		landLeftAnimation = new Animation(LAND_FRAME_DURATION, leftFrames);
+		landRightAnimation = new Animation(LAND_FRAME_DURATION, rightFrames);
+		// wallhug 1
+		wallHugRight = atlas.findRegion("p0/wallhug-01");
+		wallHugLeft = new TextureRegion(wallHugRight);
+		wallHugRight.flip(true, false);
+		
+		// approximate size of the player
+		size = new Vector2(16.0f, 48.0f).scl(scale);
 		
 		buttonMap = new HashMap<Action, InputButton>();
 		axisMap = new HashMap<Action, InputAxis>();
@@ -120,11 +166,21 @@ public class Player extends Entity {
     }
 	public TextureRegion getSprite() {
 		TextureRegion frame;
+		// pass a time to animation to get the right frame
 		if (landed) {
-			frame = facingRight ? landLeft : landRight;
+			frame = facingRight ? landRightAnimation.getKeyFrame(animationTime, true)
+								: landLeftAnimation.getKeyFrame(animationTime, true);
+		} else if (onWall) {
+			frame = facingRight ? wallHugRight : wallHugLeft;
+		} else if (!onGround) {
+			frame = facingRight ? jumpRightAnimation.getKeyFrame(animationTime, true)
+								: jumpLeftAnimation.getKeyFrame(animationTime, true);
+		} else if (Math.abs(speed.x) > 20.0f) { 
+			frame = facingRight ? walkRightAnimation.getKeyFrame(animationTime, true)
+								: walkLeftAnimation.getKeyFrame(animationTime, true);
 		} else {
-			// pass a time to animation to get the right frame
-			frame = facingRight ? walkRightAnimation.getKeyFrame(animationTime, true) : walkLeftAnimation.getKeyFrame(animationTime, true);
+			frame = facingRight ? idleRightAnimation.getKeyFrame(animationTime, true)
+								: idleLeftAnimation.getKeyFrame(animationTime, true);
 		}
 		return frame;
 	}
@@ -140,20 +196,23 @@ public class Player extends Entity {
                     airJumps--;
                 }
             } else if (onWall) {
-                boolean nextToWall = false;
-                if (wallDir == 1) {
-                    Vector2 tileCoords = scene.map.getTileCoords(pos.cpy());
-                    nextToWall = scene.map.levelLayer.getCell((int)(tileCoords.x - 1.0f), (int)tileCoords.y) != null;
-                } else if (wallDir == -1) {
-                    Vector2 tileCoords = scene.map.getTileCoords(pos.cpy().add(size));
-                    nextToWall = scene.map.levelLayer.getCell((int)(tileCoords.x), (int)tileCoords.y) != null;
-                }
-                if (nextToWall) {
-                    speed.y = JUMP * 1.25f;
-                    speed.x = wallDir * JUMP * 0.75f;
-                    onWall = false;
-                }
+                speed.y = JUMP * 1.25f;
+                speed.x = wallDir * JUMP * 0.75f;
+                cooldown.put(Action.JUMP, maxCooldown.get(Action.JUMP));
+                onWall = false;
             }
+		}
+		// if was on wall, am I still on the wall?
+		if (onWall) {
+            boolean nextToWall = false;
+            if (wallDir == 1) {
+                Vector2 tileCoords = scene.map.getTileCoords(pos.cpy().add(new Vector2(0, size.y/4)));
+                nextToWall = scene.map.levelLayer.getCell((int)(tileCoords.x - 1.0f), (int)tileCoords.y) != null;
+            } else if (wallDir == -1) {
+                Vector2 tileCoords = scene.map.getTileCoords(pos.cpy().add(new Vector2(size.x, size.y/4)));
+                nextToWall = scene.map.levelLayer.getCell((int)(tileCoords.x), (int)tileCoords.y) != null;
+            }
+            onWall = nextToWall;
 		}
 		// shoot
 		if (buttonMap.get(Action.SHOOT).isDown() && cooldown.get(Action.SHOOT) == 0.0f) {
@@ -260,6 +319,7 @@ public class Player extends Entity {
                 speed.x = 0;
                 onWall = true;
                 wallDir = sign(pen.x);
+                facingRight = wallDir > 0;
             }
         }
     }
@@ -296,7 +356,7 @@ public class Player extends Entity {
 	@Override
 	public void render(SpriteBatch batch) {
 		TextureRegion frame = getSprite();
-		batch.draw(frame, pos.x, pos.y, frame.getRegionWidth() * scale, frame.getRegionHeight() * scale);
+		batch.draw(frame, pos.x + (animationOffset * scale), pos.y, frame.getRegionWidth() * scale, frame.getRegionHeight() * scale);
 	}
 
     public void onShot(Projectile projectile) {
