@@ -9,8 +9,9 @@ import java.util.Stack;
 public class HackathonApp extends Game {
 
     Stack<Screen> backStack;
+    private boolean isEscaping = false;
 
-	@Override
+    @Override
 	public void create () {
         backStack = new Stack<Screen>();
 
@@ -20,7 +21,15 @@ public class HackathonApp extends Game {
 	@Override
 	public void render () {
         super.render();
-	}
+
+        //Go back when esc is hit.
+        if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+            isEscaping = true;
+        } else if(isEscaping == true) {
+            isEscaping = false;
+            popBackstack();
+        }
+    }
 
     @Override
     public void setScreen(Screen screen) {
@@ -29,6 +38,7 @@ public class HackathonApp extends Game {
     }
 
     public void popBackstack() {
-        setScreen(this.backStack.pop());
+        getScreen().dispose();
+        super.setScreen(this.backStack.pop());
     }
 }
