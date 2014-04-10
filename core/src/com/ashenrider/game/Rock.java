@@ -18,14 +18,14 @@ public class Rock extends Projectile {
 		img = GUN_PROJECTILE;
 		
 		// you cannot hurt yourself within the first fraction of a second that a shot is fired
-		SPEED = 700.0f;
+		SPEED = 1400.0f;
 		speed = direction.nor().scl(SPEED);
 		//GRAVITY = -300.0f;
 		falls = false;
 		
-		BOUNCE_WALLS = true;
-		BOUNCE_CEILING = true;
-		groundBounces = 2;
+		BOUNCE_WALLS = false;
+		BOUNCE_CEILING = false;
+		groundBounces = 0;
 		ELASTICITY = 0.7f;
 	}
 

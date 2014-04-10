@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.ArrayList;
+
 public class Projectile extends Entity {
 	static Texture BASE_PROJECTILE = null;
 	Texture img;
@@ -54,6 +56,38 @@ public class Projectile extends Entity {
 		friendlyFireTimer -= dt;
 	}
 
+    void checkTextureCollision(Map map) {
+        ArrayList<Vector2> points = new ArrayList<Vector2>();
+
+        points.add(pos);
+        points.add(pos.cpy().add(new Vector2(size.x, 0)));
+        points.add(pos.cpy().add(size));
+        points.add(pos.cpy().add(new Vector2(0, size.y)));
+
+        int numTexCollisionZero = 0;
+
+        for (Vector2 p : points) {
+            float modX = p.x % map.getWidth();
+            float modY = p.y % map.getHeight();
+
+            if (modX < 0) {
+                modX += map.getWidth();
+            }
+            if (modY < 0) {
+                modY += map.getHeight();
+            }
+
+            int textureValue = scene.getCollisionMaskValueAtPoint(modX, modY);
+
+            if (textureValue == 0) {
+                numTexCollisionZero += 1;
+            }
+        }
+        if (numTexCollisionZero != 0){
+            destroy();
+        }
+    }
+
     @Override
     public void handleCollision(Map map) {
     	boolean collided = false;
@@ -69,7 +103,7 @@ public class Projectile extends Entity {
                     	groundBounces--;
                     }
             	} else {
-            		destroy();
+            		checkTextureCollision(map);
             	}
             } else {
             	// horizontal collision
@@ -77,7 +111,7 @@ public class Projectile extends Entity {
                     pos.add(new Vector2(pen.x, 0));
                     speed.x = speed.x * - ELASTICITY;
             	} else {
-                	destroy();
+            		checkTextureCollision(map);
             	}
             }
         }
