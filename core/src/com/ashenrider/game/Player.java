@@ -32,10 +32,13 @@ public class Player extends Entity {
 	float DASH_SPEED = 800.0f;
 	float DASH_TIME = 0.13f;
 	float dashTime = 0.0f;
+	
+	float MAX_NULL_TIME = 0.7f;
+	float nullTime = 0.0f;
+    boolean nullSphereEnabled = false;
 
     boolean jumpPressedLastFrame = false;
 
-    boolean nullSphereEnabled = false;
 	
 	// current
 	int airJumps = 0;
@@ -169,10 +172,12 @@ public class Player extends Entity {
 		cooldown.put(Action.JUMP, 0.0f);
 		cooldown.put(Action.SHOOT, 0.0f);
 		cooldown.put(Action.DASH, 0.0f);
+		cooldown.put(Action.NULL_SPHERE, 0.0f);
 		maxCooldown = new HashMap<Action, Float>();
 		maxCooldown.put(Action.JUMP, 0.0f);
 		maxCooldown.put(Action.SHOOT, 0.8f);
-		maxCooldown.put(Action.DASH, DASH_TIME + 0.2f);
+		maxCooldown.put(Action.DASH, DASH_TIME + 0.35f);
+		maxCooldown.put(Action.NULL_SPHERE, 0.8f);
 	}
 
     public ArrayList<Vector2> getPoints() {
@@ -262,7 +267,18 @@ public class Player extends Entity {
 	@Override
 	public void update(float dt) {
 		// jump
-		nullSphereEnabled = buttonMap.get(Action.NULL_SPHERE).isDown();
+		if (!nullSphereEnabled && buttonMap.get(Action.NULL_SPHERE).isDown() && cooldown.get(Action.NULL_SPHERE) == 0.0f) {
+			nullSphereEnabled = true;
+			nullTime = MAX_NULL_TIME;
+		} else if (nullSphereEnabled) {
+			nullTime -= dt;
+			if (nullTime <= 0) {
+				nullTime = 0;
+				nullSphereEnabled = false;
+			}
+            cooldown.put(Action.NULL_SPHERE, maxCooldown.get(Action.NULL_SPHERE));
+		}
+		
 		if (!jumpPressedLastFrame && buttonMap.get(Action.JUMP).isDown() && cooldown.get(Action.JUMP) == 0.0f) {
             if (onGround || airJumps > 0) {
                 speed.y = JUMP;
