@@ -193,7 +193,6 @@ public class Scene {
         spawnPoints = map.getSpawnPoints();
         powerUpPoints = map.getPowerupPoints();
 
-        //TODO: make some sort of system for generating powerups.
         addEntity(new InvulnerabilityPowerUp(powerUpPoints), PLAYER_LAYER);
 
         for (int i = 0; i < players.size(); i++) {
@@ -204,14 +203,11 @@ public class Scene {
         loadShaders();
 
         shapeRenderer = new ShapeRenderer();
-
-        //batch.setShader(nullSphereMaskingShader);
-        //map.mapRenderer.getSpriteBatch().setShader(nullSphereMaskingShader);
     }
 
     public void respawnPlayer(Player player, boolean body) {
-        //TODO: Random spawn points?
         player.pos = spawnPoints.get(Math.abs((player.number + random.nextInt()) % spawnPoints.size())).cpy().sub(new Vector2(player.size.x / 2.f, 0f));
+    	player.speed = new Vector2(0,0);
     }
 
     public void testShaderCompilation(ShaderProgram program) {

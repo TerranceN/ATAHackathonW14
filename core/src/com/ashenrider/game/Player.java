@@ -272,11 +272,11 @@ public class Player extends Entity {
 			nullTime = MAX_NULL_TIME;
 		} else if (nullSphereEnabled) {
 			nullTime -= dt;
-			if (nullTime <= 0) {
+			if (nullTime <= 0 || !buttonMap.get(Action.NULL_SPHERE).isDown()) {
 				nullTime = 0;
 				nullSphereEnabled = false;
+	            cooldown.put(Action.NULL_SPHERE, maxCooldown.get(Action.NULL_SPHERE));
 			}
-            cooldown.put(Action.NULL_SPHERE, maxCooldown.get(Action.NULL_SPHERE));
 		}
 		
 		if (!jumpPressedLastFrame && buttonMap.get(Action.JUMP).isDown() && cooldown.get(Action.JUMP) == 0.0f) {
