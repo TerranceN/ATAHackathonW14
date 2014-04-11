@@ -21,7 +21,7 @@ public class Player extends Entity {
 	float scale = 2.0f;
 	float animationTime = 0.0f;
 
-    int lives = 10;
+    int lives = 3;
 
 	float JUMP = 550.0f;
 	float AIR_JUMP = 400.0f;
