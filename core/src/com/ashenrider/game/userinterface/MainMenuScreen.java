@@ -20,10 +20,13 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
@@ -31,7 +34,12 @@ public class MainMenuScreen implements Screen {
 
     private HackathonApp app;
     private TextureAtlas atlas;
+    
     private Stage stage;
+    private Table menu;
+    private Label skipLabel;
+    Intro intro;
+    
     private Skin skin;
     private ArrayList<Button> buttons;
     
@@ -45,11 +53,9 @@ public class MainMenuScreen implements Screen {
 
     TextButton.TextButtonStyle style;
     TextButton.TextButtonStyle selectedStyle;
-    
     public MainMenuScreen(final HackathonApp app) {
+    	intro = new Intro();
         this.app = app;
-
-        BitmapFont buttonFont = new BitmapFont();
 
         atlas = new TextureAtlas(Gdx.files.internal("pack/gui.atlas"));
 
@@ -60,16 +66,16 @@ public class MainMenuScreen implements Screen {
         style.down = new NinePatchDrawable(atlas.createPatch("ashenrider_btn_pressed"));
         style.disabled = new NinePatchDrawable(atlas.createPatch("ashenrider_btn_disabled"));
         style.over = new NinePatchDrawable(atlas.createPatch("ashenrider_btn_highlight"));
-        style.font = buttonFont;
-        style.fontColor = new Color(1, 1, 1, 1);
+        style.font = HackathonApp.buttonFont;
+        style.fontColor = Color.BLACK;
 
         selectedStyle = new TextButton.TextButtonStyle();
         selectedStyle.up = new NinePatchDrawable(atlas.createPatch("ashenrider_btn_highlight"));
         selectedStyle.down = new NinePatchDrawable(atlas.createPatch("ashenrider_btn_pressed"));
         selectedStyle.disabled = new NinePatchDrawable(atlas.createPatch("ashenrider_btn_highlight"));
         selectedStyle.over = new NinePatchDrawable(atlas.createPatch("ashenrider_btn_highlight"));
-        selectedStyle.font = buttonFont;
-        selectedStyle.fontColor = new Color(1, 1, 1, 1);
+        selectedStyle.font = HackathonApp.buttonFont;
+        selectedStyle.fontColor = Color.BLACK;
 
         skin.add("default", style);
 
@@ -79,8 +85,18 @@ public class MainMenuScreen implements Screen {
         //Container menuContainer = new Container();
         //menuContainer.setScale();
 
-        Table menu = new Table();
+
+        BitmapFont labelFont = new BitmapFont();
+        Skin labelSkin = new Skin();
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = HackathonApp.buttonFont;
+        labelStyle.fontColor = Color.WHITE;
+        labelSkin.add("default", labelStyle);
+        skipLabel = new Label("Press A or Enter to skip", labelSkin);
+        		
+        menu = new Table();
         menu.setFillParent(true);
+        menu.center().bottom();
         stage.addActor(menu);
 
         TextButton startButton = new TextButton("Start", skin);
@@ -105,7 +121,10 @@ public class MainMenuScreen implements Screen {
         menu.add(startButton).width(300).height(50).padBottom(10);
         menu.row();
         menu.add(exitButton).width(300).height(50).padBottom(10);
+        menu.row();
         buttons.add(exitButton);
+
+        menu.add(skipLabel);
 
         hAxis = new ArrayList<InputAxis>();
         vAxis = new ArrayList<InputAxis>();
@@ -168,7 +187,9 @@ public class MainMenuScreen implements Screen {
         for (InputButton iButton : select) {
         	if (iButton.isDown()) {
                 //Gdx.app.log("input", "Ok");
-            	if (Math.floor(btnIndex) == 0) {
+            	if (!intro.isFinished()) {
+                	intro.skip();
+            	} else if (Math.floor(btnIndex) == 0) {
             		startGame();
             	} else {
                     exitGame();
@@ -179,6 +200,9 @@ public class MainMenuScreen implements Screen {
         	if (iButton.isDown()) {
                 //Gdx.app.log("input", "Back");
                //exitGame();
+            	if (!intro.isFinished()) {
+                	intro.skip();
+            	}
         	}
         }
         for (int i=0; i<buttons.size(); i++) {
@@ -189,17 +213,22 @@ public class MainMenuScreen implements Screen {
         		btn.setStyle(style);
         	}
         }
+        intro.update(delta);
+        for (Button b : buttons) {
+            b.setVisible(intro.isFinished());
+        }
+        skipLabel.setVisible(!intro.isFinished());
     }
     
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        intro.render();
         stage.act(delta);
         update(delta);
         stage.draw();
-
         Table.drawDebug(stage);
     }
 

@@ -13,6 +13,11 @@ public class DesktopLauncher {
         TexturePacker.process(settings, "gui", "pack", "gui");
         TexturePacker.process(settings, "animations", "pack", "animations");
         TexturePacker.process(settings, "fx", "pack", "fx");
+        // intro is 1200 x 800
+        // for now, only build the intro once and then reuse the packed version
+        settings.maxWidth=2048;
+        settings.maxHeight=1024;
+        //TexturePacker.process(settings, "intro_frames", "pack", "intro");
 
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.width = 1280;

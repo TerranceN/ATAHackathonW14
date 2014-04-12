@@ -1,9 +1,11 @@
 package com.ashenrider.game.userinterface;
 
+import com.ashenrider.game.HackathonApp;
 import com.ashenrider.game.Player;
 import com.ashenrider.game.PlayerDeathListener;
 import com.ashenrider.game.Scene;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -34,11 +36,11 @@ public class WinWidget implements PlayerDeathListener {
         this.scene = scene;
         scene.addPlayerDeathListener(this);
 
-        BitmapFont labelFont = new BitmapFont();
         skin = new Skin();
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = labelFont;
+        labelStyle.font = HackathonApp.hudFont;
+        labelStyle.fontColor = Color.BLACK;
 
         skin.add("default", labelStyle);
 

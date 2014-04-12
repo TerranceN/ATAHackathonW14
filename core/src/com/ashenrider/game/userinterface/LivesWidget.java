@@ -1,7 +1,9 @@
 package com.ashenrider.game.userinterface;
 
+import com.ashenrider.game.HackathonApp;
 import com.ashenrider.game.Player;
 import com.ashenrider.game.Scene;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -31,7 +33,8 @@ public class LivesWidget {
         skin = new Skin();
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = labelFont;
+        labelStyle.font = HackathonApp.hudFont;
+        labelStyle.fontColor = Color.WHITE;
 
         skin.add("default", labelStyle);
 
