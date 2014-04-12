@@ -443,9 +443,9 @@ public class Scene {
         this.playerDeathListeners.add(playerDeathListener);
     }
 
-    public void reportPlayerDeath(Player aggressor, Player victim) {
+    public void reportPlayerDeath(Player aggressor, Player victim, int deathSource) {
         for(PlayerDeathListener listener : playerDeathListeners) {
-            listener.onPlayerDeath(aggressor, victim);
+            listener.onPlayerDeath(aggressor, victim, deathSource);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.ashenrider.game;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
@@ -64,7 +65,9 @@ public abstract class PowerUp extends Entity {
     @Override
     public void render(SpriteBatch batch) {
         if(respawnTimer < 0.0f) {
+        	batch.setColor(new Color(0.9f, 1, 0.7f, 1));
             batch.draw(img, pos.x, pos.y, img.getWidth() * scale, img.getHeight() * scale);
+            batch.setColor(Color.WHITE);
         }
     }
 

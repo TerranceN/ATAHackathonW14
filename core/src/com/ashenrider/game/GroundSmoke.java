@@ -17,6 +17,7 @@ public class GroundSmoke extends Entity {
     float animationTime = 0.0f;
 
     private float FRAME_DURATION = 0.025f;
+    private static Animation staticAnim = null;
     private Animation anim;
     
     boolean flipped;
@@ -25,16 +26,18 @@ public class GroundSmoke extends Entity {
         super(initPosition);
         flipped = isRight;
 
-        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/fx.atlas"));
-        TextureRegion[] frames = new TextureRegion[18];
-        for (int i=0; i<18; i++) {
-            frames[i] = atlas.findRegion("smoke/smoke-" + (i+1));
-            //if (flipped) {
-            //	frames[i].flip(true,  false);
-            //}
+        if (staticAnim == null) {
+            TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/fx.atlas"));
+            TextureRegion[] frames = new TextureRegion[18];
+            for (int i=0; i<18; i++) {
+                frames[i] = atlas.findRegion("smoke/smoke-" + (i+1));
+            }
+            anim = new Animation(FRAME_DURATION, frames);
+            staticAnim = anim;
+        } else {
+            anim = staticAnim;
         }
-        anim = new Animation(FRAME_DURATION, frames);
-
+        
         size = new Vector2(52.0f, 12.0f).scl(scale);
         if (isRight) {
         	pos = initPosition.cpy();

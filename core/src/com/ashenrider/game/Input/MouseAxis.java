@@ -24,7 +24,7 @@ public class MouseAxis extends InputAxis {
 		Vector3 mouse3 = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
 		mouse3 = camera.unproject(mouse3);
 		Vector2 mouse = new Vector2(mouse3.x, mouse3.y);
-		mouse.sub(relativeE.pos);
+		mouse.sub(relativeE.getCentre());
 		mouse.nor();
 		if (xAxis)
 			return mouse.x;

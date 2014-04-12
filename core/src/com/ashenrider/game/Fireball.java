@@ -55,6 +55,7 @@ public class Fireball extends Projectile {
 		BOUNCE_CEILING = false;
 		groundBounces = 0;
 		ELASTICITY = 0.7f;
+		type = DeathSources.FIREBALL;
 	}
 
 	@Override

@@ -87,7 +87,7 @@ public class WinWidget implements PlayerDeathListener {
     }
 
     @Override
-    public void onPlayerDeath(Player aggressor, Player victim) {
+    public void onPlayerDeath(Player aggressor, Player victim, int deathSource) {
         Player winner=null;
         for(Player player : scene.players) {
             if(!player.isDestroyed() && player.getLives() > 0) {

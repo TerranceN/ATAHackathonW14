@@ -19,6 +19,7 @@ public class Projectile extends Entity {
 	
 	// frames per particle spawn (unused)
 	private int particleTimer = 0;
+	protected int type;
 	
 	// shoud lit bounce on wall collision or be destroyed?
 	protected boolean BOUNCE_WALLS = false;
@@ -143,4 +144,7 @@ public class Projectile extends Entity {
 		batch.draw(img, pos.x + (size.x - img.getWidth())/2, pos.y + (size.y - img.getHeight())/2);
 	}
 	
+	public int getType() {
+		return type;
+	}
 }

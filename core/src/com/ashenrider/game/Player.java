@@ -74,7 +74,9 @@ public class Player extends Entity {
 	HashMap<Action, Float> cooldown;
 	HashMap<Action, Float> maxCooldown;
 		
+	// playerNumber is an ID for 
 	public int number;
+	public int NOT_A_PLAYER = -1;
 
     ArrayList<Boolean> texCollidedBeforeUpdate;
 	
@@ -229,7 +231,7 @@ public class Player extends Entity {
                 int textureValue = scene.getCollisionMaskValueAtPoint(modX, modY);
 
                 if (textureValue == 0 && scene.map.isInsideLevel(modX, modY)) {
-                    killPlayer(number);
+                    killPlayer(NOT_A_PLAYER, DeathSources.WALL);
                 }
             }
         }
@@ -336,6 +338,9 @@ public class Player extends Entity {
 	        float dir = speed.x > 0 ? 1 : -1;
 	        if (Math.abs(xAxis) > 0.25) {
 	        	dir = Math.signum(xAxis);
+	        }
+	        if (onWall) {
+	        	dir = wallDir;
 	        }
 	        float a = dir == 1 ? 180 : 00;
             scene.addEntity(new AirSmoke(getCentre(), a + 45, false), Scene.PARTICLE_LAYER);
@@ -619,11 +624,12 @@ public class Player extends Entity {
         batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 
-    public boolean killPlayer(int murderer) {
+    public boolean killPlayer(int killerID, int deathSource) {
         if(invulnerableTime <= 0.0f && !destroyed) {
             lives--;
             scene.addEntity(new PlayerBody(number, pos, speed.cpy(), 5.0f, facingRight), Scene.PLAYER_LAYER);
-            scene.reportPlayerDeath(scene.players.get(murderer), this);
+            Player murderer = (killerID == NOT_A_PLAYER) ? null : scene.players.get(killerID);
+            scene.reportPlayerDeath(murderer, this, deathSource);
             if(lives > 0) {
                 scene.respawnPlayer(this, true);
                 onInvulnerable(INVULNERABILITY_LENGTH);
@@ -636,7 +642,7 @@ public class Player extends Entity {
     }
 
     public boolean onShot(Projectile projectile) {
-        if (killPlayer(projectile.getShotBy())) {
+        if (killPlayer(projectile.getShotBy(), projectile.getType())) {
             scene.addEntity(new Blood(getCentre(), projectile.speed.cpy()), Scene.PARTICLE_LAYER);
             return true;
         }

@@ -43,12 +43,13 @@ public class LivesWidget {
         ui.left().bottom();
         for(Player player : playersList) {
             Sprite playerSprite = new Sprite(player.getSprite());
-            playerSprite.setScale(0.5f);
+            playerSprite.setScale(0.7f);
             playerSprite.setAlpha(0.7f);
 
             Image playerImage = new Image(new SpriteDrawable(playerSprite));
             playerImageList.add(playerImage);
-            ui.add(playerImage).padLeft(10);
+            // the player images all have a lot of transparency around them
+            ui.add(playerImage).padLeft(-10).padRight(-10);
 
             Label playerLives = new Label("x" + player.getLives(), skin);
             playerLivesList.add(playerLives);
