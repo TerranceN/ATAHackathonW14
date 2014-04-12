@@ -180,7 +180,7 @@ public class Player extends Entity {
 		maxCooldown.put(Action.JUMP, 0.0f);
 		maxCooldown.put(Action.SHOOT, 0.8f);
 		maxCooldown.put(Action.DASH, DASH_TIME + 0.35f);
-		maxCooldown.put(Action.NULL_SPHERE, 1.2f);
+		maxCooldown.put(Action.NULL_SPHERE, 1.0f);
 	}
 
     public ArrayList<Vector2> getPoints() {

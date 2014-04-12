@@ -58,6 +58,7 @@ public class Scene {
     ShapeRenderer shapeRenderer;
 
     float unitScale = 1f;
+    private static float NULL_FADE_TIME = 0.8f;
 
     ShaderProgram nullSphereMaskingShader;
     ShaderProgram nullSphereFadeShader;
@@ -287,6 +288,8 @@ public class Scene {
         batch.setShader(nullSphereFadeShader);
         nullSphereFadeShader.begin();
         batch.begin();
+        nullSphereFadeShader.setUniformf("u_dt", dt);
+        nullSphereFadeShader.setUniformf("u_fadeRate", 1.0f/NULL_FADE_TIME);
         batch.setProjectionMatrix(mapCam.combined);
         batch.draw(collisionMaskRegion, 0, 0, map.getWidth(), map.getHeight());
         batch.end();
