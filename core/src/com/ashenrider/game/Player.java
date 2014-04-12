@@ -16,10 +16,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class Player extends Entity {
-    private static final float INVULNERABILITY_LENGTH = 2.0f;
+    private static final float INVULNERABILITY_LENGTH = 2.25f;
 
 	float scale = 2.0f;
 	float animationTime = 0.0f;
+	int frameCount = 0;
 
     int lives = 3;
 
@@ -231,7 +232,9 @@ public class Player extends Entity {
                 int textureValue = scene.getCollisionMaskValueAtPoint(modX, modY);
 
                 if (textureValue == 0 && scene.map.isInsideLevel(modX, modY)) {
-                    killPlayer(NOT_A_PLAYER, DeathSources.WALL);
+                    scene.addEntity(new Blood(getCentre(), new Vector2(1,0)), Scene.PARTICLE_LAYER);
+                	killPlayer(NOT_A_PLAYER, DeathSources.WALL);
+                	break;
                 }
             }
         }
@@ -268,6 +271,8 @@ public class Player extends Entity {
 
 	@Override
 	public void update(float dt) {
+		frameCount++;
+		
 		// jump
 		if (!nullSphereEnabled && buttonMap.get(Action.NULL_SPHERE).isDown() && cooldown.get(Action.NULL_SPHERE) == 0.0f) {
 			nullSphereEnabled = true;
@@ -297,23 +302,21 @@ public class Player extends Entity {
 		}
 		// if was on wall, am I still on the wall?
 		if (onWall) {
-            Random rand = new Random();
-            float pX = pos.x + size.x * (0.5f - 0.5f * wallDir);
-            float pY = pos.y + (0.25f + 0.5f * rand.nextFloat()) * size.y;
-            float pSize = 0.2f + rand.nextFloat() * 0.4f;
-            float pDuration = 0.4f + rand.nextFloat();
-            float pSpeed = (40 + rand.nextFloat() * 200);
-
-            float smokeThreshold = 200f;
-
-            if (speed.y < -smokeThreshold) {
-                AirSmoke smoke = new AirSmoke(new Vector2(pX,pY), 90, wallDir == 1);
-                scene.addEntity(smoke, Scene.PARTICLE_LAYER);
-            } else if (speed.y > smokeThreshold) {
-                AirSmoke smoke = new AirSmoke(new Vector2(pX,pY), 270, wallDir == -1);
-                scene.addEntity(smoke, Scene.PARTICLE_LAYER);
-            }
-            
+			if (frameCount % 3 == 0) {
+	            Random rand = new Random();
+	            float pX = pos.x + size.x * (0.5f - 0.5f * wallDir);
+	            float pY = pos.y + (0.25f + 0.5f * rand.nextFloat()) * size.y;
+	
+	            float smokeThreshold = 150f;
+	
+	            if (speed.y < -smokeThreshold) {
+	                AirSmoke smoke = new AirSmoke(new Vector2(pX,pY), 90, wallDir == 1);
+	                scene.addEntity(smoke, Scene.PARTICLE_LAYER);
+	            } else if (speed.y > smokeThreshold) {
+	                AirSmoke smoke = new AirSmoke(new Vector2(pX,pY), 270, wallDir == -1);
+	                scene.addEntity(smoke, Scene.PARTICLE_LAYER);
+	            }
+			}
             boolean nextToWall = false;
             if (wallDir == 1) {
                 Vector2 tileCoords = scene.map.getTileCoords(pos.cpy().add(new Vector2(0, size.y/4)));
@@ -625,7 +628,7 @@ public class Player extends Entity {
 	}
 
     public boolean killPlayer(int killerID, int deathSource) {
-        if(invulnerableTime <= 0.0f && !destroyed) {
+        if(invulnerableTime <= 0.0f && !destroyed || deathSource == DeathSources.WALL) {
             lives--;
             scene.addEntity(new PlayerBody(number, pos, speed.cpy(), 5.0f, facingRight), Scene.PLAYER_LAYER);
             Player murderer = (killerID == NOT_A_PLAYER) ? null : scene.players.get(killerID);

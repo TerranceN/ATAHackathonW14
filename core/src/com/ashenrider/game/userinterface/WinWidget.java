@@ -88,16 +88,21 @@ public class WinWidget implements PlayerDeathListener {
 
     @Override
     public void onPlayerDeath(Player aggressor, Player victim, int deathSource) {
-        Player winner=null;
+    	if (this.winner != null) {
+    		// someone already won, they are still the winner even if they die now
+    		return;
+    	}
+        Player livingPlayer=null;
         for(Player player : scene.players) {
             if(!player.isDestroyed() && player.getLives() > 0) {
-                if(winner == null) {
-                    winner = player;
+                if(livingPlayer == null) {
+                	livingPlayer = player;
                 } else {
+                	// two players are alive, no winner yet
                     return;
                 }
             }
         }
-        this.winner = winner;
+        this.winner = livingPlayer;
     }
 }

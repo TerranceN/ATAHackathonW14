@@ -35,9 +35,9 @@ public class Scene {
 	int NUM_LAYERS = 5;
 	static int BACKGROUND_LAYER = 0;
 	static int PLAYER_LAYER = 1;
-	static int PARTICLE_LAYER = 2;
-	static int SHOT_LAYER = 3;
-	static int FOREGROUND_LAYER = 4;
+	static int SHOT_LAYER = 2;
+	static int FOREGROUND_LAYER = 3;
+	static int PARTICLE_LAYER = 4;
 	
     OrthographicCamera camera;
     OrthographicCamera mapCam;
