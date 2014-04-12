@@ -97,11 +97,14 @@ public class DeathsWidget implements PlayerDeathListener {
             else {
                 rows[i].setVisible(true);
                 if (events.get(i).aggressor != null) {
+                	aggressorImages[i].setVisible(true);
 	                if(aggressorImages[i].getDrawable() == null) {
 	                    aggressorImages[i].setDrawable(new SpriteDrawable(new Sprite(events.get(i).aggressor.getHead())));
 	                } else {
 	                    ((SpriteDrawable)aggressorImages[i].getDrawable()).getSprite().setTexture(events.get(i).aggressor.getHead());
 	                }
+                } else {
+                	aggressorImages[i].setVisible(false);
                 }
                 Texture attackImg = attackIcons.get(events.get(i).source);
                 if(attackImages[i].getDrawable() == null) {

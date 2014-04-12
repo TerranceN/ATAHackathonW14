@@ -206,7 +206,23 @@ public class Scene {
     }
 
     public void respawnPlayer(Player player, boolean body) {
-        player.pos = spawnPoints.get(Math.abs((player.number + random.nextInt()) % spawnPoints.size())).cpy().sub(new Vector2(player.size.x / 2.f, 0f));
+    	// pick the spawn point for which the closest player is the furthest away.
+    	// alternatively, pick any spawnpoint that has no players within a minimum distance
+    	float spawnD = 0.0f;
+    	Vector2 furthestSpawn = spawnPoints.get(0);
+    	for (Vector2 spawn : spawnPoints) {
+    		float minD = Float.MAX_VALUE;
+    		for (Player otherPlayer : players) {
+    			if (player.number != otherPlayer.number) {
+    				minD = Math.min(otherPlayer.getCentre().dst(spawn), minD);
+    			}
+    		}
+    		if (minD > spawnD) {
+    			spawnD = minD;
+    			furthestSpawn = spawn;
+    		}
+    	}
+        player.pos = furthestSpawn.cpy().sub(new Vector2(player.size.x / 2.f, 0f));
     	player.speed = new Vector2(0,0);
     }
 

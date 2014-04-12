@@ -46,7 +46,7 @@ public class Fireball extends Projectile {
 
 		
 		// you cannot hurt yourself within the first fraction of a second that a shot is fired
-		SPEED = 700.0f;
+		SPEED = 800.0f;
 		speed = direction.nor().scl(SPEED);
 		//GRAVITY = -300.0f;
 		falls = false;
