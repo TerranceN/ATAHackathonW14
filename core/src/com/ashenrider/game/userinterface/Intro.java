@@ -18,6 +18,9 @@ public class Intro {
     private float FRAME_DURATION = 0.025f;
     private Animation anim;
     
+    private int LOOP_FRAME;
+    private float LOOP_DELAY = 2.25f;
+    
     float angle;
 
     public Intro() {       
@@ -25,6 +28,7 @@ public class Intro {
             TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/intro.atlas"));
             TextureRegion[] frames = new TextureRegion[181];
             NUM_FRAMES = frames.length;
+            LOOP_FRAME = 170;
             for (int i=0; i<NUM_FRAMES; i++) {
                 frames[i] = atlas.findRegion(String.format("intro-%05d", i));
             }
@@ -35,6 +39,8 @@ public class Intro {
         } else {
             anim = staticAnim;
         }
+        
+        // 170-180 are loopable
     }
 
     public TextureRegion getSprite() {
@@ -43,20 +49,25 @@ public class Intro {
 
     public void update(float dt) {
         animationTime += dt;
+        // every 2s or so, play the last 10 frames of the animation again
+        if (animationTime > FRAME_DURATION * NUM_FRAMES + LOOP_DELAY) {
+        	animationTime = LOOP_FRAME * FRAME_DURATION;
+        }
+        
     }
 
     public void skip() {
-    	animationTime = FRAME_DURATION * NUM_FRAMES;
+    	animationTime = FRAME_DURATION * LOOP_FRAME;
     }
     
     public boolean isFinished() {
-    	return animationTime > FRAME_DURATION * NUM_FRAMES;
+    	return animationTime >= FRAME_DURATION * LOOP_FRAME;
     }
     
-    public void render() {
+    public void render(float screenWidth, float screenHeight) {
         TextureRegion frame = getSprite();
         batch.begin();
-        batch.draw(frame, 0, 0);
+        batch.draw(frame, (screenWidth - frame.getRegionWidth())/2f, (screenHeight - frame.getRegionHeight())/2f);
         batch.end();
     }
 }

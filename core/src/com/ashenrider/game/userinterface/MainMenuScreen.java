@@ -225,7 +225,7 @@ public class MainMenuScreen implements Screen {
         Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        intro.render();
+        intro.render(stage.getWidth(), stage.getHeight());
         stage.act(delta);
         update(delta);
         stage.draw();
