@@ -213,9 +213,10 @@ public class Scene {
     	for (Vector2 spawn : spawnPoints) {
     		float minD = Float.MAX_VALUE;
     		for (Player otherPlayer : players) {
-    			if (player.number != otherPlayer.number) {
+    			// Don't spawn near your own corpse either
+    			//if (player.number != otherPlayer.number) {
     				minD = Math.min(otherPlayer.getCentre().dst(spawn), minD);
-    			}
+    			//}
     		}
     		if (minD > spawnD) {
     			spawnD = minD;
@@ -224,6 +225,7 @@ public class Scene {
     	}
         player.pos = furthestSpawn.cpy().sub(new Vector2(player.size.x / 2.f, 0f));
     	player.speed = new Vector2(0,0);
+        addEntity(new RespawnParticle(player), Scene.PARTICLE_LAYER);
     }
 
     public void testShaderCompilation(ShaderProgram program) {
