@@ -645,8 +645,9 @@ public class Player extends Entity {
     }
 
     public boolean onShot(Projectile projectile) {
+    	Vector2 originalPos = getCentre();
         if (killPlayer(projectile.getShotBy(), projectile.getType())) {
-            scene.addEntity(new Blood(getCentre(), projectile.speed.cpy()), Scene.PARTICLE_LAYER);
+            scene.addEntity(new Blood(originalPos, projectile.speed.cpy()), Scene.PARTICLE_LAYER);
             return true;
         }
 
