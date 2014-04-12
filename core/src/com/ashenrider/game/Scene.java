@@ -64,8 +64,6 @@ public class Scene {
     ShaderProgram nullSphereFadeShader;
     ShaderProgram nullSphereFilterShader;
 
-    Player player;
-
     FrameBuffer collisionMask;
     TextureRegion collisionMaskRegion;
 
@@ -176,19 +174,29 @@ public class Scene {
             }
         }
         
+        // keyboard/mouse player
+		Player p = addPlayer(new Vector2(100, 100),
+			  new KeyboardAxis(Keys.A, Keys.D),
+			  // mouseAxis needs a reference to the player
+		  		  null,
+		  		  null,
+		  		  new KeyboardButton(Keys.W),
+		  		  new MouseButton(Buttons.LEFT),
+		  		  new KeyboardButton(Keys.S),
+		            new KeyboardButton(Keys.SHIFT_LEFT));
+		p.axisMap.put(Player.Action.AIM_HORIZONTAL, new MouseAxis(p, camera, true));
+		p.axisMap.put(Player.Action.AIM_VERTICAL, new MouseAxis(p, camera, false));
+
+        // uncontrollable players
         for (int i = players.size(); i < 4; i++) {
-			Player p = addPlayer(new Vector2(100, 100),
-				  new KeyboardAxis(Keys.A, Keys.D),
-				  // mouseAxis needs a reference to the player
-			  		  null,
-			  		  null,
-			  		  new KeyboardButton(Keys.W),
-			  		  new MouseButton(Buttons.LEFT),
-			  		  new KeyboardButton(Keys.S),
-			            new KeyboardButton(Keys.SHIFT_LEFT));
-			player = p;
-			p.axisMap.put(Player.Action.AIM_HORIZONTAL, new MouseAxis(p, camera, true));
-			p.axisMap.put(Player.Action.AIM_VERTICAL, new MouseAxis(p, camera, false));
+			addPlayer(new Vector2(100, 100),
+					  new KeyboardAxis(Keys.LEFT, Keys.RIGHT),
+					  new KeyboardAxis(Keys.NUMPAD_4, Keys.NUMPAD_6),
+					  new KeyboardAxis(Keys.NUMPAD_5, Keys.NUMPAD_8),
+			  		  new KeyboardButton(Keys.UP),
+			  		  new KeyboardButton(Keys.ENTER),
+			  		  new KeyboardButton(Keys.CONTROL_RIGHT),
+			          new KeyboardButton(Keys.SHIFT_RIGHT));
         }
 
         spawnPoints = map.getSpawnPoints();

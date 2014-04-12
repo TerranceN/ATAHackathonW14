@@ -330,6 +330,10 @@ public class Player extends Entity {
 		// shoot
 		if (buttonMap.get(Action.SHOOT).isDown() && cooldown.get(Action.SHOOT) == 0.0f) {
 			Vector2 dir = new Vector2(axisMap.get(Action.AIM_HORIZONTAL).getValue(), axisMap.get(Action.AIM_VERTICAL).getValue());
+			if (dir.isZero()) {
+				// if dir is 0 the projectile would sit still in space
+				dir.x = 1;
+			}
 			Projectile p = new Fireball(getCentre(), dir, number);
 			cooldown.put(Action.SHOOT, maxCooldown.get(Action.SHOOT));
 			scene.addEntity(p, Scene.SHOT_LAYER);
