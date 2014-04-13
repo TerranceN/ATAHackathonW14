@@ -60,3 +60,4 @@ build/
 *.classpath
 *.project
 *.atlas
+android/assets/pack/*
