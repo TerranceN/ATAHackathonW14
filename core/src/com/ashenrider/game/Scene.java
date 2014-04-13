@@ -206,7 +206,8 @@ public class Scene {
 
         for (int i = 0; i < players.size(); i++) {
             Player player = players.get(i);
-            respawnPlayer(player, false);
+            // stagger the initial player spawns ?
+            respawnPlayer(player, 0.5f * i);
         }
 
         loadShaders();
@@ -214,7 +215,7 @@ public class Scene {
         shapeRenderer = new ShapeRenderer();
     }
 
-    public void respawnPlayer(Player player, boolean body) {
+    public void respawnPlayer(Player player, float delay) {
     	// pick the spawn point for which the closest player is the furthest away.
     	// alternatively, pick any spawnpoint that has no players within a minimum distance
     	float spawnD = 0.0f;
@@ -233,8 +234,17 @@ public class Scene {
     		}
     	}
         player.pos = furthestSpawn.cpy().sub(new Vector2(player.size.x / 2.f, 0f));
+        // clear any leftover state information
     	player.speed = new Vector2(0,0);
-        addEntity(new RespawnParticle(player), Scene.PARTICLE_LAYER);
+    	player.invulnerableTime = 0.0f;
+    	player.dashing = false;
+    	player.dashTime = 0.0f;
+    	player.landed = false;
+    	player.landedTime = 0.0f;
+    	player.onWall = false;
+    	player.nullSphereEnabled = false;
+    	
+    	player.spawnDelay = delay;
     }
 
     public void testShaderCompilation(ShaderProgram program) {
@@ -290,7 +300,9 @@ public class Scene {
 	public void update(float dt) {
         collisionMask.begin();
         for (Player p : players) {
-            p.recordTexCollision();
+        	if (p.alive) {
+        		p.recordTexCollision();
+        	}
         }
         // fade collision mask
         batch.setShader(nullSphereFadeShader);
@@ -304,7 +316,9 @@ public class Scene {
         nullSphereFadeShader.end();
         batch.setShader(null);
         for (Player p : players) {
-            p.texCollisionResolve();
+        	if (p.alive) {
+        		p.texCollisionResolve();
+        	}
         }
         collisionMask.end();
 

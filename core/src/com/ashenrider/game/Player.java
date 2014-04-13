@@ -23,6 +23,8 @@ public class Player extends Entity {
 	int frameCount = 0;
 
     int lives = 3;
+    boolean alive = false;
+    float spawnDelay = 0.0f;
 
 	float JUMP = 550.0f;
 	float AIR_JUMP = 400.0f;
@@ -271,160 +273,162 @@ public class Player extends Entity {
 
 	@Override
 	public void update(float dt) {
-		frameCount++;
-		
-		// jump
-		if (!nullSphereEnabled && buttonMap.get(Action.NULL_SPHERE).isDown() && cooldown.get(Action.NULL_SPHERE) == 0.0f) {
-			nullSphereEnabled = true;
-			nullTime = MAX_NULL_TIME;
-		} else if (nullSphereEnabled) {
-			nullTime -= dt;
-			if (nullTime <= 0 || !buttonMap.get(Action.NULL_SPHERE).isDown()) {
-				nullTime = 0;
-				nullSphereEnabled = false;
-	            cooldown.put(Action.NULL_SPHERE, maxCooldown.get(Action.NULL_SPHERE));
+		if (alive) {
+			// jump
+			if (!nullSphereEnabled && buttonMap.get(Action.NULL_SPHERE).isDown() && cooldown.get(Action.NULL_SPHERE) == 0.0f) {
+				nullSphereEnabled = true;
+				nullTime = MAX_NULL_TIME;
+			} else if (nullSphereEnabled) {
+				nullTime -= dt;
+				if (nullTime <= 0 || !buttonMap.get(Action.NULL_SPHERE).isDown()) {
+					nullTime = 0;
+					nullSphereEnabled = false;
+		            cooldown.put(Action.NULL_SPHERE, maxCooldown.get(Action.NULL_SPHERE));
+				}
 			}
-		}
-		
-		if (!jumpPressedLastFrame && buttonMap.get(Action.JUMP).isDown() && cooldown.get(Action.JUMP) == 0.0f) {
-            if (onGround || airJumps > 0) {
-                speed.y = JUMP;
-                cooldown.put(Action.JUMP, maxCooldown.get(Action.JUMP));
-                if (!onGround) {
-                    airJumps--;
-                }
-            } else if (onWall) {
-                speed = new Vector2(wallDir * 0.75f, 1.25f).scl(AIR_JUMP);
-                cooldown.put(Action.JUMP, maxCooldown.get(Action.JUMP));
-                onWall = false;
-                airDashes = NUM_AIRDASHES;
-            }
-		}
-		// if was on wall, am I still on the wall?
-		if (onWall) {
-			if (frameCount % 3 == 0) {
-	            Random rand = new Random();
-	            float pX = pos.x + size.x * (0.5f - 0.5f * wallDir);
-	            float pY = pos.y + (0.25f + 0.5f * rand.nextFloat()) * size.y;
-	
-	            float smokeThreshold = 150f;
-	
-	            if (speed.y < -smokeThreshold) {
-	                AirSmoke smoke = new AirSmoke(new Vector2(pX,pY), 90, wallDir == 1);
-	                scene.addEntity(smoke, Scene.PARTICLE_LAYER);
-	            } else if (speed.y > smokeThreshold) {
-	                AirSmoke smoke = new AirSmoke(new Vector2(pX,pY), 270, wallDir == -1);
-	                scene.addEntity(smoke, Scene.PARTICLE_LAYER);
+			
+			if (!jumpPressedLastFrame && buttonMap.get(Action.JUMP).isDown() && cooldown.get(Action.JUMP) == 0.0f) {
+	            if (onGround || airJumps > 0) {
+	                speed.y = JUMP;
+	                cooldown.put(Action.JUMP, maxCooldown.get(Action.JUMP));
+	                if (!onGround) {
+	                    airJumps--;
+	                }
+	            } else if (onWall) {
+	                speed = new Vector2(wallDir * 0.75f, 1.25f).scl(AIR_JUMP);
+	                cooldown.put(Action.JUMP, maxCooldown.get(Action.JUMP));
+	                onWall = false;
+	                airDashes = NUM_AIRDASHES;
 	            }
 			}
-            boolean nextToWall = false;
-            if (wallDir == 1) {
-                Vector2 tileCoords = scene.map.getTileCoords(pos.cpy().add(new Vector2(0, size.y/4)));
-                nextToWall = scene.map.levelLayer.getCell((int)(tileCoords.x - 1.0f), (int)tileCoords.y) != null;
-            } else if (wallDir == -1) {
-                Vector2 tileCoords = scene.map.getTileCoords(pos.cpy().add(new Vector2(size.x, size.y/4)));
-                nextToWall = scene.map.levelLayer.getCell((int)(tileCoords.x), (int)tileCoords.y) != null;
-            }
-            onWall = nextToWall;
-		}
-		// shoot
-		if (buttonMap.get(Action.SHOOT).isDown() && cooldown.get(Action.SHOOT) == 0.0f) {
-			Vector2 dir = new Vector2(axisMap.get(Action.AIM_HORIZONTAL).getValue(), axisMap.get(Action.AIM_VERTICAL).getValue());
-			if (dir.isZero()) {
-				// if dir is 0 the projectile would sit still in space
-				dir.x = 1;
+			// if was on wall, am I still on the wall?
+			if (onWall) {
+				if (frameCount % 3 == 0) {
+		            Random rand = new Random();
+		            float pX = pos.x + size.x * (0.5f - 0.5f * wallDir);
+		            float pY = pos.y + (0.25f + 0.5f * rand.nextFloat()) * size.y;
+		
+		            float smokeThreshold = 150f;
+		
+		            if (speed.y < -smokeThreshold) {
+		                AirSmoke smoke = new AirSmoke(new Vector2(pX,pY), 90, wallDir == 1);
+		                scene.addEntity(smoke, Scene.PARTICLE_LAYER);
+		            } else if (speed.y > smokeThreshold) {
+		                AirSmoke smoke = new AirSmoke(new Vector2(pX,pY), 270, wallDir == -1);
+		                scene.addEntity(smoke, Scene.PARTICLE_LAYER);
+		            }
+				}
+	            boolean nextToWall = false;
+	            if (wallDir == 1) {
+	                Vector2 tileCoords = scene.map.getTileCoords(pos.cpy().add(new Vector2(0, size.y/4)));
+	                nextToWall = scene.map.levelLayer.getCell((int)(tileCoords.x - 1.0f), (int)tileCoords.y) != null;
+	            } else if (wallDir == -1) {
+	                Vector2 tileCoords = scene.map.getTileCoords(pos.cpy().add(new Vector2(size.x, size.y/4)));
+	                nextToWall = scene.map.levelLayer.getCell((int)(tileCoords.x), (int)tileCoords.y) != null;
+	            }
+	            onWall = nextToWall;
 			}
-			Projectile p = new Fireball(getCentre(), dir, number);
-			cooldown.put(Action.SHOOT, maxCooldown.get(Action.SHOOT));
-			scene.addEntity(p, Scene.SHOT_LAYER);
-		}
-		// dash quickly in the currently facing direction
-		// (or in the aimed direction)
-		if (buttonMap.get(Action.DASH).isDown() && cooldown.get(Action.DASH) == 0.0f && airDashes > 0) {
-	        float xAxis = axisMap.get(Action.MOVE).getValue();
-	        float dir = speed.x > 0 ? 1 : -1;
-	        if (Math.abs(xAxis) > 0.25) {
-	        	dir = Math.signum(xAxis);
+			// shoot
+			if (buttonMap.get(Action.SHOOT).isDown() && cooldown.get(Action.SHOOT) == 0.0f) {
+				Vector2 dir = new Vector2(axisMap.get(Action.AIM_HORIZONTAL).getValue(), axisMap.get(Action.AIM_VERTICAL).getValue());
+				if (dir.isZero()) {
+					// if dir is 0 the projectile would sit still in space
+					dir.x = 1;
+				}
+				Projectile p = new Fireball(getCentre(), dir, number);
+				cooldown.put(Action.SHOOT, maxCooldown.get(Action.SHOOT));
+				scene.addEntity(p, Scene.SHOT_LAYER);
+			}
+			// dash quickly in the currently facing direction
+			// (or in the aimed direction)
+			if (buttonMap.get(Action.DASH).isDown() && cooldown.get(Action.DASH) == 0.0f && airDashes > 0) {
+		        float xAxis = axisMap.get(Action.MOVE).getValue();
+		        float dir = speed.x > 0 ? 1 : -1;
+		        if (Math.abs(xAxis) > 0.25) {
+		        	dir = Math.signum(xAxis);
+		        }
+		        if (onWall) {
+		        	dir = wallDir;
+		        }
+		        float a = dir == 1 ? 180 : 00;
+	            scene.addEntity(new AirSmoke(getCentre(), a + 45, false), Scene.PARTICLE_LAYER);
+	            scene.addEntity(new AirSmoke(getCentre(), a -45, true), Scene.PARTICLE_LAYER);
+	            scene.addEntity(new AirSmoke(getCentre(), a + 22.5f, false), Scene.PARTICLE_LAYER);
+	            scene.addEntity(new AirSmoke(getCentre(), a -22.5f, true), Scene.PARTICLE_LAYER);
+	
+				speed = new Vector2(DASH_SPEED * dir, 0.0f);
+				cooldown.put(Action.DASH, maxCooldown.get(Action.DASH));
+				airDashes--;
+				falls = false;
+				dashing = true;
+				animationTime = 0.0f;
+				dashTime = DASH_TIME;
+			}
+			// accelerate
+	        float move = axisMap.get(Action.MOVE).getValue();
+	        float xAcceleration = ACCEL * move;
+	        if (Math.abs(move) > 0.25) {
+	            if (!onGround) {
+	                xAcceleration *= 0.25f;
+	            }
+	            if (!landed) {
+	            	speed.x = speed.x + xAcceleration * dt;
+	            }
 	        }
-	        if (onWall) {
-	        	dir = wallDir;
+			// landed stun
+			if (landed) {
+				landedTime = Math.max(0.0f, landedTime - dt);
+				if (landedTime == 0.0f) {
+					landed = false;
+				}
+			}
+			// update duration of persistent effects
+			if (dashing) {
+				dashTime = Math.max(0.0f, dashTime - dt);
+				if (dashTime == 0) {
+					dashing = false;
+					falls = true;
+				}
+			} else {
+				// max speed
+				if (Math.abs(speed.x) > MAX_MOVE_SPEED) {
+					speed.scl(MAX_MOVE_SPEED / Math.abs(speed.x), 1.0f);
+				}
+				if (Math.abs(speed.y) > MAX_FALL_SPEED) {
+					speed.scl(1.0f, MAX_FALL_SPEED / Math.abs(speed.y));
+				}
+			}
+	        if(invulnerableTime > 0.0f) {
+	            invulnerableTime = (invulnerableTime - dt > 0) ? invulnerableTime - dt : 0.0f;
 	        }
-	        float a = dir == 1 ? 180 : 00;
-            scene.addEntity(new AirSmoke(getCentre(), a + 45, false), Scene.PARTICLE_LAYER);
-            scene.addEntity(new AirSmoke(getCentre(), a -45, true), Scene.PARTICLE_LAYER);
-            scene.addEntity(new AirSmoke(getCentre(), a + 22.5f, false), Scene.PARTICLE_LAYER);
-            scene.addEntity(new AirSmoke(getCentre(), a -22.5f, true), Scene.PARTICLE_LAYER);
-
-			speed = new Vector2(DASH_SPEED * dir, 0.0f);
-			cooldown.put(Action.DASH, maxCooldown.get(Action.DASH));
-			airDashes--;
-			falls = false;
-			dashing = true;
-			animationTime = 0.0f;
-			dashTime = DASH_TIME;
-
-//            Random rand = new Random();
-//            for (int i = 0; i<8; i++) {
-//                float pX = pos.x + size.x * 0.5f + (rand.nextFloat() * size.x * 0.5f * ((speed.x < 0) ? -1 : 1) );
-//                float pY = pos.y + rand.nextFloat() * size.y;
-//                float pSize = 0.2f + rand.nextFloat() * 0.4f;
-//                float pDuration = 0.4f + rand.nextFloat();
-//                float pSpeed = 40 + rand.nextFloat() * 200;
-//                Particle p = new Particle(new Vector2(pX,pY), new Vector2( (speed.x > 0) ? -1 : 1 ,0), pSpeed, pSize, pDuration, new Color(1.0f,1.0f, 1.0f, 1.0f));
-//                scene.addEntity(p, Scene.PARTICLE_LAYER);
-//            }
+	        // movement
+			super.update(dt);
+	
+	        if (onGround && !dashing) {
+	            speed.x -= Math.min(1, dt * 10) * speed.x;
+	        }
+	        if (speed.x != 0) {
+	        	facingRight = speed.x > 0;
+	        }
+	        jumpPressedLastFrame = buttonMap.get(Action.JUMP).isDown();
+		} else {
+			if (lives > 0) {
+				spawnDelay -= dt;
+				if (spawnDelay <= 0) {
+					alive = true;
+			    	onInvulnerable(INVULNERABILITY_LENGTH);
+			        scene.addEntity(new RespawnParticle(this), Scene.PARTICLE_LAYER);
+				}
+			}
 		}
-		// accelerate
-        float move = axisMap.get(Action.MOVE).getValue();
-        float xAcceleration = ACCEL * move;
-        if (Math.abs(move) > 0.25) {
-            if (!onGround) {
-                xAcceleration *= 0.25f;
-            }
-            if (!landed) {
-            	speed.x = speed.x + xAcceleration * dt;
-            }
-        }
+		// cooldown / status effects that can happen while alive or dead happen here
+		frameCount++;
+        animationTime += dt;
+
 		// update cooldowns
 		for (Action action : cooldown.keySet()) {
 			cooldown.put(action, Math.max(0.0f, cooldown.get(action) - dt));
 		}
-		// landed stun
-		if (landed) {
-			landedTime = Math.max(0.0f, landedTime - dt);
-			if (landedTime == 0.0f) {
-				landed = false;
-			}
-		}
-		// update duration of persistent effects
-		if (dashing) {
-			dashTime = Math.max(0.0f, dashTime - dt);
-			if (dashTime == 0) {
-				dashing = false;
-				falls = true;
-			}
-		} else {
-			// max speed
-			if (Math.abs(speed.x) > MAX_MOVE_SPEED) {
-				speed.scl(MAX_MOVE_SPEED / Math.abs(speed.x), 1.0f);
-			}
-			if (Math.abs(speed.y) > MAX_FALL_SPEED) {
-				speed.scl(1.0f, MAX_FALL_SPEED / Math.abs(speed.y));
-			}
-		}
-        if(invulnerableTime > 0.0f) {
-            invulnerableTime = (invulnerableTime - dt > 0) ? invulnerableTime - dt : 0.0f;
-        }
-		super.update(dt);
-
-        if (onGround && !dashing) {
-            speed.x -= Math.min(1, dt * 10) * speed.x;
-        }
-        if (speed.x != 0) {
-        	facingRight = speed.x > 0;
-        }
-        animationTime += dt;
-        jumpPressedLastFrame = buttonMap.get(Action.JUMP).isDown();
 	}
 
     public int sign(float x) {
@@ -622,24 +626,26 @@ public class Player extends Entity {
 	
 	@Override
 	public void render(SpriteBatch batch) {
-		TextureRegion frame = getSprite();
-        if(invulnerableTime > 0.0f) {
-            batch.setColor(1.0f, 1.0f, 1.0f - (invulnerableTime%0.3f) * 1.5f, 0.4f + (invulnerableTime%0.3f)*2.0f);
-        }
-
-		batch.draw(frame, pos.x + (animationOffset * scale), pos.y, frame.getRegionWidth() * scale, frame.getRegionHeight() * scale);
-        batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+		if (alive) {
+			TextureRegion frame = getSprite();
+	        if(invulnerableTime > 0.0f) {
+	            batch.setColor(1.0f, 1.0f, 1.0f - (invulnerableTime%0.3f) * 1.5f, 0.4f + (invulnerableTime%0.3f)*2.0f);
+	        }
+	
+			batch.draw(frame, pos.x + (animationOffset * scale), pos.y, frame.getRegionWidth() * scale, frame.getRegionHeight() * scale);
+	        batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+		}
 	}
 
     public boolean killPlayer(int killerID, int deathSource) {
-        if(invulnerableTime <= 0.0f && !destroyed || deathSource == DeathSources.WALL) {
+        if(invulnerableTime <= 0.0f && alive || deathSource == DeathSources.WALL) {
             lives--;
+            alive = false;
             scene.addEntity(new PlayerBody(number, pos, speed.cpy(), 5.0f, facingRight), Scene.PLAYER_LAYER);
             Player murderer = (killerID == NOT_A_PLAYER) ? null : scene.players.get(killerID);
             scene.reportPlayerDeath(murderer, this, deathSource);
-            if(lives > 0) {
-                scene.respawnPlayer(this, true);
-                onInvulnerable(INVULNERABILITY_LENGTH);
+            if (lives > 0) {
+                scene.respawnPlayer(this, 0.5f);
             } else {
                 destroy();
             }
@@ -654,7 +660,6 @@ public class Player extends Entity {
             scene.addEntity(new Blood(originalPos, projectile.speed.cpy()), Scene.PARTICLE_LAYER);
             return true;
         }
-
         return false;
     }
 
