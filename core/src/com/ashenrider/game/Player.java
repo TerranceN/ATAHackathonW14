@@ -624,6 +624,7 @@ public class Player extends Entity {
                 // Ideally this is precise enough to allow the player to accelerate enough in the next frame to be on the ground again
                 // in a single frame from rest, a player will accelerate to 600 * 1/60 = 10, and then move 10 * 1/60 = 0.16
                 // so 0.1 is being used as the margin for now.
+                // Alternatively, onGround could be a duration and last a few frames to be more forgiving.
                 while (high - low > 0.1f && high < 1000) {
                     boolean stillColliding = false;
                     float mid;

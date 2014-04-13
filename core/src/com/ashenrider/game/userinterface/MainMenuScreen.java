@@ -154,7 +154,7 @@ public class MainMenuScreen implements Screen {
     }
 
     public void startGame() {
-        app.setScreen(new GameScreen(app, "finalMap.tmx"));
+        app.setScreen(new GameScreen(app, "finalMap2.tmx"));
     }
 
     public void exitGame() {
