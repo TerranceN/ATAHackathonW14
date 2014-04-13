@@ -128,14 +128,6 @@ public class Projectile extends Entity {
         		}
         	}
         }
-        
-    	// TODO
-    	// and check the line of the projectiles path to see if it moved through any thin walls since the last frame
-        // (this is necessary if projectiles can go very fast or walls are thin
-        if (collided) {
-        	// bouncing projectiles could be cool too
-        	// spawn particles here, possibly based on the normal of collision or the velocity
-        }
     }
     
 	@Override

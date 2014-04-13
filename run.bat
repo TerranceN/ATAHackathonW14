@@ -1,1 +1,1 @@
-./gradlew --configure-on-demand --daemon desktop:run
+./gradlew --configure-on-demand --daemon desktop:run --offline

@@ -8,6 +8,7 @@ import com.ashenrider.game.HackathonApp;
 import com.ashenrider.game.Input.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
@@ -137,6 +138,7 @@ public class MainMenuScreen implements Screen {
         vAxis.add(new KeyboardAxis(Keys.DOWN, Keys.UP));
 
         select.add(new KeyboardButton(Keys.ENTER));
+        select.add(new MouseButton(Buttons.LEFT));
         back.add(new KeyboardButton(Keys.ESCAPE));
         
         for(Controller controller : Controllers.getControllers()) {
