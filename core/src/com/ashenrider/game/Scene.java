@@ -223,10 +223,11 @@ public class Scene {
     	for (Vector2 spawn : spawnPoints) {
     		float minD = Float.MAX_VALUE;
     		for (Player otherPlayer : players) {
+    			// Dead players have already been moved to a spawn location, don't go near them if they are respawning soon
     			// Don't spawn near your own corpse either
-    			//if (player.number != otherPlayer.number) {
+    			if (player.lives > 0) {
     				minD = Math.min(otherPlayer.getCentre().dst(spawn), minD);
-    			//}
+    			}
     		}
     		if (minD > spawnD) {
     			spawnD = minD;

@@ -33,7 +33,8 @@ public class RespawnParticle extends Entity {
 			RESPAWN_PARTICLE = new Texture("respawn.png");
 			//0xFFF76BFF
 		}
-		respawnTint = new Color(0xFFF6ADFF); //RRGGBBAA
+		//respawnTint = new Color(0xFFF6ADFF); //RRGGBBAA
+		respawnTint = new Color(player.playerColor);
 		img = RESPAWN_PARTICLE;
 
         size = new Vector2(16.0f, 16.0f);

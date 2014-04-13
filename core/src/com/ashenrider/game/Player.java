@@ -102,10 +102,25 @@ public class Player extends Entity {
 	private TextureRegion wallHugRight;
 	
 	private Texture head;
+	public Color playerColor;
     
 	public Player(int playerNumber, Vector2 initPosition, InputAxis moveAxis, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton dash, InputButton nullSphere) {
 		super(initPosition);
 		number = playerNumber;
+		switch (number % 4) {
+			case 0:
+				playerColor = new Color(0x951A1AFF);
+				break;
+			case 1:
+				playerColor = new Color(0x372D8EFF);
+				break;
+			case 2:
+				playerColor = new Color(0xA6F400FF);
+				break;
+			case 3:
+				playerColor = new Color(0xFFD200FF);
+				break;
+		}
 		//img = new Texture("p" + (playerNumber % 4) + ".png");
 		// 16x32 regions
 		TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/animations.atlas"));
