@@ -29,7 +29,7 @@ public class Explosion extends Entity {
         angle = 360 * rand.nextFloat();
         
         if (staticAnim == null) {
-            TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/fx.atlas"));
+            TextureAtlas atlas = Assets.manager.get("pack/fx.atlas", TextureAtlas.class);
             TextureRegion[] frames = new TextureRegion[43];
             for (int i=0; i<43; i++) {
                 frames[i] = atlas.findRegion("explosion/explosion-" + (i+1));

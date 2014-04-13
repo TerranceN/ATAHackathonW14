@@ -4,6 +4,7 @@ import com.ashenrider.game.DeathSources;
 import com.ashenrider.game.Player;
 import com.ashenrider.game.PlayerDeathListener;
 import com.ashenrider.game.Scene;
+import com.ashenrider.game.Assets;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -45,13 +46,13 @@ public class DeathsWidget implements PlayerDeathListener {
     
     public DeathsWidget(Scene scene) {
         this.scene = scene;
-        atlas = new TextureAtlas(Gdx.files.internal("pack/gui.atlas"));
+        atlas = Assets.manager.get("pack/gui.atlas", TextureAtlas.class);
         scene.addPlayerDeathListener(this);
 
         attackIcons = new HashMap<Integer, Texture>();
-        attackIcons.put(DeathSources.FIREBALL, new Texture("fire.png"));
-        attackIcons.put(DeathSources.PLASMA, new Texture("gun_projectile.png"));
-        attackIcons.put(DeathSources.WALL, new Texture("wall_block.png"));
+        attackIcons.put(DeathSources.FIREBALL, Assets.manager.get("./fire.png", Texture.class));
+        attackIcons.put(DeathSources.PLASMA, Assets.manager.get("./gun_projectile.png", Texture.class));
+        attackIcons.put(DeathSources.WALL, Assets.manager.get("./wall_block.png", Texture.class));
 
         stage = new Stage();
         Table ui = new Table();

@@ -8,7 +8,7 @@ import com.ashenrider.game.Input.InputButton;
 import com.ashenrider.game.Input.KeyboardAxis;
 import com.ashenrider.game.Input.KeyboardButton;
 import com.ashenrider.game.Input.Xbox;
-import com.ashenrider.game.userinterface.MainMenuScreen;
+import com.ashenrider.game.userinterface.LoadingScreen;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.files.FileHandle;
@@ -48,7 +48,7 @@ public class HackathonApp extends Game {
         buttonFont = generator.generateFont(26);
         generator.dispose();
 
-        setScreen(new MainMenuScreen(this));
+        setScreen(new LoadingScreen(this));
     }
 
     public void packTextures() {

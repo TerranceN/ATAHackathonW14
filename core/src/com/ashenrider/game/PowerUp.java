@@ -24,7 +24,7 @@ public abstract class PowerUp extends Entity {
         this.spawns = spawns;
         this.respawnTime = respawnTime;
         falls = false;
-        img = new Texture(texture);
+        img = Assets.manager.get(texture);
         size = new Vector2(img.getWidth(), img.getHeight()).scl(scale);
 
         respawn();

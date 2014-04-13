@@ -4,6 +4,7 @@ import com.ashenrider.game.HackathonApp;
 import com.ashenrider.game.Player;
 import com.ashenrider.game.PlayerDeathListener;
 import com.ashenrider.game.Scene;
+import com.ashenrider.game.Assets;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -49,7 +50,7 @@ public class WinWidget implements PlayerDeathListener {
         ui.setFillParent(true);
         stage.addActor(ui);
 
-        atlas = new TextureAtlas(Gdx.files.internal("pack/gui.atlas"));
+        atlas = Assets.manager.get("pack/gui.atlas", TextureAtlas.class);
 
         ui.center();
         container = new Table();

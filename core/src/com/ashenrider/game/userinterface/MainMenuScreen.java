@@ -6,6 +6,7 @@ import java.util.List;
 import com.ashenrider.game.GameScreen;
 import com.ashenrider.game.HackathonApp;
 import com.ashenrider.game.Input.*;
+import com.ashenrider.game.Assets;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
@@ -57,7 +58,7 @@ public class MainMenuScreen implements Screen {
     	intro = new Intro();
         this.app = app;
 
-        atlas = new TextureAtlas(Gdx.files.internal("pack/gui.atlas"));
+        atlas = Assets.manager.get("pack/gui.atlas", TextureAtlas.class);
 
         skin = new Skin();
 
@@ -152,7 +153,7 @@ public class MainMenuScreen implements Screen {
     }
 
     public void startGame() {
-        app.setScreen(new GameScreen(app, "finalMap.tmx"));
+        app.setScreen(new GameScreen(app, "maps/finalMap/finalMap.tmx"));
     }
 
     public void exitGame() {

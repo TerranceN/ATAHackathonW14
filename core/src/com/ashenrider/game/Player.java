@@ -121,9 +121,8 @@ public class Player extends Entity {
 				playerColor = new Color(0xFFD200FF);
 				break;
 		}
-		//img = new Texture("p" + (playerNumber % 4) + ".png");
 		// 16x32 regions
-		TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/animations.atlas"));
+		TextureAtlas atlas = Assets.manager.get("pack/animations.atlas", TextureAtlas.class);
 		// death 1-10
 		// (unused)
 		// run 1-5
@@ -171,7 +170,7 @@ public class Player extends Entity {
 		wallHugLeft = new TextureRegion(wallHugRight);
 		wallHugRight.flip(true, false);
 		
-		head = new Texture("head" + playerNumber % 4 + ".png");
+		head = Assets.manager.get("./head" + playerNumber % 4 + ".png", Texture.class);
 		
 		// approximate size of the player
 		size = new Vector2(16.0f, 48.0f).scl(scale);

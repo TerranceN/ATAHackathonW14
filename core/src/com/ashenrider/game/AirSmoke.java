@@ -30,7 +30,7 @@ public class AirSmoke extends Entity {
         flipped = isUpsideDown;
 
         if (staticAnim == null) {
-            TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/fx.atlas"));
+            TextureAtlas atlas = Assets.manager.get("pack/fx.atlas", TextureAtlas.class);
             TextureRegion[] frames = new TextureRegion[18];
             for (int i=0; i<18; i++) {
                 frames[i] = atlas.findRegion("smoke/smoke-" + (i+1));

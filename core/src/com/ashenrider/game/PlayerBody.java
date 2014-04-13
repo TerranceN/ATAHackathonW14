@@ -26,7 +26,7 @@ public class PlayerBody extends Entity {
         speed.y = initVelocity.y;
         this.number = playerNumber;
 
-        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/animations.atlas"));
+        TextureAtlas atlas = Assets.manager.get("pack/animations.atlas", TextureAtlas.class);
         TextureRegion[] deathFrames = new TextureRegion[10];
         for (int i=0; i<10; i++) {
             deathFrames[i] = atlas.findRegion(String.format("p%d/death-%02d", (playerNumber % 4), i+1));
