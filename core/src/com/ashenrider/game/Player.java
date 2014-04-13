@@ -79,10 +79,10 @@ public class Player extends Entity {
 		
 	// playerNumber is an ID for 
 	public int number;
+	ArrayList<Boolean> texCollidedBeforeUpdate;
+	
 	public int NOT_A_PLAYER = -1;
 
-    ArrayList<Boolean> texCollidedBeforeUpdate;
-	
 	// every image is 70 wide and the middle 20 are the hitbox
 	int animationOffset = -27;
 	private float RUNNING_FRAME_DURATION = 0.06f;
@@ -100,7 +100,7 @@ public class Player extends Entity {
 	private Animation landRightAnimation;
 	private TextureRegion wallHugLeft;
 	private TextureRegion wallHugRight;
-	
+
 	private Texture head;
 	public Color playerColor;
     
@@ -202,8 +202,10 @@ public class Player extends Entity {
     public ArrayList<Vector2> getPoints() {
         ArrayList<Vector2> points = new ArrayList<Vector2>();
 
+        //feet
         points.add(pos);
         points.add(pos.cpy().add(new Vector2(size.x, 0)));
+        // top of player
         points.add(pos.cpy().add(size));
         points.add(pos.cpy().add(new Vector2(0, size.y)));
 
@@ -226,6 +228,7 @@ public class Player extends Entity {
             }
 
             int textureValue = scene.getCollisionMaskValueAtPoint(modX, modY);
+            // 0 is normal collission, >0 is masked value
             texCollidedBeforeUpdate.add(textureValue != 0);
         }
     }
@@ -234,6 +237,7 @@ public class Player extends Entity {
         ArrayList<Vector2> points = getPoints();
 
         for (int i = 0; i < points.size(); i++) {
+        	// for each corner of the player that was previously inside a null mask
             if (texCollidedBeforeUpdate.get(i)) {
                 float modX = points.get(i).x % scene.map.getWidth();
                 float modY = points.get(i).y % scene.map.getHeight();
@@ -247,6 +251,10 @@ public class Player extends Entity {
 
                 int textureValue = scene.getCollisionMaskValueAtPoint(modX, modY);
 
+                // 0 is normal collission, this point was previously in the null mask
+                // if this point is in a wall, then the player is (at least partially) inside the wall.
+                // to make this more forgiving, require that all of the points in a small plus or box shape are inside a wall
+                // otherwise just return to normal collision logic and the player will "pop" out a bit
                 if (textureValue == 0 && scene.map.isInsideLevel(modX, modY)) {
                     scene.addEntity(new Blood(getCentre(), new Vector2(1,0)), Scene.PARTICLE_LAYER);
                 	killPlayer(NOT_A_PLAYER, DeathSources.WALL);
@@ -424,7 +432,6 @@ public class Player extends Entity {
 	        if (speed.x != 0) {
 	        	facingRight = speed.x > 0;
 	        }
-	        jumpPressedLastFrame = buttonMap.get(Action.JUMP).isDown();
 		} else {
 			if (lives > 0) {
 				spawnDelay -= dt;
@@ -438,6 +445,7 @@ public class Player extends Entity {
 		// cooldown / status effects that can happen while alive or dead happen here
 		frameCount++;
         animationTime += dt;
+        jumpPressedLastFrame = buttonMap.get(Action.JUMP).isDown();
 
 		// update cooldowns
 		for (Action action : cooldown.keySet()) {
@@ -531,8 +539,8 @@ public class Player extends Entity {
             ArrayList<Boolean> texCollision = new ArrayList<Boolean>();
             ArrayList<Boolean> levelCollision = new ArrayList<Boolean>();
 
-            int numTexCollisionZero = 0;
-            int numTexCollisionGTZeroOrNotLevelCollision = 0;
+            int numNotMasked = 0;
+            int numMaskedOrNotWall = 0;
 
             for (Vector2 p : points) {
                 float modX = p.x % map.getWidth();
@@ -548,25 +556,30 @@ public class Player extends Entity {
                 int textureValue = scene.getCollisionMaskValueAtPoint(modX, modY);
                 boolean insideLevel = map.isInsideLevel(modX, modY);
 
+                // 0 is normal collission, >0 is masked value
                 if (textureValue == 0) {
-                    numTexCollisionZero += 1;
+                	numNotMasked += 1;
                 }
 
                 if (textureValue > 0 || !insideLevel) {
-                    numTexCollisionGTZeroOrNotLevelCollision += 1;
+                	// this point is not in the null mask but it is also not in a wall.
+                	numMaskedOrNotWall += 1;
                 }
 
                 texCollision.add(new Boolean(textureValue == 0));
                 levelCollision.add(new Boolean(insideLevel));
             }
-            if (numTexCollisionZero == points.size()) {
+            if (numNotMasked == points.size()) {
+                // Totally out of the mask, normal collision logic
                 //System.out.println("normal collision");
                 normalLevelCollision(map);
-            } else if (numTexCollisionGTZeroOrNotLevelCollision == points.size()) {
+            } else if (numMaskedOrNotWall == points.size()) {
+                // Totally in the mask or not a wall, no collision
                 //System.out.println("no collision");
                 // do nothing
             } else {
-                //System.out.println("circle collision");
+            	// do more complicated collision logic based on the pixel data
+                System.out.println("circle collision");
 
                 int numPoints = 0;
                 Vector2 average = new Vector2(0, 0);
@@ -582,6 +595,9 @@ public class Player extends Entity {
                     }
                 }
 
+                if (numPoints == 0) {
+                    System.out.println("fancy no collision in circle logic");
+                }
                 average.scl(1f/numPoints);
 
                 Vector2 centre = size.cpy().scl(0.5f);
@@ -603,7 +619,12 @@ public class Player extends Entity {
                 float low = 0f;
                 float high = 1f;
                 boolean growing = true;
-                while (high - low > 0.5f && high < 1000) {
+                // this seems to be about 5 iterations on average
+                // Ideally this is precise enough to allow the player to accelerate enough in the next frame to be on the ground again
+                // in a single frame from rest, a player will accelerate to 600 * 1/60 = 10, and then move 10 * 1/60 = 0.16
+                // so 0.1 is being used as the margin for now.
+                // Alternatively, onGround could be a duration and last a few frames to be more forgiving.
+                while (high - low > 0.1f && high < 1000) {
                     boolean stillColliding = false;
                     float mid;
                     if (growing) {

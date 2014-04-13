@@ -9,6 +9,7 @@ import com.ashenrider.game.Input.*;
 import com.ashenrider.game.Assets;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
@@ -138,6 +139,7 @@ public class MainMenuScreen implements Screen {
         vAxis.add(new KeyboardAxis(Keys.DOWN, Keys.UP));
 
         select.add(new KeyboardButton(Keys.ENTER));
+        select.add(new MouseButton(Buttons.LEFT));
         back.add(new KeyboardButton(Keys.ESCAPE));
         
         for(Controller controller : Controllers.getControllers()) {
@@ -153,7 +155,7 @@ public class MainMenuScreen implements Screen {
     }
 
     public void startGame() {
-        app.setScreen(new GameScreen(app, "maps/finalMap/finalMap.tmx"));
+        app.setScreen(new GameScreen(app, "maps/finalMap2/finalMap2.tmx"));
     }
 
     public void exitGame() {

@@ -300,6 +300,7 @@ public class Scene {
 
 	public void update(float dt) {
         collisionMask.begin();
+        // check which players were colliding/not colliding in the previous frame
         for (Player p : players) {
         	if (p.alive) {
         		p.recordTexCollision();
@@ -316,6 +317,7 @@ public class Scene {
         batch.end();
         nullSphereFadeShader.end();
         batch.setShader(null);
+        // see which players are colliding now compared to before the mask fade
         for (Player p : players) {
         	if (p.alive) {
         		p.texCollisionResolve();

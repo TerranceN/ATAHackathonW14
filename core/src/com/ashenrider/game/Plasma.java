@@ -18,7 +18,7 @@ public class Plasma extends Projectile {
 		img = GUN_PROJECTILE;
 		
 		// you cannot hurt yourself within the first fraction of a second that a shot is fired
-		SPEED = 1400.0f;
+		SPEED = 600.0f;
 		speed = direction.nor().scl(SPEED);
 		//GRAVITY = -300.0f;
 		falls = true;
@@ -26,7 +26,7 @@ public class Plasma extends Projectile {
 		BOUNCE_WALLS = false;
 		BOUNCE_CEILING = false;
 		groundBounces = 0;
-		ELASTICITY = 0.7f;
+		ELASTICITY = 0.5f;
 		type = DeathSources.PLASMA;
 	}
 
