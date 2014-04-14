@@ -427,7 +427,7 @@ public class Player extends Entity {
 				spawnDelay -= dt;
 				if (spawnDelay <= 0) {
 					alive = true;
-			    	onInvulnerable(INVULNERABILITY_LENGTH);
+			    	addBuff(new StatusBuff(this, INVULNERABILITY_LENGTH, Status.INVULNERABLE));
 			        scene.addEntity(new RespawnParticle(this), Scene.PARTICLE_LAYER);
 				}
 			}
@@ -675,14 +675,6 @@ public class Player extends Entity {
         return false;
     }
 
-    public void onInvulnerable(float time) {
-    	addBuff(new StatusBuff(this, time, Status.INVULNERABLE));
-    }
-
-    public void onSpeedBoost(float mult, float time) {
-    	addBuff(new SpeedBuff(this, time, mult));
-    }
-
     @Override
     public void destroy() {
         super.destroy();
@@ -723,9 +715,12 @@ public class Player extends Entity {
     	if (b.status == null) {
         	buffs.add(b);
 			b.init();
-    	} else if (getBuffDuration(b.status) < b.duration) {
+    	} else if (!hasStatus(b.status)) {
         	statusBuffs.put(b.status, b);
 			b.init();
+    	} else if (getBuffDuration(b.status) < b.duration) {
+    		// refresh the duration
+        	statusBuffs.put(b.status, b);
 		}
     }
     
