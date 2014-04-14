@@ -95,6 +95,11 @@ public class HackathonApp extends Game {
 
     public void popBackstack() {
         getScreen().dispose();
-        super.setScreen(this.backStack.pop());
+        Screen next = this.backStack.pop();
+        if (next == null) {
+            Gdx.app.exit();
+        } else {
+            super.setScreen(next);
+        }
     }
 }
