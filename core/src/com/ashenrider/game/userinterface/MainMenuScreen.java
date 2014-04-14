@@ -216,7 +216,8 @@ public class MainMenuScreen implements Screen {
         		btn.setStyle(style);
         	}
         }
-        intro.update(delta);
+        // update intro at 60 fps with no jumping if there's lag
+        intro.update(0.017f);
         for (Button b : buttons) {
             b.setVisible(intro.isFinished());
         }
