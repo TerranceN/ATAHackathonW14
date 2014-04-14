@@ -61,3 +61,6 @@ build/
 *.project
 *.atlas
 android/assets/pack/*
+
+textureAtlases.list
+textures.list

@@ -27,7 +27,7 @@ public class Particle extends Entity {
 		color = col;
 
 		if (BASE_PARTICLE == null) {
-			BASE_PARTICLE = Assets.manager.get("./particle.png", Texture.class);
+			BASE_PARTICLE = Assets.manager.get("particle.png", Texture.class);
 		}
 		img = BASE_PARTICLE;
 		

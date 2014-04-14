@@ -50,9 +50,9 @@ public class DeathsWidget implements PlayerDeathListener {
         scene.addPlayerDeathListener(this);
 
         attackIcons = new HashMap<Integer, Texture>();
-        attackIcons.put(DeathSources.FIREBALL, Assets.manager.get("./fire.png", Texture.class));
-        attackIcons.put(DeathSources.PLASMA, Assets.manager.get("./gun_projectile.png", Texture.class));
-        attackIcons.put(DeathSources.WALL, Assets.manager.get("./wall_block.png", Texture.class));
+        attackIcons.put(DeathSources.FIREBALL, Assets.manager.get("fire.png", Texture.class));
+        attackIcons.put(DeathSources.PLASMA, Assets.manager.get("gun_projectile.png", Texture.class));
+        attackIcons.put(DeathSources.WALL, Assets.manager.get("wall_block.png", Texture.class));
 
         stage = new Stage();
         Table ui = new Table();

@@ -170,7 +170,7 @@ public class Player extends Entity {
 		wallHugLeft = new TextureRegion(wallHugRight);
 		wallHugRight.flip(true, false);
 		
-		head = Assets.manager.get("./head" + playerNumber % 4 + ".png", Texture.class);
+		head = Assets.manager.get("head" + playerNumber % 4 + ".png", Texture.class);
 		
 		// approximate size of the player
 		size = new Vector2(16.0f, 48.0f).scl(scale);

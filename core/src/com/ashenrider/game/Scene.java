@@ -98,7 +98,7 @@ public class Scene {
         levelBufferRegion = new TextureRegion(levelBuffer.getColorBufferTexture());
         levelBufferRegion.flip(false, true);
 
-        background = Assets.manager.get("./background.png", Texture.class);
+        background = Assets.manager.get("background.png", Texture.class);
 
         onResize();
         newEntities = new ArrayList<Entity>();

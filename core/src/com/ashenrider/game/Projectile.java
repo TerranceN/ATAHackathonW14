@@ -34,7 +34,7 @@ public class Projectile extends Entity {
 		shotBy = playerNumber;
 
 		if (BASE_PROJECTILE == null) {
-			BASE_PROJECTILE = Assets.manager.get("./projectile.png", Texture.class);
+			BASE_PROJECTILE = Assets.manager.get("projectile.png", Texture.class);
 		}
 		img = BASE_PROJECTILE;
 		

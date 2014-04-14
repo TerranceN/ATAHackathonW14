@@ -13,7 +13,7 @@ public class Plasma extends Projectile {
 		super(initPosition, direction, playerNumber);
 		size = new Vector2(16, 16);
 		if (GUN_PROJECTILE == null) {
-			GUN_PROJECTILE = Assets.manager.get("./gun_projectile.png", Texture.class);
+			GUN_PROJECTILE = Assets.manager.get("gun_projectile.png", Texture.class);
 		}
 		img = GUN_PROJECTILE;
 		

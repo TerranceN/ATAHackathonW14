@@ -16,7 +16,7 @@ public class GunParticle extends Particle {
 		float spread = 0.6f;
 		speed = direction.nor().rotateRad((rand.nextFloat()-0.5f) * spread).scl(pSpeed);
 		if (GUN_TRAIL == null) {
-			GUN_TRAIL = Assets.manager.get("./gun_trail.png", Texture.class);
+			GUN_TRAIL = Assets.manager.get("gun_trail.png", Texture.class);
 		}
 		img = GUN_TRAIL;
 		size = new Vector2(img.getWidth() * scale, img.getHeight() * scale);

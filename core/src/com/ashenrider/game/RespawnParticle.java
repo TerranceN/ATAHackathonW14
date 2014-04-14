@@ -30,7 +30,7 @@ public class RespawnParticle extends Entity {
         this.player = player;
     	
 		if (RESPAWN_PARTICLE == null) {
-			RESPAWN_PARTICLE = Assets.manager.get("./respawn.png", Texture.class);
+			RESPAWN_PARTICLE = Assets.manager.get("respawn.png", Texture.class);
 			//0xFFF76BFF
 		}
 		//respawnTint = new Color(0xFFF6ADFF); //RRGGBBAA
