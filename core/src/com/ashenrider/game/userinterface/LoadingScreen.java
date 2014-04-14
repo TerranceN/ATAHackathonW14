@@ -32,17 +32,17 @@ public class LoadingScreen implements Screen {
 
             Vector2 screenSize = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
             Vector2 center = screenSize.cpy().scl(0.5f);
-            Vector2 boxSize = new Vector2(400f, 200f);
+            Vector2 boxSize = new Vector2(400f, 60f);
             Vector2 botLeft = center.cpy().sub(boxSize.cpy().scl(0.5f));
 
-            Vector2 edgeSize = new Vector2(10f, 10f);
+            Vector2 edgeSize = new Vector2(6f, 6f);
 
             shapeRenderer.begin(ShapeType.Filled);
             shapeRenderer.setColor(1, 1, 1, 1);
             shapeRenderer.rect(botLeft.x - edgeSize.x, botLeft.y - edgeSize.y, boxSize.x + edgeSize.x * 2, boxSize.y + edgeSize.y * 2);
-            shapeRenderer.setColor(1, 0, 0, 1);
+            shapeRenderer.setColor(0.25f, 0, 0, 1);
             shapeRenderer.rect(botLeft.x, botLeft.y, boxSize.x, boxSize.y);
-            shapeRenderer.setColor(0, 1, 0, 1);
+            shapeRenderer.setColor(0, 0.8f, 0, 1);
             shapeRenderer.rect(botLeft.x, botLeft.y, boxSize.x * Assets.manager.getProgress(), boxSize.y);
             shapeRenderer.end();
 
