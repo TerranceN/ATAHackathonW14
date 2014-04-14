@@ -1,5 +1,8 @@
-package com.ashenrider.game;
+package com.ashenrider.game.Entities;
 
+import java.util.Random;
+
+import com.ashenrider.game.Assets;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -7,29 +10,30 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-public class Blood extends Entity {
+public class Explosion extends Entity {
 
     private float lifeTime = 5.0f;
 
-    float scale = 2.0f;
+    float scale = 3.0f;
     float animationTime = 0.0f;
 
     private static Animation staticAnim;
 
-    private float FRAME_DURATION = 0.15f;
+    private float FRAME_DURATION = 0.025f;
     private Animation anim;
     
     float angle;
 
-    public Blood(Vector2 initPosition, Vector2 direction) {
+    public Explosion(Vector2 initPosition) {
         super(initPosition);
-        angle = direction.angle();
-
+        Random rand = new Random();
+        angle = 360 * rand.nextFloat();
+        
         if (staticAnim == null) {
             TextureAtlas atlas = Assets.manager.get("pack/fx.atlas", TextureAtlas.class);
-            TextureRegion[] frames = new TextureRegion[9];
-            for (int i=0; i<9; i++) {
-                frames[i] = atlas.findRegion("blood/blood-" + (i+1));
+            TextureRegion[] frames = new TextureRegion[43];
+            for (int i=0; i<43; i++) {
+                frames[i] = atlas.findRegion("explosion/explosion-" + (i+1));
             }
             anim = new Animation(FRAME_DURATION, frames);
             staticAnim = anim;
@@ -40,7 +44,7 @@ public class Blood extends Entity {
         size = new Vector2(16.0f, 16.0f).scl(scale);
         pos = initPosition.cpy().sub(size.cpy().scl(0.5f));
         
-        lifeTime = FRAME_DURATION * 10;
+        lifeTime = FRAME_DURATION * 44;
         falls = false;
     }
 
@@ -63,8 +67,8 @@ public class Blood extends Entity {
         TextureRegion frame = getSprite();
         float w = frame.getRegionWidth();
         float h = frame.getRegionHeight();
-        float oX = 21;
-        float oY = 28;
+        float oX = 26; // flip this if flipped
+        float oY = 30;
         batch.draw(frame, pos.x + size.x/2f -oX, pos.y + size.y/2f -oY, oX, oY, w, h, scale, scale, angle);
     }
 }

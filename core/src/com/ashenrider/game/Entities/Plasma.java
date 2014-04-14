@@ -1,5 +1,8 @@
-package com.ashenrider.game;
+package com.ashenrider.game.Entities;
 
+import com.ashenrider.game.Assets;
+import com.ashenrider.game.DeathSources;
+import com.ashenrider.game.Scene;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 

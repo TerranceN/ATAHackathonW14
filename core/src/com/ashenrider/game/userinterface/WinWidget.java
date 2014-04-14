@@ -1,10 +1,10 @@
 package com.ashenrider.game.userinterface;
 
 import com.ashenrider.game.HackathonApp;
-import com.ashenrider.game.Player;
 import com.ashenrider.game.PlayerDeathListener;
 import com.ashenrider.game.Scene;
 import com.ashenrider.game.Assets;
+import com.ashenrider.game.Entities.Player;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;

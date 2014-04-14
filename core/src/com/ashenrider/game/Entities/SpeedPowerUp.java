@@ -1,4 +1,4 @@
-package com.ashenrider.game;
+package com.ashenrider.game.Entities;
 
 import com.ashenrider.game.Buffs.SpeedBuff;
 import com.ashenrider.game.Buffs.StatusBuff;

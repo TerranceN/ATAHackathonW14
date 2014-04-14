@@ -2,7 +2,7 @@
 
 package com.ashenrider.game.Input;
 
-import com.ashenrider.game.Entity;
+import com.ashenrider.game.Entities.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;

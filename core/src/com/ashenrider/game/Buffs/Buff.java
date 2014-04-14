@@ -1,12 +1,12 @@
 package com.ashenrider.game.Buffs;
 
-import com.ashenrider.game.Player;
+import com.ashenrider.game.Entities.Player;
 
 public abstract class Buff {
 	// Some buffs stack (you can have 2 speed boosts)
 	// others are unique (being invulnerable twice merely refreshes the duration)
 	public enum Status {
-		INVULNERABLE, DASHING, LAND_STUN, RESPAWNING
+		INVULNERABLE, DASHING, LAND_STUN, MULTI_SHOT //unused: RESPAWNING
 	}
 	
 	public float duration;

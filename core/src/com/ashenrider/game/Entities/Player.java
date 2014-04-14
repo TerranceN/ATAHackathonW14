@@ -1,4 +1,4 @@
-package com.ashenrider.game;
+package com.ashenrider.game.Entities;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -6,6 +6,10 @@ import java.util.Random;
 import java.util.ArrayList;
 import java.util.Set;
 
+import com.ashenrider.game.Assets;
+import com.ashenrider.game.DeathSources;
+import com.ashenrider.game.Map;
+import com.ashenrider.game.Scene;
 import com.ashenrider.game.Buffs.Buff;
 import com.ashenrider.game.Buffs.Buff.Status;
 import com.ashenrider.game.Buffs.DashBuff;
@@ -29,9 +33,9 @@ public class Player extends Entity {
 	float animationTime = 0.0f;
 	int frameCount = 0;
 
-    int lives = 3;
-    boolean alive = false;
-    float spawnDelay = 0.0f;
+    public int lives = 3;
+    public boolean alive = false;
+    public float spawnDelay = 0.0f;
 
 	float JUMP = 550.0f;
 	float AIR_JUMP = 400.0f;
@@ -44,7 +48,7 @@ public class Player extends Entity {
 	
 	float MAX_NULL_TIME = 0.7f;
 	float nullTime = 0.0f;
-    boolean nullSphereEnabled = false;
+    public boolean nullSphereEnabled = false;
 
     boolean jumpPressedLastFrame = false;
 
@@ -62,7 +66,7 @@ public class Player extends Entity {
 	// landDuration / animation
 	// standing
 	// falling
-    boolean onWall = false;
+    private boolean onWall = false;
     int wallDir = 0;
 
 	float minLandedSpeed = -400.0f;
@@ -74,7 +78,7 @@ public class Player extends Entity {
 	}
 	
 	HashMap<Action, InputButton> buttonMap;
-	HashMap<Action, InputAxis> axisMap;
+	public HashMap<Action, InputAxis> axisMap;
 	
 	HashMap<Action, Float> cooldown;
 	HashMap<Action, Float> maxCooldown;
@@ -363,9 +367,18 @@ public class Player extends Entity {
 					// if dir is 0 the projectile would sit still in space
 					dir.x = 1;
 				}
-				Projectile p = new Fireball(getCentre(), dir, number);
+				if (hasStatus(Buff.Status.MULTI_SHOT)) {
+					float spread = 42;
+					Vector2 offset = dir.cpy().rotate90(1).nor().scl(spread/2f);
+					Projectile p = new Fireball(getCentre().cpy().add(offset), dir, number);
+					scene.addEntity(p, Scene.SHOT_LAYER);
+					p = new Fireball(getCentre().cpy().sub(offset), dir, number);
+					scene.addEntity(p, Scene.SHOT_LAYER);
+				} else {
+					Projectile p = new Fireball(getCentre(), dir, number);
+					scene.addEntity(p, Scene.SHOT_LAYER);
+				}
 				cooldown.put(Action.SHOOT, maxCooldown.get(Action.SHOOT));
-				scene.addEntity(p, Scene.SHOT_LAYER);
 			}
 			// dash quickly in the currently facing direction
 			// (or in the aimed direction)
@@ -684,10 +697,6 @@ public class Player extends Entity {
     	return alive;
     }
     
-    public boolean isDestroyed() {
-        return destroyed;
-    }
-    
     private void updateBuffs(float dt) {
 		for (int i = buffs.size() - 1; i >= 0; i--) {
 			Buff b = buffs.get(i);
@@ -737,6 +746,10 @@ public class Player extends Entity {
     }
     
     public void clearBuffs() {
+    	speed = new Vector2(0,0);
+    	onWall = false;
+    	nullSphereEnabled = false;
+    	
     	for (Buff b : buffs) {
     		b.duration = 0.0f;
     	}

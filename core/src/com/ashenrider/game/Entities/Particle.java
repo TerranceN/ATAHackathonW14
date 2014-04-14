@@ -1,5 +1,6 @@
-package com.ashenrider.game;
+package com.ashenrider.game.Entities;
 
+import com.ashenrider.game.Assets;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;

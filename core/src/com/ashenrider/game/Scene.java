@@ -5,6 +5,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import com.ashenrider.game.Entities.Entity;
+import com.ashenrider.game.Entities.InvulnerabilityPowerUp;
+import com.ashenrider.game.Entities.Player;
+import com.ashenrider.game.Entities.ShotPowerUp;
+import com.ashenrider.game.Entities.SpeedPowerUp;
 import com.ashenrider.game.Input.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.Gdx;
@@ -33,11 +38,11 @@ public class Scene {
 
 	// map and entitity layers
 	int NUM_LAYERS = 5;
-	static int BACKGROUND_LAYER = 0;
-	static int PLAYER_LAYER = 1;
-	static int SHOT_LAYER = 2;
-	static int FOREGROUND_LAYER = 3;
-	static int PARTICLE_LAYER = 4;
+	public static int BACKGROUND_LAYER = 0;
+	public static int PLAYER_LAYER = 1;
+	public static int SHOT_LAYER = 2;
+	public static int FOREGROUND_LAYER = 3;
+	public static int PARTICLE_LAYER = 4;
 	
     OrthographicCamera camera;
     OrthographicCamera mapCam;
@@ -204,6 +209,7 @@ public class Scene {
 
         addEntity(new InvulnerabilityPowerUp(powerUpPoints), PLAYER_LAYER);
         addEntity(new SpeedPowerUp(powerUpPoints), PLAYER_LAYER);
+        addEntity(new ShotPowerUp(powerUpPoints), PLAYER_LAYER);
 
         for (int i = 0; i < players.size(); i++) {
             Player player = players.get(i);
@@ -237,9 +243,6 @@ public class Scene {
     	}
         player.pos = furthestSpawn.cpy().sub(new Vector2(player.size.x / 2.f, 0f));
         // clear any leftover state information
-    	player.speed = new Vector2(0,0);
-    	player.onWall = false;
-    	player.nullSphereEnabled = false;
     	player.clearBuffs();
     	
     	player.spawnDelay = delay;
@@ -323,14 +326,14 @@ public class Scene {
         collisionMask.end();
 
 		for (Entity e : entities) {
-			if (!e.destroyed) {
+			if (!e.isDestroyed()) {
 				e.update(dt);
 			}
 		}
 
         collisionMask.begin();
 		for (Entity e : entities) {
-			if (!e.destroyed) {
+			if (!e.isDestroyed()) {
 				e.handleCollision(map);
 			}
 		}
@@ -343,7 +346,7 @@ public class Scene {
 		// remove destroyed entities
 		for (int i = entities.size() - 1; i >= 0; i--) {
 			Entity e = entities.get(i);
-			if (e.destroyed) {
+			if (e.isDestroyed()) {
 				entities.remove(i);
 			}
 		}
@@ -424,7 +427,7 @@ public class Scene {
 	        map.renderLayer(layer, mapCam);
 			batch.begin();
 			for (Entity e : entityLayers.get(layer)) {
-                if(!e.destroyed) {
+                if(!e.isDestroyed()) {
                     e.renderWithWrapAround(batch);
                     //if (Particle.BASE_PARTICLE == null) {
                     //	Particle.BASE_PARTICLE = Assets.manager.get("particle.png", Texture.class);

@@ -1,7 +1,7 @@
 
 package com.ashenrider.game.Buffs;
 
-import com.ashenrider.game.Player;
+import com.ashenrider.game.Entities.Player;
 
 public class StatusBuff extends Buff {
 	// a do nothing buff that can be used to indicate a status

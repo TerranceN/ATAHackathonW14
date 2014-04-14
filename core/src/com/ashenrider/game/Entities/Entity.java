@@ -1,23 +1,25 @@
-package com.ashenrider.game;
+package com.ashenrider.game.Entities;
 
+import com.ashenrider.game.Map;
+import com.ashenrider.game.Scene;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public abstract class Entity {
-	Scene scene;
-	int layer;
+	public Scene scene;
+	public int layer;
 	
 	public Vector2 pos;
-	Vector2 speed;
-	Vector2 size;
+	public Vector2 speed;
+	public Vector2 size;
 	
 	float GRAVITY = -600.0f;
 	public boolean falls = true;
 	boolean onGround = false;
 	boolean collides = true;
 	
-	boolean destroyed = false;
+	private boolean destroyed = false;
 	
 	public Entity(Vector2 initPosition) {
 		pos = initPosition;
@@ -79,4 +81,8 @@ public abstract class Entity {
 		// and mark it to be removed from the list of all entities later
 		destroyed = true;
 	}
+
+	public boolean isDestroyed() {
+        return destroyed;
+    }
 }

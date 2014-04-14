@@ -14,7 +14,7 @@ public class Map {
     OrthogonalTiledMapRenderer mapRenderer;
 
     TiledMapTileLayer backgroundLayer;
-    TiledMapTileLayer levelLayer;
+    public TiledMapTileLayer levelLayer;
     TiledMapTileLayer powerUpLayer;
     TiledMapTileLayer spawnLayer;
     TiledMapTileLayer decorationFrontLayer;

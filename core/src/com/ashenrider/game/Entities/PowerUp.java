@@ -1,5 +1,7 @@
-package com.ashenrider.game;
+package com.ashenrider.game.Entities;
 
+import com.ashenrider.game.Assets;
+import com.ashenrider.game.Map;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;

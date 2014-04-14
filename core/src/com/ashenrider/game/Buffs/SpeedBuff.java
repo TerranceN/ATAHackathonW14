@@ -1,6 +1,6 @@
 package com.ashenrider.game.Buffs;
 
-import com.ashenrider.game.Player;
+import com.ashenrider.game.Entities.Player;
 
 public class SpeedBuff extends Buff {
 	private float speedDiff;

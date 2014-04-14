@@ -1,7 +1,8 @@
-package com.ashenrider.game;
+package com.ashenrider.game.Entities;
 
 import java.util.Random;
 
+import com.ashenrider.game.Assets;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
