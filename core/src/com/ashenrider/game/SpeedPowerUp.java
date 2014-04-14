@@ -8,7 +8,7 @@ import java.util.List;
 public class SpeedPowerUp extends PowerUp {
 
     private static final float RESPAWN_TIME = 5.0f;
-    private static final float BUFF_DURATION = 4.0f;
+    private static final float BUFF_DURATION = 10.0f;
     private static final String TEXTURE_LOCATION = "powerup.png";
 
     public SpeedPowerUp(List<Vector2> respawns) {
@@ -18,6 +18,6 @@ public class SpeedPowerUp extends PowerUp {
     @Override
     public void onPickup(Player player) {
         super.onPickup(player);
-        player.onSpeedBoost(0.5f, BUFF_DURATION);
+        player.onSpeedBoost(1.0f, BUFF_DURATION);
     }
 }

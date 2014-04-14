@@ -406,10 +406,10 @@ public class Player extends Entity {
 			if (!hasStatus(Buff.Status.DASHING)){
 				// max speed
 				if (Math.abs(speed.x) > MAX_MOVE_SPEED * speedMult) {
-					speed.scl(MAX_MOVE_SPEED / Math.abs(speed.x), 1.0f);
+					speed.scl(MAX_MOVE_SPEED * speedMult / Math.abs(speed.x), 1.0f);
 				}
 				if (Math.abs(speed.y) > MAX_FALL_SPEED * speedMult) {
-					speed.scl(1.0f, MAX_FALL_SPEED / Math.abs(speed.y));
+					speed.scl(1.0f, MAX_FALL_SPEED * speedMult / Math.abs(speed.y));
 				}
 				if (onGround) {
 					speed.x -= Math.min(1, dt * 10) * speed.x;
@@ -651,7 +651,7 @@ public class Player extends Entity {
 	}
 
     public boolean killPlayer(int killerID, int deathSource) {
-        if(alive && (hasStatus(Buff.Status.INVULNERABLE) || deathSource == DeathSources.WALL)) {
+        if(alive && (!hasStatus(Buff.Status.INVULNERABLE) || deathSource == DeathSources.WALL)) {
             lives--;
             alive = false;
             scene.addEntity(new PlayerBody(number, pos, speed.cpy(), 5.0f, facingRight), Scene.PLAYER_LAYER);
@@ -681,7 +681,7 @@ public class Player extends Entity {
     }
 
     public void onSpeedBoost(float mult, float time) {
-    	addBuff(new SpeedBuff(this, time, 0.5f));
+    	addBuff(new SpeedBuff(this, time, mult));
     }
 
     @Override
