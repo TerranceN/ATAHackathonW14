@@ -26,7 +26,7 @@ public class Blood extends Entity {
         angle = direction.angle();
 
         if (staticAnim == null) {
-            TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/fx.atlas"));
+            TextureAtlas atlas = Assets.manager.get("pack/fx.atlas", TextureAtlas.class);
             TextureRegion[] frames = new TextureRegion[9];
             for (int i=0; i<9; i++) {
                 frames[i] = atlas.findRegion("blood/blood-" + (i+1));

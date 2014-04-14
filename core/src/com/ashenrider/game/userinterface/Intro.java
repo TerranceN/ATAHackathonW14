@@ -1,5 +1,7 @@
 package com.ashenrider.game.userinterface;
 
+import com.ashenrider.game.Assets;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -25,7 +27,7 @@ public class Intro {
 
     public Intro() {       
         if (staticAnim == null) {
-            TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/intro.atlas"));
+            TextureAtlas atlas = Assets.manager.get("pack/intro.atlas", TextureAtlas.class);
             TextureRegion[] frames = new TextureRegion[181];
             NUM_FRAMES = frames.length;
             LOOP_FRAME = 170;

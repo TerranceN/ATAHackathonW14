@@ -98,7 +98,7 @@ public class Scene {
         levelBufferRegion = new TextureRegion(levelBuffer.getColorBufferTexture());
         levelBufferRegion.flip(false, true);
 
-        background = new Texture("background.png");
+        background = Assets.manager.get("background.png", Texture.class);
 
         onResize();
         newEntities = new ArrayList<Entity>();
@@ -427,7 +427,7 @@ public class Scene {
                 if(!e.destroyed) {
                     e.renderWithWrapAround(batch);
                     //if (Particle.BASE_PARTICLE == null) {
-                    //	Particle.BASE_PARTICLE = new Texture("particle.png");
+                    //	Particle.BASE_PARTICLE = Assets.manager.get("particle.png", Texture.class);
                     //} else if (Particle.BASE_PARTICLE != null) {
                     //    batch.draw(Particle.BASE_PARTICLE, e.pos.x - Particle.BASE_PARTICLE.getWidth() / 2f, e.pos.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
                     //    batch.draw(Particle.BASE_PARTICLE, e.pos.x + e.size.x - Particle.BASE_PARTICLE.getWidth() / 2f, e.pos.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);

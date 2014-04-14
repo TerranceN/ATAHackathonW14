@@ -6,6 +6,7 @@ import java.util.List;
 import com.ashenrider.game.GameScreen;
 import com.ashenrider.game.HackathonApp;
 import com.ashenrider.game.Input.*;
+import com.ashenrider.game.Assets;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Buttons;
@@ -58,7 +59,7 @@ public class MainMenuScreen implements Screen {
     	intro = new Intro();
         this.app = app;
 
-        atlas = new TextureAtlas(Gdx.files.internal("pack/gui.atlas"));
+        atlas = Assets.manager.get("pack/gui.atlas", TextureAtlas.class);
 
         skin = new Skin();
 
@@ -138,7 +139,6 @@ public class MainMenuScreen implements Screen {
         vAxis.add(new KeyboardAxis(Keys.DOWN, Keys.UP));
 
         select.add(new KeyboardButton(Keys.ENTER));
-        select.add(new MouseButton(Buttons.LEFT));
         back.add(new KeyboardButton(Keys.ESCAPE));
         
         for(Controller controller : Controllers.getControllers()) {
@@ -154,7 +154,7 @@ public class MainMenuScreen implements Screen {
     }
 
     public void startGame() {
-        app.setScreen(new GameScreen(app, "finalMap2.tmx"));
+        app.setScreen(new GameScreen(app, "maps/finalMap2/finalMap2.tmx"));
     }
 
     public void exitGame() {
@@ -215,7 +215,8 @@ public class MainMenuScreen implements Screen {
         		btn.setStyle(style);
         	}
         }
-        intro.update(delta);
+        // update intro at 60 fps with no jumping if there's lag
+        intro.update(0.017f);
         for (Button b : buttons) {
             b.setVisible(intro.isFinished());
         }

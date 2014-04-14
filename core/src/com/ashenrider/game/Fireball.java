@@ -27,7 +27,7 @@ public class Fireball extends Projectile {
         boolean flipped = true;
 
         if (staticAnim == null) {
-            TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("pack/fx.atlas"));
+            TextureAtlas atlas = Assets.manager.get("pack/fx.atlas", TextureAtlas.class);
             TextureRegion[] frames = new TextureRegion[15];
             for (int i=0; i<15; i++) {
                 frames[i] = atlas.findRegion("fire/fire-" + (i+1));
