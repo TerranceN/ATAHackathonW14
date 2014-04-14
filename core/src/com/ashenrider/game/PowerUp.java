@@ -18,14 +18,16 @@ public abstract class PowerUp extends Entity {
     Vector2 initPosition;
     List<Vector2> spawns;
     Texture img;
+    Color colorTint;
 
-    public PowerUp(List<Vector2> spawns, float respawnTime, String texture) {
+    public PowerUp(List<Vector2> spawns, float respawnTime, String texture, Color col) {
         super(new Vector2(0, 0));
         this.spawns = spawns;
         this.respawnTime = respawnTime;
         falls = false;
         img = new Texture(texture);
         size = new Vector2(img.getWidth(), img.getHeight()).scl(scale);
+        colorTint = col;
 
         respawn();
     }
@@ -52,10 +54,10 @@ public abstract class PowerUp extends Entity {
     @Override
     public void handleCollision(Map map) {
         for (Player p : scene.players) {
-            if (respawnTimer <= 0 && !p.isDestroyed()) {
-                Rectangle shotBox = getBounds();
+            if (respawnTimer <= 0 && p.isAlive()) {
+                Rectangle box = getBounds();
                 Rectangle playerBox = p.getBounds();
-                if (shotBox.overlaps(playerBox)) {
+                if (box.overlaps(playerBox)) {
                     this.onPickup(p);
                 }
             }
@@ -65,7 +67,7 @@ public abstract class PowerUp extends Entity {
     @Override
     public void render(SpriteBatch batch) {
         if(respawnTimer < 0.0f) {
-        	batch.setColor(new Color(0.9f, 1, 0.7f, 1));
+        	batch.setColor(colorTint);
             batch.draw(img, pos.x, pos.y, img.getWidth() * scale, img.getHeight() * scale);
             batch.setColor(Color.WHITE);
         }

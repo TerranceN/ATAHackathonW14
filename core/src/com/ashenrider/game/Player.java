@@ -1,9 +1,16 @@
 package com.ashenrider.game;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.ArrayList;
+import java.util.Set;
 
+import com.ashenrider.game.Buffs.Buff;
+import com.ashenrider.game.Buffs.Buff.Status;
+import com.ashenrider.game.Buffs.DashBuff;
+import com.ashenrider.game.Buffs.SpeedBuff;
+import com.ashenrider.game.Buffs.StatusBuff;
 import com.ashenrider.game.Input.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -34,7 +41,6 @@ public class Player extends Entity {
 	
 	float DASH_SPEED = 800.0f;
 	float DASH_TIME = 0.13f;
-	float dashTime = 0.0f;
 	
 	float MAX_NULL_TIME = 0.7f;
 	float nullTime = 0.0f;
@@ -42,7 +48,6 @@ public class Player extends Entity {
 
     boolean jumpPressedLastFrame = false;
 
-	
 	// current
 	int airJumps = 0;
 	int airDashes = 0;
@@ -54,8 +59,6 @@ public class Player extends Entity {
 	// state logic (for animation and some logic)
 	//onGround
 	boolean facingRight = true;
-	boolean dashing = false;
-	boolean landed = false;
 	// landDuration / animation
 	// standing
 	// falling
@@ -63,9 +66,8 @@ public class Player extends Entity {
     int wallDir = 0;
 
 	float minLandedSpeed = -400.0f;
-	float landedTime = 0.0f;
 
-    float invulnerableTime;
+    public float speedMult = 1.0f;
 	
 	public enum Action {
 		MOVE, AIM_HORIZONTAL, AIM_VERTICAL, JUMP, SHOOT, DASH, NULL_SPHERE
@@ -76,6 +78,8 @@ public class Player extends Entity {
 	
 	HashMap<Action, Float> cooldown;
 	HashMap<Action, Float> maxCooldown;
+	HashMap<Buff.Status, Buff> statusBuffs;
+	ArrayList<Buff> buffs;
 		
 	// playerNumber is an ID for 
 	public int number;
@@ -198,6 +202,8 @@ public class Player extends Entity {
 		maxCooldown.put(Action.SHOOT, 0.8f);
 		maxCooldown.put(Action.DASH, DASH_TIME + 0.35f);
 		maxCooldown.put(Action.NULL_SPHERE, 1.0f);
+		buffs = new ArrayList<Buff>();
+		statusBuffs = new HashMap<Buff.Status, Buff>();
 	}
 
     public ArrayList<Vector2> getPoints() {
@@ -276,7 +282,7 @@ public class Player extends Entity {
 	public TextureRegion getSprite() {
 		TextureRegion frame;
 		// pass a time to animation to get the right frame
-		if (landed) {
+		if (hasStatus(Buff.Status.LAND_STUN)) {
 			frame = facingRight ? landRightAnimation.getKeyFrame(animationTime, false)
 								: landLeftAnimation.getKeyFrame(animationTime, false);
 		} else if (onWall) {
@@ -383,53 +389,37 @@ public class Player extends Entity {
 				cooldown.put(Action.DASH, maxCooldown.get(Action.DASH));
 				airDashes--;
 				falls = false;
-				dashing = true;
+				addBuff(new DashBuff(this, DASH_TIME));
 				animationTime = 0.0f;
-				dashTime = DASH_TIME;
 			}
 			// accelerate
 	        float move = axisMap.get(Action.MOVE).getValue();
-	        float xAcceleration = ACCEL * move;
+	        float xAcceleration = ACCEL * move * speedMult;
 	        if (Math.abs(move) > 0.25) {
 	            if (!onGround) {
 	                xAcceleration *= 0.25f;
 	            }
-	            if (!landed) {
+	            if (!hasStatus(Buff.Status.LAND_STUN)) {
 	            	speed.x = speed.x + xAcceleration * dt;
 	            }
 	        }
-			// landed stun
-			if (landed) {
-				landedTime = Math.max(0.0f, landedTime - dt);
-				if (landedTime == 0.0f) {
-					landed = false;
-				}
-			}
-			// update duration of persistent effects
-			if (dashing) {
-				dashTime = Math.max(0.0f, dashTime - dt);
-				if (dashTime == 0) {
-					dashing = false;
-					falls = true;
-				}
-			} else {
+			if (!hasStatus(Buff.Status.DASHING)){
 				// max speed
-				if (Math.abs(speed.x) > MAX_MOVE_SPEED) {
+				if (Math.abs(speed.x) > MAX_MOVE_SPEED * speedMult) {
 					speed.scl(MAX_MOVE_SPEED / Math.abs(speed.x), 1.0f);
 				}
-				if (Math.abs(speed.y) > MAX_FALL_SPEED) {
+				if (Math.abs(speed.y) > MAX_FALL_SPEED * speedMult) {
 					speed.scl(1.0f, MAX_FALL_SPEED / Math.abs(speed.y));
 				}
-			}
-	        if(invulnerableTime > 0.0f) {
-	            invulnerableTime = (invulnerableTime - dt > 0) ? invulnerableTime - dt : 0.0f;
+				if (onGround) {
+					speed.x -= Math.min(1, dt * 10) * speed.x;
+				}
 	        }
+	        updateBuffs(dt);
+	        
 	        // movement
 			super.update(dt);
 	
-	        if (onGround && !dashing) {
-	            speed.x -= Math.min(1, dt * 10) * speed.x;
-	        }
 	        if (speed.x != 0) {
 	        	facingRight = speed.x > 0;
 	        }
@@ -511,21 +501,9 @@ public class Player extends Entity {
         }
         // if falling quickly and hit the ground
         if (onGround && velY < minLandedSpeed) {
-            landed = true;
+        	float duration = LAND_FRAME_DURATION * 4;
             animationTime = 0.0f;
-            landedTime = LAND_FRAME_DURATION * 4;
-            // spawn some smoke particles
-            Random rand = new Random();
-//            for (int i = 0; i<5; i++) {
-//                float pX = pos.x + rand.nextFloat() * size.x;
-//                float pY = pos.y + rand.nextFloat() * 5;
-//                float pSize = 0.2f + rand.nextFloat() * 0.2f;
-//                float pDuration = 0.3f + rand.nextFloat() * 0.9f;
-//                float pSpeed = 20 + rand.nextFloat() * 100;
-//                float pAngle = rand.nextFloat() * (float) Math.PI;
-//                Particle p = new Particle(new Vector2(pX,pY), new Vector2(1,0).setAngleRad(pAngle), pSpeed, pSize, pDuration, new Color(1.0f,1.0f, 1.0f, 1.0f));
-//                scene.addEntity(p, Scene.PARTICLE_LAYER);
-//            }
+        	addBuff(new StatusBuff(this, duration, Buff.Status.LAND_STUN));
             scene.addEntity(new GroundSmoke(new Vector2(pos.x + size.x/2, pos.y), false), Scene.PARTICLE_LAYER);
             scene.addEntity(new GroundSmoke(new Vector2(pos.x + size.x/2, pos.y), true), Scene.PARTICLE_LAYER);
         }
@@ -580,8 +558,7 @@ public class Player extends Entity {
                 // do nothing
             } else {
             	// do more complicated collision logic based on the pixel data
-                System.out.println("circle collision");
-
+                //System.out.println("circle collision");
                 int numPoints = 0;
                 Vector2 average = new Vector2(0, 0);
 
@@ -664,8 +641,8 @@ public class Player extends Entity {
 	public void render(SpriteBatch batch) {
 		if (alive) {
 			TextureRegion frame = getSprite();
-	        if(invulnerableTime > 0.0f) {
-	            batch.setColor(1.0f, 1.0f, 1.0f - (invulnerableTime%0.3f) * 1.5f, 0.4f + (invulnerableTime%0.3f)*2.0f);
+	        if (hasStatus(Buff.Status.INVULNERABLE)) {
+	            batch.setColor(1.0f, 1.0f, 1.0f - (animationTime % 0.3f) * 1.5f, 0.4f + (animationTime % 0.3f) * 2.0f);
 	        }
 	
 			batch.draw(frame, pos.x + (animationOffset * scale), pos.y, frame.getRegionWidth() * scale, frame.getRegionHeight() * scale);
@@ -674,7 +651,7 @@ public class Player extends Entity {
 	}
 
     public boolean killPlayer(int killerID, int deathSource) {
-        if(invulnerableTime <= 0.0f && alive || deathSource == DeathSources.WALL) {
+        if(alive && (hasStatus(Buff.Status.INVULNERABLE) || deathSource == DeathSources.WALL)) {
             lives--;
             alive = false;
             scene.addEntity(new PlayerBody(number, pos, speed.cpy(), 5.0f, facingRight), Scene.PLAYER_LAYER);
@@ -700,7 +677,11 @@ public class Player extends Entity {
     }
 
     public void onInvulnerable(float time) {
-        this.invulnerableTime = time;
+    	addBuff(new StatusBuff(this, time, Status.INVULNERABLE));
+    }
+
+    public void onSpeedBoost(float mult, float time) {
+    	addBuff(new SpeedBuff(this, time, 0.5f));
     }
 
     @Override
@@ -708,7 +689,67 @@ public class Player extends Entity {
         super.destroy();
     }
 
+    public boolean isAlive() {
+    	return alive;
+    }
+    
     public boolean isDestroyed() {
         return destroyed;
+    }
+    
+    private void updateBuffs(float dt) {
+		for (int i = buffs.size() - 1; i >= 0; i--) {
+			Buff b = buffs.get(i);
+    		b.update(dt);
+    		if (b.finished) {
+    			buffs.remove(i);
+    		}
+    	}
+		
+		Set<Buff.Status> expired = new HashSet<Buff.Status>();
+    	for (Buff.Status status : statusBuffs.keySet()) {
+    		Buff b = statusBuffs.get(status);
+    		b.update(dt);
+    		if (b.finished) {
+    			expired.add(status);
+    		}
+    	}
+    	// avoid concurrent modification of statusBuffs	
+    	for (Buff.Status status : expired) {
+			statusBuffs.remove(status);
+    	}
+    }
+    
+    public void addBuff(Buff b) {
+    	if (b.status == null) {
+        	buffs.add(b);
+			b.init();
+    	} else if (getBuffDuration(b.status) < b.duration) {
+        	statusBuffs.put(b.status, b);
+			b.init();
+		}
+    }
+    
+    private boolean hasStatus(Buff.Status status) {
+    	return statusBuffs.containsKey(status);
+    }
+    
+    private float getBuffDuration(Buff.Status status) {
+    	if (hasStatus(status)) {
+    		return statusBuffs.get(status).duration;
+    	} else {
+    		return 0.0f;
+    	}
+    }
+    
+    public void clearBuffs() {
+    	for (Buff b : buffs) {
+    		b.duration = 0.0f;
+    	}
+    	for (Buff.Status status : statusBuffs.keySet()) {
+    		Buff b = statusBuffs.get(status);
+    		b.duration = 0.0f;
+    	}
+    	// they will call their "end" methods and be removed next update
     }
 }

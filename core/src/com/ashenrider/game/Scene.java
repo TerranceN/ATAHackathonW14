@@ -203,6 +203,7 @@ public class Scene {
         powerUpPoints = map.getPowerupPoints();
 
         addEntity(new InvulnerabilityPowerUp(powerUpPoints), PLAYER_LAYER);
+        addEntity(new SpeedPowerUp(powerUpPoints), PLAYER_LAYER);
 
         for (int i = 0; i < players.size(); i++) {
             Player player = players.get(i);
@@ -237,13 +238,9 @@ public class Scene {
         player.pos = furthestSpawn.cpy().sub(new Vector2(player.size.x / 2.f, 0f));
         // clear any leftover state information
     	player.speed = new Vector2(0,0);
-    	player.invulnerableTime = 0.0f;
-    	player.dashing = false;
-    	player.dashTime = 0.0f;
-    	player.landed = false;
-    	player.landedTime = 0.0f;
     	player.onWall = false;
     	player.nullSphereEnabled = false;
+    	player.clearBuffs();
     	
     	player.spawnDelay = delay;
     }

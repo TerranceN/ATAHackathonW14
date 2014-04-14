@@ -13,7 +13,7 @@ public abstract class Entity {
 	Vector2 size;
 	
 	float GRAVITY = -600.0f;
-	boolean falls = true;
+	public boolean falls = true;
 	boolean onGround = false;
 	boolean collides = true;
 	
