@@ -139,7 +139,6 @@ public class MainMenuScreen implements Screen {
         vAxis.add(new KeyboardAxis(Keys.DOWN, Keys.UP));
 
         select.add(new KeyboardButton(Keys.ENTER));
-        select.add(new MouseButton(Buttons.LEFT));
         back.add(new KeyboardButton(Keys.ESCAPE));
         
         for(Controller controller : Controllers.getControllers()) {
