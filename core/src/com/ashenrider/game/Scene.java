@@ -301,6 +301,9 @@ public class Scene {
     }
 
 	public void update(float dt) {
+		// if you resize the window, it pauses all rendering
+		// so you can get a delta time of around 3 seconds, which would result in collision bugs
+		dt = Math.min(dt, 1/30f);
         collisionMask.begin();
         // check which players were colliding/not colliding in the previous frame
         for (Player p : players) {
@@ -431,17 +434,17 @@ public class Scene {
 			for (Entity e : entityLayers.get(layer)) {
                 if(!e.isDestroyed()) {
                     e.renderWithWrapAround(batch);
-                    /*
-                    if (DEBUG_PARTICLE == null) {
-                    	DEBUG_PARTICLE = Assets.manager.get("particle.png", Texture.class);
-                    } else if (DEBUG_PARTICLE != null) {
-                    	float sz = 10f;
-                        batch.draw(DEBUG_PARTICLE, e.pos.x - sz / 2f, e.pos.y - sz / 2f, sz, sz);
-                        batch.draw(DEBUG_PARTICLE, e.pos.x + e.size.x - sz / 2f, e.pos.y - sz / 2f, sz, sz);
-                        batch.draw(DEBUG_PARTICLE, e.pos.x + e.size.x - sz / 2f, e.pos.y + e.size.y - sz / 2f, sz, sz);
-                        batch.draw(DEBUG_PARTICLE, e.pos.x - sz / 2f, e.pos.y + e.size.y - sz / 2f, sz, sz);
+                    if (HackathonApp.DEBUG_HITBOXES) {
+	                    if (DEBUG_PARTICLE == null) {
+	                    	DEBUG_PARTICLE = Assets.manager.get("particle.png", Texture.class);
+	                    } else if (DEBUG_PARTICLE != null) {
+	                    	float sz = 10f;
+	                        batch.draw(DEBUG_PARTICLE, e.pos.x - sz / 2f, e.pos.y - sz / 2f, sz, sz);
+	                        batch.draw(DEBUG_PARTICLE, e.pos.x + e.size.x - sz / 2f, e.pos.y - sz / 2f, sz, sz);
+	                        batch.draw(DEBUG_PARTICLE, e.pos.x + e.size.x - sz / 2f, e.pos.y + e.size.y - sz / 2f, sz, sz);
+	                        batch.draw(DEBUG_PARTICLE, e.pos.x - sz / 2f, e.pos.y + e.size.y - sz / 2f, sz, sz);
+	                    }
                     }
-                    */
                 }
 			}
 			batch.end();

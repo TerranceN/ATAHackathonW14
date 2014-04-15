@@ -12,6 +12,7 @@ import com.ashenrider.game.userinterface.LoadingScreen;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -24,7 +25,9 @@ import java.util.Stack;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 public class HackathonApp extends Game {
-
+	public static final boolean DEBUG_HITBOXES = false;
+	public static final boolean DEBUG_FPS = false;
+	
     Stack<Screen> backStack;
     private boolean isEscaping = false;
 
@@ -34,6 +37,7 @@ public class HackathonApp extends Game {
     
     
     public static final String FONT_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;,{}\"´`'<>";
+    FPSLogger logger;
     
     @Override
 	public void create () {
@@ -48,6 +52,7 @@ public class HackathonApp extends Game {
         buttonFont = generator.generateFont(26);
         generator.dispose();
 
+        logger = new FPSLogger();
         setScreen(new LoadingScreen(this));
     }
 
@@ -76,6 +81,9 @@ public class HackathonApp extends Game {
 
 	@Override
 	public void render () {
+		if (DEBUG_FPS) {
+			logger.log();
+		}
         super.render();
 
         //Go back when esc is hit.

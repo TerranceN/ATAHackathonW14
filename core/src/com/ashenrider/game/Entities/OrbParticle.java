@@ -58,7 +58,7 @@ public class OrbParticle extends Entity {
     public void update(float dt) {
         super.update(dt);
         lifeTime -= dt;
-        if(lifeTime <= 0) {
+        if(lifeTime <= 0 || !player.alive) {
             destroy();
         } else if (lifeTime < FADE_TIME) {
             orbColor.a = lifeTime / FADE_TIME;
