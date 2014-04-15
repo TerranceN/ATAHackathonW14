@@ -7,6 +7,7 @@ import java.util.Random;
 
 import com.ashenrider.game.Entities.Entity;
 import com.ashenrider.game.Entities.InvulnerabilityPowerUp;
+import com.ashenrider.game.Entities.Particle;
 import com.ashenrider.game.Entities.Player;
 import com.ashenrider.game.Entities.ShotPowerUp;
 import com.ashenrider.game.Entities.SpeedPowerUp;
@@ -34,6 +35,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.graphics.Pixmap;
 
 public class Scene {
+	public static Texture DEBUG_PARTICLE = null;
     Random random = new Random();
 
 	// map and entitity layers
@@ -429,14 +431,17 @@ public class Scene {
 			for (Entity e : entityLayers.get(layer)) {
                 if(!e.isDestroyed()) {
                     e.renderWithWrapAround(batch);
-                    //if (Particle.BASE_PARTICLE == null) {
-                    //	Particle.BASE_PARTICLE = Assets.manager.get("particle.png", Texture.class);
-                    //} else if (Particle.BASE_PARTICLE != null) {
-                    //    batch.draw(Particle.BASE_PARTICLE, e.pos.x - Particle.BASE_PARTICLE.getWidth() / 2f, e.pos.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
-                    //    batch.draw(Particle.BASE_PARTICLE, e.pos.x + e.size.x - Particle.BASE_PARTICLE.getWidth() / 2f, e.pos.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
-                    //    batch.draw(Particle.BASE_PARTICLE, e.pos.x + e.size.x - Particle.BASE_PARTICLE.getWidth() / 2f, e.pos.y + e.size.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
-                    //    batch.draw(Particle.BASE_PARTICLE, e.pos.x - Particle.BASE_PARTICLE.getWidth() / 2f, e.pos.y + e.size.y - Particle.BASE_PARTICLE.getHeight() / 2f, 10, 10);
-                    //}
+                    /*
+                    if (DEBUG_PARTICLE == null) {
+                    	DEBUG_PARTICLE = Assets.manager.get("particle.png", Texture.class);
+                    } else if (DEBUG_PARTICLE != null) {
+                    	float sz = 10f;
+                        batch.draw(DEBUG_PARTICLE, e.pos.x - sz / 2f, e.pos.y - sz / 2f, sz, sz);
+                        batch.draw(DEBUG_PARTICLE, e.pos.x + e.size.x - sz / 2f, e.pos.y - sz / 2f, sz, sz);
+                        batch.draw(DEBUG_PARTICLE, e.pos.x + e.size.x - sz / 2f, e.pos.y + e.size.y - sz / 2f, sz, sz);
+                        batch.draw(DEBUG_PARTICLE, e.pos.x - sz / 2f, e.pos.y + e.size.y - sz / 2f, sz, sz);
+                    }
+                    */
                 }
 			}
 			batch.end();

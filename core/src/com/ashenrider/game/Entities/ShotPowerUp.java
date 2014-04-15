@@ -1,5 +1,6 @@
 package com.ashenrider.game.Entities;
 
+import com.ashenrider.game.Scene;
 import com.ashenrider.game.Buffs.Buff;
 import com.ashenrider.game.Buffs.SpeedBuff;
 import com.ashenrider.game.Buffs.StatusBuff;
@@ -23,5 +24,6 @@ public class ShotPowerUp extends PowerUp {
     public void onPickup(Player player) {
         super.onPickup(player);
     	player.addBuff(new StatusBuff(player, BUFF_DURATION, Buff.Status.MULTI_SHOT));
+        scene.addEntity(new OrbParticle(player, colorTint, BUFF_DURATION), Scene.PARTICLE_LAYER);
     }
 }
