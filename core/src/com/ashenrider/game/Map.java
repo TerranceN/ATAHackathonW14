@@ -193,9 +193,9 @@ public class Map {
                     if (levelLayer.getCell(x, y) != null) {
                         foundCollision = true;
                         if (vel.x < 0) {
-                            newPenX = (x + 1) * tileSize - lower.x;
+                            newPenX = (x + 1) * tileSize - lower.x + 0.001f;
                         } else {
-                            newPenX = (x) * tileSize - upper.x;
+                            newPenX = (x) * tileSize - upper.x + 0.001f;
                         }
                     } else {
                         if (foundCollision) {
