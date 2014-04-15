@@ -195,7 +195,7 @@ public class Map {
                         if (vel.x < 0) {
                             newPenX = (x + 1) * tileSize - lower.x + 0.001f;
                         } else {
-                            newPenX = (x) * tileSize - upper.x + 0.001f;
+                            newPenX = (x) * tileSize - upper.x - 0.001f;
                         }
                     } else {
                         if (foundCollision) {
