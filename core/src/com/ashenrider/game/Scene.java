@@ -119,8 +119,8 @@ public class Scene {
         boolean controllerDebug = false;
 
         for(Controller controller : Controllers.getControllers()) {
-            addPlayer(new Vector2(400, 200),
-                    ControllerHelper.getAxis(controller, ControllerHelper.LEFT_STICK_HORIZONTAL),
+            Player player = addPlayer(new Vector2(400, 200));
+    		player.setInputs(ControllerHelper.getAxis(controller, ControllerHelper.LEFT_STICK_HORIZONTAL),
                     ControllerHelper.getAxis(controller, ControllerHelper.RIGHT_STICK_HORIZONTAL),
                     ControllerHelper.getAxis(controller, ControllerHelper.RIGHT_STICK_VERTICAL),
                     ControllerHelper.getButton(controller, ControllerHelper.A_BTN),
@@ -182,22 +182,19 @@ public class Scene {
         }
         
         // keyboard/mouse player
-		Player p = addPlayer(new Vector2(100, 100),
-			  new KeyboardAxis(Keys.A, Keys.D),
-			  // mouseAxis needs a reference to the player
-		  		  null,
-		  		  null,
-		  		  new KeyboardButton(Keys.W),
-		  		  new MouseButton(Buttons.LEFT),
-		  		  new KeyboardButton(Keys.S),
-		            new KeyboardButton(Keys.SHIFT_LEFT));
-		p.axisMap.put(Player.Action.AIM_HORIZONTAL, new MouseAxis(p, camera, true));
-		p.axisMap.put(Player.Action.AIM_VERTICAL, new MouseAxis(p, camera, false));
+        Player player = addPlayer(new Vector2(100, 100));
+		player.setInputs(new KeyboardAxis(Keys.A, Keys.D),
+						new MouseAxis(player, camera, true),
+						new MouseAxis(player, camera, false),
+						new KeyboardButton(Keys.W),
+						new MouseButton(Buttons.LEFT),
+						new KeyboardButton(Keys.S),
+						new KeyboardButton(Keys.SHIFT_LEFT));
 
         // uncontrollable players
         for (int i = players.size(); i < 4; i++) {
-			addPlayer(new Vector2(100, 100),
-					  new KeyboardAxis(Keys.LEFT, Keys.RIGHT),
+            player = addPlayer(new Vector2(100, 100));
+    		player.setInputs(new KeyboardAxis(Keys.LEFT, Keys.RIGHT),
 					  new KeyboardAxis(Keys.NUMPAD_4, Keys.NUMPAD_6),
 					  new KeyboardAxis(Keys.NUMPAD_5, Keys.NUMPAD_8),
 			  		  new KeyboardButton(Keys.UP),
@@ -214,7 +211,7 @@ public class Scene {
         addEntity(new ShotPowerUp(powerUpPoints), PLAYER_LAYER);
 
         for (int i = 0; i < players.size(); i++) {
-            Player player = players.get(i);
+            player = players.get(i);
             // stagger the initial player spawns ?
             respawnPlayer(player, 0.5f * i);
         }
@@ -358,8 +355,8 @@ public class Scene {
 		newEntities.clear();
 	}
 	
-	public Player addPlayer(Vector2 position,  InputAxis moveAxis, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton dash, InputButton nullSphere) {
-		Player p = new Player(players.size(), position, moveAxis, aimH, aimV, jump, shoot, dash, nullSphere);
+	public Player addPlayer(Vector2 position) {
+		Player p = new Player(players.size(), position);
         players.add(p);
         addEntity(p, PLAYER_LAYER);
         return p;

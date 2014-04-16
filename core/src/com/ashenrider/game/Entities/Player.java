@@ -107,7 +107,7 @@ public class Player extends Entity {
 	private Texture head;
 	public Color playerColor;
     
-	public Player(int playerNumber, Vector2 initPosition, InputAxis moveAxis, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton dash, InputButton nullSphere) {
+	public Player(int playerNumber, Vector2 initPosition) {
 		super(initPosition);
 		number = playerNumber;
 		switch (number % 4) {
@@ -163,15 +163,6 @@ public class Player extends Entity {
 		buttonMap = new HashMap<Action, InputButton>();
 		axisMap = new HashMap<Action, InputAxis>();
 		
-		axisMap.put(Action.MOVE, moveAxis);
-		axisMap.put(Action.AIM_HORIZONTAL, aimH);
-		axisMap.put(Action.AIM_VERTICAL, aimV);
-
-		buttonMap.put(Action.JUMP, jump);
-		buttonMap.put(Action.SHOOT, shoot);
-		buttonMap.put(Action.DASH, dash);
-		buttonMap.put(Action.NULL_SPHERE, nullSphere);
-		
 		cooldown = new HashMap<Action, Float>();
 		cooldown.put(Action.JUMP, 0.0f);
 		cooldown.put(Action.SHOOT, 0.0f);
@@ -185,8 +176,27 @@ public class Player extends Entity {
 		buffs = new ArrayList<Buff>();
 		statusBuffs = new HashMap<Buff.Status, Buff>();
 	}
+	
+	public void setInputs(InputAxis moveAxis, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton dash, InputButton nullSphere) {
+		axisMap.put(Action.MOVE, moveAxis);
+		axisMap.put(Action.AIM_HORIZONTAL, aimH);
+		axisMap.put(Action.AIM_VERTICAL, aimV);
 
-    public ArrayList<Vector2> getPoints() {
+		buttonMap.put(Action.JUMP, jump);
+		buttonMap.put(Action.SHOOT, shoot);
+		buttonMap.put(Action.DASH, dash);
+		buttonMap.put(Action.NULL_SPHERE, nullSphere);
+	}
+
+	public void setInput(Action action, InputAxis axis) {
+		axisMap.put(action, axis);
+	}
+
+	public void setInput(Action action, InputButton button) {
+		buttonMap.put(action, button);
+	}
+
+	public ArrayList<Vector2> getPoints() {
         ArrayList<Vector2> points = new ArrayList<Vector2>();
 
         //feet
