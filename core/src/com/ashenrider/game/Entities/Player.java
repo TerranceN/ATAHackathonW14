@@ -98,16 +98,11 @@ public class Player extends Entity {
 	private float LAND_FRAME_DURATION = 0.08f;
 	private float IDLE_FRAME_DURATION = 0.16f;
 
-	private Animation walkLeftAnimation;
-    private Animation walkRightAnimation;
-	private Animation jumpLeftAnimation;
-    private Animation jumpRightAnimation;
-	private Animation idleLeftAnimation;
-    private Animation idleRightAnimation;
-	private Animation landLeftAnimation;
-	private Animation landRightAnimation;
-	private TextureRegion wallHugLeft;
-	private TextureRegion wallHugRight;
+	private Animation walkAnimation;
+	private Animation jumpAnimation;
+	private Animation idleAnimation;
+	private Animation landAnimation;
+	private TextureRegion wallHug;
 
 	private Texture head;
 	public Color playerColor;
@@ -134,49 +129,31 @@ public class Player extends Entity {
 		// death 1-10
 		// (unused)
 		// run 1-5
-		TextureRegion[] leftFrames = new TextureRegion[5];
-		TextureRegion[] rightFrames = new TextureRegion[5];
+		TextureRegion[] frames = new TextureRegion[5];
 		for (int i=0; i<5; i++) {
-			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/run-0" + (i+1));
-			leftFrames[i] = new TextureRegion(rightFrames[i]);
-            rightFrames[i].flip(true, false);
+			frames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/run-0" + (i+1));
 		}
-		walkLeftAnimation = new Animation(RUNNING_FRAME_DURATION, leftFrames);
-		walkRightAnimation = new Animation(RUNNING_FRAME_DURATION, rightFrames);
+		walkAnimation = new Animation(RUNNING_FRAME_DURATION, frames);
 		// stand 1-5
-		leftFrames = new TextureRegion[5];
-		rightFrames = new TextureRegion[5];
+		frames = new TextureRegion[5];
 		for (int i=0; i<5; i++) {
-			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/stand-0" + (i+1));
-			leftFrames[i] = new TextureRegion(rightFrames[i]);
-			rightFrames[i].flip(true, false);
+			frames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/stand-0" + (i+1));
 		}
-		idleLeftAnimation = new Animation(IDLE_FRAME_DURATION, leftFrames);
-		idleRightAnimation = new Animation(IDLE_FRAME_DURATION, rightFrames);
+		idleAnimation = new Animation(IDLE_FRAME_DURATION, frames);
 		// jump 1-3
-		leftFrames = new TextureRegion[3];
-		rightFrames = new TextureRegion[3];
+		frames = new TextureRegion[3];
 		for (int i=0; i<3; i++) {
-			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/jump-0" + (i+1));
-			leftFrames[i] = new TextureRegion(rightFrames[i]);
-			rightFrames[i].flip(true, false);
+			frames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/jump-0" + (i+1));
 		}
-		jumpLeftAnimation = new Animation(JUMP_FRAME_DURATION, leftFrames);
-		jumpRightAnimation = new Animation(JUMP_FRAME_DURATION, rightFrames);
+		jumpAnimation = new Animation(JUMP_FRAME_DURATION, frames);
 		// land 1-5
-		leftFrames = new TextureRegion[4];
-		rightFrames = new TextureRegion[4];
+		frames = new TextureRegion[4];
 		for (int i=0; i<4; i++) {
-			rightFrames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/land-0" + (i+2));
-			leftFrames[i] = new TextureRegion(rightFrames[i]);
-            rightFrames[i].flip(true, false);
+			frames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/land-0" + (i+2));
 		}
-		landLeftAnimation = new Animation(LAND_FRAME_DURATION, leftFrames);
-		landRightAnimation = new Animation(LAND_FRAME_DURATION, rightFrames);
+		landAnimation = new Animation(LAND_FRAME_DURATION, frames);
 		// wallhug 1
-		wallHugRight = atlas.findRegion("p" + (playerNumber % 4) + "/wallhug-01");
-		wallHugLeft = new TextureRegion(wallHugRight);
-		wallHugRight.flip(true, false);
+		wallHug = atlas.findRegion("p" + (playerNumber % 4) + "/wallhug-01");
 		
 		head = Assets.manager.get("head" + playerNumber % 4 + ".png", Texture.class);
 		
@@ -286,19 +263,15 @@ public class Player extends Entity {
 		TextureRegion frame;
 		// pass a time to animation to get the right frame
 		if (hasStatus(Buff.Status.LAND_STUN)) {
-			frame = facingRight ? landRightAnimation.getKeyFrame(animationTime, false)
-								: landLeftAnimation.getKeyFrame(animationTime, false);
+			frame = landAnimation.getKeyFrame(animationTime, false);
 		} else if (onWall) {
-			frame = facingRight ? wallHugRight : wallHugLeft;
+			frame = wallHug;
 		} else if (!onGround) {
-			frame = facingRight ? jumpRightAnimation.getKeyFrame(animationTime, true)
-								: jumpLeftAnimation.getKeyFrame(animationTime, true);
+			frame = jumpAnimation.getKeyFrame(animationTime, true);
 		} else if (Math.abs(speed.x) > 20.0f) { 
-			frame = facingRight ? walkRightAnimation.getKeyFrame(animationTime, true)
-								: walkLeftAnimation.getKeyFrame(animationTime, true);
+			frame = walkAnimation.getKeyFrame(animationTime, true);
 		} else {
-			frame = facingRight ? idleRightAnimation.getKeyFrame(animationTime, true)
-								: idleLeftAnimation.getKeyFrame(animationTime, true);
+			frame = idleAnimation.getKeyFrame(animationTime, true);
 		}
 		return frame;
 	}
@@ -657,7 +630,11 @@ public class Player extends Entity {
 	            batch.setColor(1.0f, 1.0f, 1.0f - (animationTime % 0.3f) * 1.5f, 0.4f + (animationTime % 0.3f) * 2.0f);
 	        }
 	
-			batch.draw(frame, pos.x + (animationOffset * scale), pos.y, frame.getRegionWidth() * scale, frame.getRegionHeight() * scale);
+	        float w = frame.getRegionWidth() * scale;
+	        float h = frame.getRegionHeight() * scale;
+	        float ox = w/2f;
+	        float scaleX = facingRight ? -1 : 1;
+	        batch.draw(frame, pos.x + size.x/2 - ox, pos.y, ox, 0, w, h, scaleX, 1f, 0f);
 	        batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
 		}
 	}
