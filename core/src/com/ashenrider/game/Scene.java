@@ -35,17 +35,17 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.graphics.Pixmap;
 
 public class Scene {
-	public static Texture DEBUG_PARTICLE = null;
+    public static Texture DEBUG_PARTICLE = null;
     Random random = new Random();
 
-	// map and entitity layers
-	int NUM_LAYERS = 5;
-	public static int BACKGROUND_LAYER = 0;
-	public static int PLAYER_LAYER = 1;
-	public static int SHOT_LAYER = 2;
-	public static int FOREGROUND_LAYER = 3;
-	public static int PARTICLE_LAYER = 4;
-	
+    // map and entitity layers
+    int NUM_LAYERS = 5;
+    public static int BACKGROUND_LAYER = 0;
+    public static int PLAYER_LAYER = 1;
+    public static int SHOT_LAYER = 2;
+    public static int FOREGROUND_LAYER = 3;
+    public static int PARTICLE_LAYER = 4;
+    
     OrthographicCamera camera;
     OrthographicCamera mapCam;
     public ArrayList<Entity> newEntities;
@@ -81,7 +81,7 @@ public class Scene {
     TextureRegion levelBufferRegion;
     
     public Scene(String filename) {
-    	batch = new SpriteBatch();
+        batch = new SpriteBatch();
         map = new Map(filename);
         camera = new OrthographicCamera();
         mapCam = new OrthographicCamera();
@@ -112,7 +112,7 @@ public class Scene {
         entities = new ArrayList<Entity>();
         entityLayers = new ArrayList<ArrayList<Entity>>();
         for (int layer =0; layer < NUM_LAYERS; layer++) {
-        	entityLayers.add(new ArrayList<Entity>());
+            entityLayers.add(new ArrayList<Entity>());
         }
         
         players = new ArrayList<Player>();
@@ -120,7 +120,8 @@ public class Scene {
 
         for(Controller controller : Controllers.getControllers()) {
             Player player = addPlayer(new Vector2(400, 200));
-    		player.setInputs(ControllerHelper.getAxis(controller, ControllerHelper.LEFT_STICK_HORIZONTAL),
+            player.setInputs(ControllerHelper.getAxis(controller, ControllerHelper.LEFT_STICK_HORIZONTAL),
+                    ControllerHelper.getAxis(controller, ControllerHelper.LEFT_STICK_VERTICAL),
                     ControllerHelper.getAxis(controller, ControllerHelper.RIGHT_STICK_HORIZONTAL),
                     ControllerHelper.getAxis(controller, ControllerHelper.RIGHT_STICK_VERTICAL),
                     ControllerHelper.getButton(controller, ControllerHelper.A_BTN),
@@ -183,24 +184,26 @@ public class Scene {
         
         // keyboard/mouse player
         Player player = addPlayer(new Vector2(100, 100));
-		player.setInputs(new KeyboardAxis(Keys.A, Keys.D),
-						new MouseAxis(player, camera, true),
-						new MouseAxis(player, camera, false),
-						new KeyboardButton(Keys.W),
-						new MouseButton(Buttons.LEFT),
-						new KeyboardButton(Keys.S),
-						new KeyboardButton(Keys.SHIFT_LEFT));
+        player.setInputs(new KeyboardAxis(Keys.A, Keys.D),
+                        new KeyboardAxis(Keys.S, Keys.W),
+                        new MouseAxis(player, camera, true),
+                        new MouseAxis(player, camera, false),
+                        new KeyboardButton(Keys.W),
+                        new MouseButton(Buttons.LEFT),
+                        new KeyboardButton(Keys.E),
+                        new KeyboardButton(Keys.SHIFT_LEFT));
 
         // uncontrollable players
         for (int i = players.size(); i < 4; i++) {
             player = addPlayer(new Vector2(100, 100));
-    		player.setInputs(new KeyboardAxis(Keys.LEFT, Keys.RIGHT),
-					  new KeyboardAxis(Keys.NUMPAD_4, Keys.NUMPAD_6),
-					  new KeyboardAxis(Keys.NUMPAD_5, Keys.NUMPAD_8),
-			  		  new KeyboardButton(Keys.UP),
-			  		  new KeyboardButton(Keys.ENTER),
-			  		  new KeyboardButton(Keys.CONTROL_RIGHT),
-			          new KeyboardButton(Keys.SHIFT_RIGHT));
+            player.setInputs(new KeyboardAxis(Keys.LEFT, Keys.RIGHT),
+                        new KeyboardAxis(Keys.DOWN, Keys.UP),
+                        new KeyboardAxis(Keys.NUMPAD_4, Keys.NUMPAD_6),
+                        new KeyboardAxis(Keys.NUMPAD_5, Keys.NUMPAD_8),
+                        new KeyboardButton(Keys.UP),
+                        new KeyboardButton(Keys.ENTER),
+                        new KeyboardButton(Keys.SHIFT_RIGHT),
+                        new KeyboardButton(Keys.CONTROL_RIGHT));
         }
 
         spawnPoints = map.getSpawnPoints();
@@ -222,29 +225,29 @@ public class Scene {
     }
 
     public void respawnPlayer(Player player, float delay) {
-    	// pick the spawn point for which the closest player is the furthest away.
-    	// alternatively, pick any spawnpoint that has no players within a minimum distance
-    	float spawnD = 0.0f;
-    	Vector2 furthestSpawn = spawnPoints.get(0);
-    	for (Vector2 spawn : spawnPoints) {
-    		float minD = Float.MAX_VALUE;
-    		for (Player otherPlayer : players) {
-    			// Dead players have already been moved to a spawn location, don't go near them if they are respawning soon
-    			// Don't spawn near your own corpse either
-    			if (player.lives > 0) {
-    				minD = Math.min(otherPlayer.getCentre().dst(spawn), minD);
-    			}
-    		}
-    		if (minD > spawnD) {
-    			spawnD = minD;
-    			furthestSpawn = spawn;
-    		}
-    	}
+        // pick the spawn point for which the closest player is the furthest away.
+        // alternatively, pick any spawnpoint that has no players within a minimum distance
+        float spawnD = 0.0f;
+        Vector2 furthestSpawn = spawnPoints.get(0);
+        for (Vector2 spawn : spawnPoints) {
+            float minD = Float.MAX_VALUE;
+            for (Player otherPlayer : players) {
+                // Dead players have already been moved to a spawn location, don't go near them if they are respawning soon
+                // Don't spawn near your own corpse either
+                if (player.lives > 0) {
+                    minD = Math.min(otherPlayer.getCentre().dst(spawn), minD);
+                }
+            }
+            if (minD > spawnD) {
+                spawnD = minD;
+                furthestSpawn = spawn;
+            }
+        }
         player.pos = furthestSpawn.cpy().sub(new Vector2(player.size.x / 2.f, 0f));
         // clear any leftover state information
-    	player.clearBuffs();
-    	
-    	player.spawnDelay = delay;
+        player.clearBuffs();
+        
+        player.spawnDelay = delay;
     }
 
     public void testShaderCompilation(ShaderProgram program) {
@@ -297,16 +300,16 @@ public class Scene {
         return (collisionMaskPixmap.getPixel(0, 0) >> 24) & 0x0FF;
     }
 
-	public void update(float dt) {
-		// if you resize the window, it pauses all rendering
-		// so you can get a delta time of around 3 seconds, which would result in collision bugs
-		dt = Math.min(dt, 1/30f);
+    public void update(float dt) {
+        // if you resize the window, it pauses all rendering
+        // so you can get a delta time of around 3 seconds, which would result in collision bugs
+        dt = Math.min(dt, 1/30f);
         collisionMask.begin();
         // check which players were colliding/not colliding in the previous frame
         for (Player p : players) {
-        	if (p.alive) {
-        		p.recordTexCollision();
-        	}
+            if (p.alive) {
+                p.recordTexCollision();
+            }
         }
         // fade collision mask
         batch.setShader(nullSphereFadeShader);
@@ -321,53 +324,53 @@ public class Scene {
         batch.setShader(null);
         // see which players are colliding now compared to before the mask fade
         for (Player p : players) {
-        	if (p.alive) {
-        		p.texCollisionResolve();
-        	}
+            if (p.alive) {
+                p.texCollisionResolve();
+            }
         }
         collisionMask.end();
 
-		for (Entity e : entities) {
-			if (!e.isDestroyed()) {
-				e.update(dt);
-			}
-		}
+        for (Entity e : entities) {
+            if (!e.isDestroyed()) {
+                e.update(dt);
+            }
+        }
 
         collisionMask.begin();
-		for (Entity e : entities) {
-			if (!e.isDestroyed()) {
-				e.handleCollision(map);
-			}
-		}
+        for (Entity e : entities) {
+            if (!e.isDestroyed()) {
+                e.handleCollision(map);
+            }
+        }
         collisionMask.end();
 
-		for (Entity e : newEntities) {
-			entities.add(e);
-			entityLayers.get(e.layer).add(e);
-		}
-		// remove destroyed entities
-		for (int i = entities.size() - 1; i >= 0; i--) {
-			Entity e = entities.get(i);
-			if (e.isDestroyed()) {
-				entities.remove(i);
-			}
-		}
-		newEntities.clear();
-	}
-	
-	public Player addPlayer(Vector2 position) {
-		Player p = new Player(players.size(), position);
+        for (Entity e : newEntities) {
+            entities.add(e);
+            entityLayers.get(e.layer).add(e);
+        }
+        // remove destroyed entities
+        for (int i = entities.size() - 1; i >= 0; i--) {
+            Entity e = entities.get(i);
+            if (e.isDestroyed()) {
+                entities.remove(i);
+            }
+        }
+        newEntities.clear();
+    }
+    
+    public Player addPlayer(Vector2 position) {
+        Player p = new Player(players.size(), position);
         players.add(p);
         addEntity(p, PLAYER_LAYER);
         return p;
-	}
+    }
 
-	public void addEntity(Entity e, int layer) {
-		e.scene = this;
-		e.layer = layer;
-		newEntities.add(e);
-	}
-	
+    public void addEntity(Entity e, int layer) {
+        e.scene = this;
+        e.layer = layer;
+        newEntities.add(e);
+    }
+    
     public void render() {
         // render circles onto collisionMask
         collisionMask.begin();
@@ -425,27 +428,27 @@ public class Scene {
     void renderLayers(int start, int end) {
         levelBuffer.begin();
         batch.setProjectionMatrix(mapCam.combined);
-		for (int layer = start; layer <= end; layer++) {
-	        map.renderLayer(layer, mapCam);
-			batch.begin();
-			for (Entity e : entityLayers.get(layer)) {
+        for (int layer = start; layer <= end; layer++) {
+            map.renderLayer(layer, mapCam);
+            batch.begin();
+            for (Entity e : entityLayers.get(layer)) {
                 if(!e.isDestroyed()) {
                     e.renderWithWrapAround(batch);
                     if (HackathonApp.DEBUG_HITBOXES) {
-	                    if (DEBUG_PARTICLE == null) {
-	                    	DEBUG_PARTICLE = Assets.manager.get("particle.png", Texture.class);
-	                    } else if (DEBUG_PARTICLE != null) {
-	                    	float sz = 10f;
-	                        batch.draw(DEBUG_PARTICLE, e.pos.x - sz / 2f, e.pos.y - sz / 2f, sz, sz);
-	                        batch.draw(DEBUG_PARTICLE, e.pos.x + e.size.x - sz / 2f, e.pos.y - sz / 2f, sz, sz);
-	                        batch.draw(DEBUG_PARTICLE, e.pos.x + e.size.x - sz / 2f, e.pos.y + e.size.y - sz / 2f, sz, sz);
-	                        batch.draw(DEBUG_PARTICLE, e.pos.x - sz / 2f, e.pos.y + e.size.y - sz / 2f, sz, sz);
-	                    }
+                        if (DEBUG_PARTICLE == null) {
+                            DEBUG_PARTICLE = Assets.manager.get("particle.png", Texture.class);
+                        } else if (DEBUG_PARTICLE != null) {
+                            float sz = 10f;
+                            batch.draw(DEBUG_PARTICLE, e.pos.x - sz / 2f, e.pos.y - sz / 2f, sz, sz);
+                            batch.draw(DEBUG_PARTICLE, e.pos.x + e.size.x - sz / 2f, e.pos.y - sz / 2f, sz, sz);
+                            batch.draw(DEBUG_PARTICLE, e.pos.x + e.size.x - sz / 2f, e.pos.y + e.size.y - sz / 2f, sz, sz);
+                            batch.draw(DEBUG_PARTICLE, e.pos.x - sz / 2f, e.pos.y + e.size.y - sz / 2f, sz, sz);
+                        }
                     }
                 }
-			}
-			batch.end();
-		}
+            }
+            batch.end();
+        }
         levelBuffer.end();
     }
 

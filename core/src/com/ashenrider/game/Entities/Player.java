@@ -29,174 +29,179 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 public class Player extends Entity {
     private static final float INVULNERABILITY_LENGTH = 2.25f;
 
-	float scale = 2.0f;
-	float animationTime = 0.0f;
-	int frameCount = 0;
+    float scale = 2.0f;
+    float animationTime = 0.0f;
+    int frameCount = 0;
 
     public int lives = 3;
     public boolean alive = false;
     public float spawnDelay = 0.0f;
 
-	float JUMP = 550.0f;
-	float AIR_JUMP = 400.0f;
-	float ACCEL = 4000.0f;
-	float MAX_MOVE_SPEED = 300.0f; // while not dashing
-    float MAX_FALL_SPEED = 800.0f;
-	
-	float DASH_SPEED = 800.0f;
-	float DASH_TIME = 0.13f;
-	
-	float MAX_NULL_TIME = 0.7f;
-	float nullTime = 0.0f;
+    float JUMP = 550.0f;
+    float AIR_JUMP = 400.0f;
+    float ACCEL = 4000.0f;
+    float MAX_MOVE_SPEED = 300.0f; // while not dashing
+    float MAX_FALL_SPEED = 1000.0f; // still affects down smashes
+    
+    float DASH_SPEED = 800.0f;
+    float DOWN_DASH_SPEED = 600.0f; // this is added to your current speed
+    float DASH_TIME = 0.13f;
+    
+    float MAX_NULL_TIME = 0.7f;
+    float nullTime = 0.0f;
     public boolean nullSphereEnabled = false;
 
     boolean jumpPressedLastFrame = false;
+    boolean dashPressedLastFrame = false;
 
-	// current
-	int airJumps = 0;
-	int airDashes = 0;
-	
-	// maximum
-	static int NUM_AIRJUMPS = 0;
-	static int NUM_AIRDASHES = 1;
-	
-	// state logic (for animation and some logic)
-	//onGround
-	boolean facingRight = true;
-	// landDuration / animation
-	// standing
-	// falling
+    // current
+    int airJumps = 0;
+    int airDashes = 0;
+    
+    // maximum
+    static int NUM_AIRJUMPS = 0;
+    static int NUM_AIRDASHES = 1;
+    
+    // state logic (for animation and some logic)
+    //onGround
+    boolean facingRight = true;
+    // landDuration / animation
+    // standing
+    // falling
     private boolean onWall = false;
     int wallDir = 0;
 
-	float minLandedSpeed = -400.0f;
+    float minLandedSpeed = -400.0f;
 
     public float speedMult = 1.0f;
-	
-	public enum Action {
-		MOVE, AIM_HORIZONTAL, AIM_VERTICAL, JUMP, SHOOT, DASH, NULL_SPHERE
-	}
-	
-	HashMap<Action, InputButton> buttonMap;
-	public HashMap<Action, InputAxis> axisMap;
-	
-	HashMap<Action, Float> cooldown;
-	HashMap<Action, Float> maxCooldown;
-	HashMap<Buff.Status, Buff> statusBuffs;
-	ArrayList<Buff> buffs;
-		
-	// playerNumber is an ID for 
-	public int number;
-	ArrayList<Boolean> texCollidedBeforeUpdate;
-	
-	public int NOT_A_PLAYER = -1;
-
-	// every image is 70 wide and the middle 20 are the hitbox
-	int animationOffset = -27;
-	private float RUNNING_FRAME_DURATION = 0.06f;
-	private float JUMP_FRAME_DURATION = 0.12f;
-	private float LAND_FRAME_DURATION = 0.08f;
-	private float IDLE_FRAME_DURATION = 0.16f;
-
-	private Animation walkAnimation;
-	private Animation jumpAnimation;
-	private Animation idleAnimation;
-	private Animation landAnimation;
-	private TextureRegion wallHug;
-
-	private Texture head;
-	public Color playerColor;
     
-	public Player(int playerNumber, Vector2 initPosition) {
-		super(initPosition);
-		number = playerNumber;
-		switch (number % 4) {
-			case 0:
-				playerColor = new Color(0x951A1AFF);
-				break;
-			case 1:
-				playerColor = new Color(0x372D8EFF);
-				break;
-			case 2:
-				playerColor = new Color(0xA6F400FF);
-				break;
-			case 3:
-				playerColor = new Color(0xFFD200FF);
-				break;
-		}
-		// 16x32 regions
-		TextureAtlas atlas = Assets.manager.get("pack/animations.atlas", TextureAtlas.class);
-		// death 1-10
-		// (unused)
-		// run 1-5
-		TextureRegion[] frames = new TextureRegion[5];
-		for (int i=0; i<5; i++) {
-			frames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/run-0" + (i+1));
-		}
-		walkAnimation = new Animation(RUNNING_FRAME_DURATION, frames);
-		// stand 1-5
-		frames = new TextureRegion[5];
-		for (int i=0; i<5; i++) {
-			frames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/stand-0" + (i+1));
-		}
-		idleAnimation = new Animation(IDLE_FRAME_DURATION, frames);
-		// jump 1-3
-		frames = new TextureRegion[3];
-		for (int i=0; i<3; i++) {
-			frames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/jump-0" + (i+1));
-		}
-		jumpAnimation = new Animation(JUMP_FRAME_DURATION, frames);
-		// land 1-5
-		frames = new TextureRegion[4];
-		for (int i=0; i<4; i++) {
-			frames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/land-0" + (i+2));
-		}
-		landAnimation = new Animation(LAND_FRAME_DURATION, frames);
-		// wallhug 1
-		wallHug = atlas.findRegion("p" + (playerNumber % 4) + "/wallhug-01");
-		
-		head = Assets.manager.get("head" + playerNumber % 4 + ".png", Texture.class);
-		
-		// approximate size of the player
-		size = new Vector2(16.0f, 48.0f).scl(scale);
-		
-		buttonMap = new HashMap<Action, InputButton>();
-		axisMap = new HashMap<Action, InputAxis>();
-		
-		cooldown = new HashMap<Action, Float>();
-		cooldown.put(Action.JUMP, 0.0f);
-		cooldown.put(Action.SHOOT, 0.0f);
-		cooldown.put(Action.DASH, 0.0f);
-		cooldown.put(Action.NULL_SPHERE, 0.0f);
-		maxCooldown = new HashMap<Action, Float>();
-		maxCooldown.put(Action.JUMP, 0.0f);
-		maxCooldown.put(Action.SHOOT, 0.8f);
-		maxCooldown.put(Action.DASH, DASH_TIME + 0.35f);
-		maxCooldown.put(Action.NULL_SPHERE, 1.0f);
-		buffs = new ArrayList<Buff>();
-		statusBuffs = new HashMap<Buff.Status, Buff>();
-	}
-	
-	public void setInputs(InputAxis moveAxis, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton dash, InputButton nullSphere) {
-		axisMap.put(Action.MOVE, moveAxis);
-		axisMap.put(Action.AIM_HORIZONTAL, aimH);
-		axisMap.put(Action.AIM_VERTICAL, aimV);
+    public enum Action {
+        MOVE_HORIZONTAL, MOVE_VERTICAL, AIM_HORIZONTAL, AIM_VERTICAL, JUMP, SHOOT, DASH, DOWN_DASH, NULL_SPHERE
+    }
+    
+    HashMap<Action, InputButton> buttonMap;
+    public HashMap<Action, InputAxis> axisMap;
+    
+    HashMap<Action, Float> cooldown;
+    HashMap<Action, Float> maxCooldown;
+    HashMap<Buff.Status, Buff> statusBuffs;
+    ArrayList<Buff> buffs;
+        
+    // playerNumber is an ID for 
+    public int number;
+    ArrayList<Boolean> texCollidedBeforeUpdate;
+    
+    public int NOT_A_PLAYER = -1;
 
-		buttonMap.put(Action.JUMP, jump);
-		buttonMap.put(Action.SHOOT, shoot);
-		buttonMap.put(Action.DASH, dash);
-		buttonMap.put(Action.NULL_SPHERE, nullSphere);
-	}
+    // every image is 70 wide and the middle 20 are the hitbox
+    int animationOffset = -27;
+    private float RUNNING_FRAME_DURATION = 0.06f;
+    private float JUMP_FRAME_DURATION = 0.12f;
+    private float LAND_FRAME_DURATION = 0.08f;
+    private float IDLE_FRAME_DURATION = 0.16f;
 
-	public void setInput(Action action, InputAxis axis) {
-		axisMap.put(action, axis);
-	}
+    private Animation walkAnimation;
+    private Animation jumpAnimation;
+    private Animation idleAnimation;
+    private Animation landAnimation;
+    private TextureRegion wallHug;
 
-	public void setInput(Action action, InputButton button) {
-		buttonMap.put(action, button);
-	}
+    private Texture head;
+    public Color playerColor;
+    
+    public Player(int playerNumber, Vector2 initPosition) {
+        super(initPosition);
+        number = playerNumber;
+        switch (number % 4) {
+            case 0:
+                playerColor = new Color(0x951A1AFF);
+                break;
+            case 1:
+                playerColor = new Color(0x372D8EFF);
+                break;
+            case 2:
+                playerColor = new Color(0xA6F400FF);
+                break;
+            case 3:
+                playerColor = new Color(0xFFD200FF);
+                break;
+        }
+        // 16x32 regions
+        TextureAtlas atlas = Assets.manager.get("pack/animations.atlas", TextureAtlas.class);
+        // death 1-10
+        // (unused)
+        // run 1-5
+        TextureRegion[] frames = new TextureRegion[5];
+        for (int i=0; i<5; i++) {
+            frames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/run-0" + (i+1));
+        }
+        walkAnimation = new Animation(RUNNING_FRAME_DURATION, frames);
+        // stand 1-5
+        frames = new TextureRegion[5];
+        for (int i=0; i<5; i++) {
+            frames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/stand-0" + (i+1));
+        }
+        idleAnimation = new Animation(IDLE_FRAME_DURATION, frames);
+        // jump 1-3
+        frames = new TextureRegion[3];
+        for (int i=0; i<3; i++) {
+            frames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/jump-0" + (i+1));
+        }
+        jumpAnimation = new Animation(JUMP_FRAME_DURATION, frames);
+        // land 1-5
+        frames = new TextureRegion[4];
+        for (int i=0; i<4; i++) {
+            frames[i] = atlas.findRegion("p" + (playerNumber % 4) + "/land-0" + (i+2));
+        }
+        landAnimation = new Animation(LAND_FRAME_DURATION, frames);
+        // wallhug 1
+        wallHug = atlas.findRegion("p" + (playerNumber % 4) + "/wallhug-01");
+        
+        head = Assets.manager.get("head" + playerNumber % 4 + ".png", Texture.class);
+        
+        // approximate size of the player
+        size = new Vector2(16.0f, 48.0f).scl(scale);
+        
+        buttonMap = new HashMap<Action, InputButton>();
+        axisMap = new HashMap<Action, InputAxis>();
+        
+        cooldown = new HashMap<Action, Float>();
+        cooldown.put(Action.JUMP, 0.0f);
+        cooldown.put(Action.SHOOT, 0.0f);
+        cooldown.put(Action.DASH, 0.0f);
+        cooldown.put(Action.DOWN_DASH, 0.0f);
+        cooldown.put(Action.NULL_SPHERE, 0.0f);
+        maxCooldown = new HashMap<Action, Float>();
+        maxCooldown.put(Action.JUMP, 0.0f);
+        maxCooldown.put(Action.SHOOT, 0.8f);
+        maxCooldown.put(Action.DASH, DASH_TIME + 0.35f);
+        maxCooldown.put(Action.DOWN_DASH, 0.5f);
+        maxCooldown.put(Action.NULL_SPHERE, 1.0f);
+        buffs = new ArrayList<Buff>();
+        statusBuffs = new HashMap<Buff.Status, Buff>();
+    }
+    
+    public void setInputs(InputAxis moveH, InputAxis moveV, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton dash, InputButton nullSphere) {
+        axisMap.put(Action.MOVE_HORIZONTAL, moveH);
+        axisMap.put(Action.MOVE_VERTICAL, moveV);
+        axisMap.put(Action.AIM_HORIZONTAL, aimH);
+        axisMap.put(Action.AIM_VERTICAL, aimV);
 
-	public ArrayList<Vector2> getPoints() {
+        buttonMap.put(Action.JUMP, jump);
+        buttonMap.put(Action.SHOOT, shoot);
+        buttonMap.put(Action.DASH, dash);
+        buttonMap.put(Action.NULL_SPHERE, nullSphere);
+    }
+
+    public void setInput(Action action, InputAxis axis) {
+        axisMap.put(action, axis);
+    }
+
+    public void setInput(Action action, InputButton button) {
+        buttonMap.put(action, button);
+    }
+
+    public ArrayList<Vector2> getPoints() {
         ArrayList<Vector2> points = new ArrayList<Vector2>();
 
         //feet
@@ -234,7 +239,7 @@ public class Player extends Entity {
         ArrayList<Vector2> points = getPoints();
 
         for (int i = 0; i < points.size(); i++) {
-        	// for each corner of the player that was previously inside a null mask
+            // for each corner of the player that was previously inside a null mask
             if (texCollidedBeforeUpdate.get(i)) {
                 float modX = points.get(i).x % scene.map.getWidth();
                 float modY = points.get(i).y % scene.map.getHeight();
@@ -254,8 +259,8 @@ public class Player extends Entity {
                 // otherwise just return to normal collision logic and the player will "pop" out a bit
                 if (textureValue == 0 && scene.map.isInsideLevel(modX, modY)) {
                     scene.addEntity(new Blood(getCentre(), new Vector2(1,0)), Scene.PARTICLE_LAYER);
-                	killPlayer(NOT_A_PLAYER, DeathSources.WALL);
-                	break;
+                    killPlayer(NOT_A_PLAYER, DeathSources.WALL);
+                    break;
                 }
             }
         }
@@ -266,178 +271,190 @@ public class Player extends Entity {
     }
     
     public Texture getHead() {
-    	return head;
+        return head;
     }
     
-	public TextureRegion getSprite() {
-		TextureRegion frame;
-		// pass a time to animation to get the right frame
-		if (hasStatus(Buff.Status.LAND_STUN)) {
-			frame = landAnimation.getKeyFrame(animationTime, false);
-		} else if (onWall) {
-			frame = wallHug;
-		} else if (!onGround) {
-			frame = jumpAnimation.getKeyFrame(animationTime, true);
-		} else if (Math.abs(speed.x) > 20.0f) { 
-			frame = walkAnimation.getKeyFrame(animationTime, true);
-		} else {
-			frame = idleAnimation.getKeyFrame(animationTime, true);
-		}
-		return frame;
-	}
+    public TextureRegion getSprite() {
+        TextureRegion frame;
+        // pass a time to animation to get the right frame
+        if (hasStatus(Buff.Status.LAND_STUN)) {
+            frame = landAnimation.getKeyFrame(animationTime, false);
+        } else if (onWall) {
+            frame = wallHug;
+        } else if (!onGround) {
+            frame = jumpAnimation.getKeyFrame(animationTime, true);
+        } else if (Math.abs(speed.x) > 20.0f) { 
+            frame = walkAnimation.getKeyFrame(animationTime, true);
+        } else {
+            frame = idleAnimation.getKeyFrame(animationTime, true);
+        }
+        return frame;
+    }
 
-	@Override
-	public void update(float dt) {
-		if (alive) {
-			// jump
-			if (!nullSphereEnabled && buttonMap.get(Action.NULL_SPHERE).isDown() && cooldown.get(Action.NULL_SPHERE) == 0.0f) {
-				nullSphereEnabled = true;
-				nullTime = MAX_NULL_TIME;
-			} else if (nullSphereEnabled) {
-				nullTime -= dt;
-				if (nullTime <= 0 || !buttonMap.get(Action.NULL_SPHERE).isDown()) {
-					nullTime = 0;
-					nullSphereEnabled = false;
-		            cooldown.put(Action.NULL_SPHERE, maxCooldown.get(Action.NULL_SPHERE));
-				}
-			}
-			
-			if (!jumpPressedLastFrame && buttonMap.get(Action.JUMP).isDown() && cooldown.get(Action.JUMP) == 0.0f) {
-	            if (onGround || airJumps > 0) {
-	                speed.y = JUMP;
-	                cooldown.put(Action.JUMP, maxCooldown.get(Action.JUMP));
-	                if (!onGround) {
-	                    airJumps--;
-	                }
-	            } else if (onWall) {
-	                speed = new Vector2(wallDir * 0.75f, 1.25f).scl(AIR_JUMP);
-	                cooldown.put(Action.JUMP, maxCooldown.get(Action.JUMP));
-	                onWall = false;
-	                airDashes = NUM_AIRDASHES;
-	            }
-			}
-			// if was on wall, am I still on the wall?
-			if (onWall) {
-				if (frameCount % 3 == 0) {
-		            Random rand = new Random();
-		            float pX = pos.x + size.x * (0.5f - 0.5f * wallDir);
-		            float pY = pos.y + (0.25f + 0.5f * rand.nextFloat()) * size.y;
-		
-		            float smokeThreshold = 150f;
-		
-		            if (speed.y < -smokeThreshold) {
-		                AirSmoke smoke = new AirSmoke(new Vector2(pX,pY), 90, wallDir == 1);
-		                scene.addEntity(smoke, Scene.PARTICLE_LAYER);
-		            } else if (speed.y > smokeThreshold) {
-		                AirSmoke smoke = new AirSmoke(new Vector2(pX,pY), 270, wallDir == -1);
-		                scene.addEntity(smoke, Scene.PARTICLE_LAYER);
-		            }
-				}
-	            boolean nextToWall = false;
-	            if (wallDir == 1) {
-	                Vector2 tileCoords = scene.map.getTileCoords(pos.cpy().add(new Vector2(0, size.y/4)));
-	                nextToWall = scene.map.levelLayer.getCell((int)(tileCoords.x - 1.0f), (int)tileCoords.y) != null;
-	            } else if (wallDir == -1) {
-	                Vector2 tileCoords = scene.map.getTileCoords(pos.cpy().add(new Vector2(size.x, size.y/4)));
-	                nextToWall = scene.map.levelLayer.getCell((int)(tileCoords.x), (int)tileCoords.y) != null;
-	            }
-	            onWall = nextToWall;
-			}
-			// shoot
-			if (buttonMap.get(Action.SHOOT).isDown() && cooldown.get(Action.SHOOT) == 0.0f) {
-				Vector2 dir = new Vector2(axisMap.get(Action.AIM_HORIZONTAL).getValue(), axisMap.get(Action.AIM_VERTICAL).getValue());
-				if (dir.isZero()) {
-					// if dir is 0 the projectile would sit still in space
-					dir.x = 1;
-				}
-				if (hasStatus(Buff.Status.MULTI_SHOT)) {
-					float spread = 42;
-					Vector2 offset = dir.cpy().rotate90(1).nor().scl(spread/2f);
-					Projectile p = new Fireball(getCentre().cpy().add(offset), dir, number);
-					scene.addEntity(p, Scene.SHOT_LAYER);
-					p = new Fireball(getCentre().cpy().sub(offset), dir, number);
-					scene.addEntity(p, Scene.SHOT_LAYER);
-				} else {
-					Projectile p = new Fireball(getCentre(), dir, number);
-					scene.addEntity(p, Scene.SHOT_LAYER);
-				}
-				cooldown.put(Action.SHOOT, maxCooldown.get(Action.SHOOT));
-			}
-			// dash quickly in the currently facing direction
-			// (or in the aimed direction)
-			if (buttonMap.get(Action.DASH).isDown() && cooldown.get(Action.DASH) == 0.0f && airDashes > 0) {
-		        float xAxis = axisMap.get(Action.MOVE).getValue();
-		        float dir = speed.x > 0 ? 1 : -1;
-		        if (Math.abs(xAxis) > 0.25) {
-		        	dir = Math.signum(xAxis);
-		        }
-		        if (onWall) {
-		        	dir = wallDir;
-		        }
-		        float a = dir == 1 ? 180 : 00;
-	            scene.addEntity(new AirSmoke(getCentre(), a + 45, false), Scene.PARTICLE_LAYER);
-	            scene.addEntity(new AirSmoke(getCentre(), a -45, true), Scene.PARTICLE_LAYER);
-	            scene.addEntity(new AirSmoke(getCentre(), a + 22.5f, false), Scene.PARTICLE_LAYER);
-	            scene.addEntity(new AirSmoke(getCentre(), a -22.5f, true), Scene.PARTICLE_LAYER);
-	
-				speed = new Vector2(DASH_SPEED * dir, 0.0f);
-				cooldown.put(Action.DASH, maxCooldown.get(Action.DASH));
-				airDashes--;
-				falls = false;
-				addBuff(new DashBuff(this, DASH_TIME));
-				animationTime = 0.0f;
-			}
-			// accelerate
-	        float move = axisMap.get(Action.MOVE).getValue();
-	        float xAcceleration = ACCEL * move * speedMult;
-	        if (Math.abs(move) > 0.25) {
-	            if (!onGround) {
-	                xAcceleration *= 0.25f;
-	            }
-	            if (!hasStatus(Buff.Status.LAND_STUN)) {
-	            	speed.x = speed.x + xAcceleration * dt;
-	            }
-	        }
-			if (!hasStatus(Buff.Status.DASHING)){
-				// max speed
-				if (Math.abs(speed.x) > MAX_MOVE_SPEED * speedMult) {
-					speed.scl(MAX_MOVE_SPEED * speedMult / Math.abs(speed.x), 1.0f);
-				}
-				if (Math.abs(speed.y) > MAX_FALL_SPEED * speedMult) {
-					speed.scl(1.0f, MAX_FALL_SPEED * speedMult / Math.abs(speed.y));
-				}
-				if (onGround) {
-					speed.x -= Math.min(1, dt * 10) * speed.x;
-				}
-	        }
-	        updateBuffs(dt);
-	        
-	        // movement
-			super.update(dt);
-	
-	        if (speed.x != 0) {
-	        	facingRight = speed.x > 0;
-	        }
-		} else {
-			if (lives > 0) {
-				spawnDelay -= dt;
-				if (spawnDelay <= 0) {
-					alive = true;
-			    	addBuff(new StatusBuff(this, INVULNERABILITY_LENGTH, Status.INVULNERABLE));
-			        scene.addEntity(new RespawnParticle(this), Scene.PARTICLE_LAYER);
-				}
-			}
-		}
-		// cooldown / status effects that can happen while alive or dead happen here
-		frameCount++;
+    @Override
+    public void update(float dt) {
+        if (alive) {
+            // jump
+            if (!nullSphereEnabled && buttonMap.get(Action.NULL_SPHERE).isDown() && cooldown.get(Action.NULL_SPHERE) == 0.0f) {
+                nullSphereEnabled = true;
+                nullTime = MAX_NULL_TIME;
+            } else if (nullSphereEnabled) {
+                nullTime -= dt;
+                if (nullTime <= 0 || !buttonMap.get(Action.NULL_SPHERE).isDown()) {
+                    nullTime = 0;
+                    nullSphereEnabled = false;
+                    cooldown.put(Action.NULL_SPHERE, maxCooldown.get(Action.NULL_SPHERE));
+                }
+            }
+            
+            if (!jumpPressedLastFrame && buttonMap.get(Action.JUMP).isDown() && cooldown.get(Action.JUMP) == 0.0f) {
+                if (onGround || airJumps > 0) {
+                    speed.y = JUMP;
+                    cooldown.put(Action.JUMP, maxCooldown.get(Action.JUMP));
+                    if (!onGround) {
+                        airJumps--;
+                    }
+                } else if (onWall) {
+                    speed = new Vector2(wallDir * 0.75f, 1.25f).scl(AIR_JUMP);
+                    cooldown.put(Action.JUMP, maxCooldown.get(Action.JUMP));
+                    onWall = false;
+                    airDashes = NUM_AIRDASHES;
+                }
+            }
+            // if was on wall, am I still on the wall?
+            if (onWall) {
+                if (frameCount % 3 == 0) {
+                    Random rand = new Random();
+                    float pX = pos.x + size.x * (0.5f - 0.5f * wallDir);
+                    float pY = pos.y + (0.25f + 0.5f * rand.nextFloat()) * size.y;
+        
+                    float smokeThreshold = 150f;
+        
+                    if (speed.y < -smokeThreshold) {
+                        AirSmoke smoke = new AirSmoke(new Vector2(pX,pY), 90, wallDir == 1);
+                        scene.addEntity(smoke, Scene.PARTICLE_LAYER);
+                    } else if (speed.y > smokeThreshold) {
+                        AirSmoke smoke = new AirSmoke(new Vector2(pX,pY), 270, wallDir == -1);
+                        scene.addEntity(smoke, Scene.PARTICLE_LAYER);
+                    }
+                }
+                boolean nextToWall = false;
+                if (wallDir == 1) {
+                    Vector2 tileCoords = scene.map.getTileCoords(pos.cpy().add(new Vector2(0, size.y/4)));
+                    nextToWall = scene.map.levelLayer.getCell((int)(tileCoords.x - 1.0f), (int)tileCoords.y) != null;
+                } else if (wallDir == -1) {
+                    Vector2 tileCoords = scene.map.getTileCoords(pos.cpy().add(new Vector2(size.x, size.y/4)));
+                    nextToWall = scene.map.levelLayer.getCell((int)(tileCoords.x), (int)tileCoords.y) != null;
+                }
+                onWall = nextToWall;
+            }
+            // shoot
+            if (buttonMap.get(Action.SHOOT).isDown() && cooldown.get(Action.SHOOT) == 0.0f) {
+                Vector2 dir = new Vector2(axisMap.get(Action.AIM_HORIZONTAL).getValue(), axisMap.get(Action.AIM_VERTICAL).getValue());
+                if (dir.isZero()) {
+                    // if dir is 0 the projectile would sit still in space
+                    dir.x = 1;
+                }
+                if (hasStatus(Buff.Status.MULTI_SHOT)) {
+                    float spread = 42;
+                    Vector2 offset = dir.cpy().rotate90(1).nor().scl(spread/2f);
+                    Projectile p = new Fireball(getCentre().cpy().add(offset), dir, number);
+                    scene.addEntity(p, Scene.SHOT_LAYER);
+                    p = new Fireball(getCentre().cpy().sub(offset), dir, number);
+                    scene.addEntity(p, Scene.SHOT_LAYER);
+                } else {
+                    Projectile p = new Fireball(getCentre(), dir, number);
+                    scene.addEntity(p, Scene.SHOT_LAYER);
+                }
+                cooldown.put(Action.SHOOT, maxCooldown.get(Action.SHOOT));
+            }
+            // dash quickly in the currently facing direction
+            // (or in the aimed direction)
+            if (buttonMap.get(Action.DASH).isDown() && !dashPressedLastFrame) {
+                if (axisMap.get(Action.MOVE_VERTICAL).getValue() < -0.5f) {
+                    // Down smash (doesnt use an air dash and has its own cooldown)
+                    if (!onGround && axisMap.get(Action.MOVE_VERTICAL).getValue() < -0.5f && cooldown.get(Action.DOWN_DASH) == 0.0f) {
+                        cooldown.put(Action.DOWN_DASH, maxCooldown.get(Action.DOWN_DASH));
+                        speed.y = speed.y - DOWN_DASH_SPEED;
+                        scene.addEntity(new AirSmoke(getCentre(), 30, false), Scene.PARTICLE_LAYER);
+                        scene.addEntity(new AirSmoke(getCentre(), 150, true), Scene.PARTICLE_LAYER);
+                    }
+                } else if (buttonMap.get(Action.DASH).isDown() && cooldown.get(Action.DASH) == 0.0f && airDashes > 0) {
+                    // horizontal dash
+                    float xAxis = axisMap.get(Action.MOVE_HORIZONTAL).getValue();
+                    float dir = speed.x > 0 ? 1 : -1;
+                    if (Math.abs(xAxis) > 0.25) {
+                        dir = Math.signum(xAxis);
+                    }
+                    if (onWall) {
+                        dir = wallDir;
+                    }
+                    float a = dir == 1 ? 180 : 00;
+                    scene.addEntity(new AirSmoke(getCentre(), a + 45, false), Scene.PARTICLE_LAYER);
+                    scene.addEntity(new AirSmoke(getCentre(), a -45, true), Scene.PARTICLE_LAYER);
+                    scene.addEntity(new AirSmoke(getCentre(), a + 22.5f, false), Scene.PARTICLE_LAYER);
+                    scene.addEntity(new AirSmoke(getCentre(), a -22.5f, true), Scene.PARTICLE_LAYER);
+        
+                    speed = new Vector2(DASH_SPEED * dir, 0.0f);
+                    cooldown.put(Action.DASH, maxCooldown.get(Action.DASH));
+                    airDashes--;
+                    falls = false;
+                    addBuff(new DashBuff(this, DASH_TIME));
+                    animationTime = 0.0f;
+                }
+            }
+            // accelerate
+            float move = axisMap.get(Action.MOVE_HORIZONTAL).getValue();
+            float xAcceleration = ACCEL * move * speedMult;
+            if (Math.abs(move) > 0.25) {
+                if (!onGround) {
+                    xAcceleration *= 0.25f;
+                }
+                if (!hasStatus(Buff.Status.LAND_STUN)) {
+                    speed.x = speed.x + xAcceleration * dt;
+                }
+            }
+            if (!hasStatus(Buff.Status.DASHING)){
+                // max speed
+                if (Math.abs(speed.x) > MAX_MOVE_SPEED * speedMult) {
+                    speed.scl(MAX_MOVE_SPEED * speedMult / Math.abs(speed.x), 1.0f);
+                }
+                if (Math.abs(speed.y) > MAX_FALL_SPEED * speedMult) {
+                    speed.scl(1.0f, MAX_FALL_SPEED * speedMult / Math.abs(speed.y));
+                }
+                if (onGround) {
+                    speed.x -= Math.min(1, dt * 10) * speed.x;
+                }
+            }
+            updateBuffs(dt);
+            
+            // movement
+            super.update(dt);
+    
+            if (speed.x != 0) {
+                facingRight = speed.x > 0;
+            }
+        } else {
+            if (lives > 0) {
+                spawnDelay -= dt;
+                if (spawnDelay <= 0) {
+                    alive = true;
+                    addBuff(new StatusBuff(this, INVULNERABILITY_LENGTH, Status.INVULNERABLE));
+                    scene.addEntity(new RespawnParticle(this), Scene.PARTICLE_LAYER);
+                }
+            }
+        }
+        // cooldown / status effects that can happen while alive or dead happen here
+        frameCount++;
         animationTime += dt;
         jumpPressedLastFrame = buttonMap.get(Action.JUMP).isDown();
+        dashPressedLastFrame = buttonMap.get(Action.DASH).isDown();
 
-		// update cooldowns
-		for (Action action : cooldown.keySet()) {
-			cooldown.put(action, Math.max(0.0f, cooldown.get(action) - dt));
-		}
-	}
+        // update cooldowns
+        for (Action action : cooldown.keySet()) {
+            cooldown.put(action, Math.max(0.0f, cooldown.get(action) - dt));
+        }
+    }
 
     public int sign(float x) {
         if (x < 0) {
@@ -459,7 +476,7 @@ public class Player extends Entity {
                 if (pen.y > 0) {
                     onGround = true;
                     airJumps = NUM_AIRJUMPS;
-                	airDashes = NUM_AIRDASHES;
+                    airDashes = NUM_AIRDASHES;
                 }
             } else {
                 pos.add(new Vector2(pen.x, 0));
@@ -472,7 +489,7 @@ public class Player extends Entity {
     }
 
     public void normalLevelCollision(Map map) {
-    	float velY = speed.y; // speed before collision
+        float velY = speed.y; // speed before collision
 
         collisionCheck(map);
         collisionCheck(map);
@@ -496,9 +513,9 @@ public class Player extends Entity {
         }
         // if falling quickly and hit the ground
         if (onGround && velY < minLandedSpeed) {
-        	float duration = LAND_FRAME_DURATION * 4;
+            float duration = LAND_FRAME_DURATION * 4;
             animationTime = 0.0f;
-        	addBuff(new StatusBuff(this, duration, Buff.Status.LAND_STUN));
+            addBuff(new StatusBuff(this, duration, Buff.Status.LAND_STUN));
             scene.addEntity(new GroundSmoke(new Vector2(pos.x + size.x/2, pos.y), false), Scene.PARTICLE_LAYER);
             scene.addEntity(new GroundSmoke(new Vector2(pos.x + size.x/2, pos.y), true), Scene.PARTICLE_LAYER);
         }
@@ -532,12 +549,12 @@ public class Player extends Entity {
 
                 // 0 is normal collission, >0 is masked value
                 if (textureValue == 0) {
-                	numNotMasked += 1;
+                    numNotMasked += 1;
                 }
 
                 if (textureValue > 0 || !insideLevel) {
-                	// this point is not in the null mask but it is also not in a wall.
-                	numMaskedOrNotWall += 1;
+                    // this point is not in the null mask but it is also not in a wall.
+                    numMaskedOrNotWall += 1;
                 }
 
                 texCollision.add(new Boolean(textureValue == 0));
@@ -552,7 +569,7 @@ public class Player extends Entity {
                 //System.out.println("no collision");
                 // do nothing
             } else {
-            	// do more complicated collision logic based on the pixel data
+                // do more complicated collision logic based on the pixel data
                 //System.out.println("circle collision");
                 int numPoints = 0;
                 Vector2 average = new Vector2(0, 0);
@@ -631,23 +648,23 @@ public class Player extends Entity {
             }
         }
     }
-	
-	@Override
-	public void render(SpriteBatch batch) {
-		if (alive) {
-			TextureRegion frame = getSprite();
-	        if (hasStatus(Buff.Status.INVULNERABLE)) {
-	            batch.setColor(1.0f, 1.0f, 1.0f - (animationTime % 0.3f) * 1.5f, 0.4f + (animationTime % 0.3f) * 2.0f);
-	        }
-	
-	        float w = frame.getRegionWidth() * scale;
-	        float h = frame.getRegionHeight() * scale;
-	        float ox = w/2f;
-	        float scaleX = facingRight ? -1 : 1;
-	        batch.draw(frame, pos.x + size.x/2 - ox, pos.y, ox, 0, w, h, scaleX, 1f, 0f);
-	        batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-		}
-	}
+    
+    @Override
+    public void render(SpriteBatch batch) {
+        if (alive) {
+            TextureRegion frame = getSprite();
+            if (hasStatus(Buff.Status.INVULNERABLE)) {
+                batch.setColor(1.0f, 1.0f, 1.0f - (animationTime % 0.3f) * 1.5f, 0.4f + (animationTime % 0.3f) * 2.0f);
+            }
+    
+            float w = frame.getRegionWidth() * scale;
+            float h = frame.getRegionHeight() * scale;
+            float ox = w/2f;
+            float scaleX = facingRight ? -1 : 1;
+            batch.draw(frame, pos.x + size.x/2 - ox, pos.y, ox, 0, w, h, scaleX, 1f, 0f);
+            batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+    }
 
     public boolean killPlayer(int killerID, int deathSource) {
         if(alive && (!hasStatus(Buff.Status.INVULNERABLE) || deathSource == DeathSources.WALL)) {
@@ -667,7 +684,7 @@ public class Player extends Entity {
     }
 
     public boolean onShot(Projectile projectile) {
-    	Vector2 originalPos = getCentre();
+        Vector2 originalPos = getCentre();
         if (killPlayer(projectile.getShotBy(), projectile.getType())) {
             scene.addEntity(new Blood(originalPos, projectile.speed.cpy()), Scene.PARTICLE_LAYER);
             return true;
@@ -681,69 +698,69 @@ public class Player extends Entity {
     }
 
     public boolean isAlive() {
-    	return alive;
+        return alive;
     }
     
     private void updateBuffs(float dt) {
-		for (int i = buffs.size() - 1; i >= 0; i--) {
-			Buff b = buffs.get(i);
-    		b.update(dt);
-    		if (b.finished) {
-    			buffs.remove(i);
-    		}
-    	}
-		
-		Set<Buff.Status> expired = new HashSet<Buff.Status>();
-    	for (Buff.Status status : statusBuffs.keySet()) {
-    		Buff b = statusBuffs.get(status);
-    		b.update(dt);
-    		if (b.finished) {
-    			expired.add(status);
-    		}
-    	}
-    	// avoid concurrent modification of statusBuffs	
-    	for (Buff.Status status : expired) {
-			statusBuffs.remove(status);
-    	}
+        for (int i = buffs.size() - 1; i >= 0; i--) {
+            Buff b = buffs.get(i);
+            b.update(dt);
+            if (b.finished) {
+                buffs.remove(i);
+            }
+        }
+        
+        Set<Buff.Status> expired = new HashSet<Buff.Status>();
+        for (Buff.Status status : statusBuffs.keySet()) {
+            Buff b = statusBuffs.get(status);
+            b.update(dt);
+            if (b.finished) {
+                expired.add(status);
+            }
+        }
+        // avoid concurrent modification of statusBuffs    
+        for (Buff.Status status : expired) {
+            statusBuffs.remove(status);
+        }
     }
     
     public void addBuff(Buff b) {
-    	if (b.status == null) {
-        	buffs.add(b);
-			b.init();
-    	} else if (!hasStatus(b.status)) {
-        	statusBuffs.put(b.status, b);
-			b.init();
-    	} else if (getBuffDuration(b.status) < b.duration) {
-    		// refresh the duration
-        	statusBuffs.put(b.status, b);
-		}
+        if (b.status == null) {
+            buffs.add(b);
+            b.init();
+        } else if (!hasStatus(b.status)) {
+            statusBuffs.put(b.status, b);
+            b.init();
+        } else if (getBuffDuration(b.status) < b.duration) {
+            // refresh the duration
+            statusBuffs.put(b.status, b);
+        }
     }
     
     private boolean hasStatus(Buff.Status status) {
-    	return statusBuffs.containsKey(status);
+        return statusBuffs.containsKey(status);
     }
     
     private float getBuffDuration(Buff.Status status) {
-    	if (hasStatus(status)) {
-    		return statusBuffs.get(status).duration;
-    	} else {
-    		return 0.0f;
-    	}
+        if (hasStatus(status)) {
+            return statusBuffs.get(status).duration;
+        } else {
+            return 0.0f;
+        }
     }
     
     public void clearBuffs() {
-    	speed = new Vector2(0,0);
-    	onWall = false;
-    	nullSphereEnabled = false;
-    	
-    	for (Buff b : buffs) {
-    		b.duration = 0.0f;
-    	}
-    	for (Buff.Status status : statusBuffs.keySet()) {
-    		Buff b = statusBuffs.get(status);
-    		b.duration = 0.0f;
-    	}
-    	// they will call their "end" methods and be removed next update
+        speed = new Vector2(0,0);
+        onWall = false;
+        nullSphereEnabled = false;
+        
+        for (Buff b : buffs) {
+            b.duration = 0.0f;
+        }
+        for (Buff.Status status : statusBuffs.keySet()) {
+            Buff b = statusBuffs.get(status);
+            b.duration = 0.0f;
+        }
+        // they will call their "end" methods and be removed next update
     }
 }
