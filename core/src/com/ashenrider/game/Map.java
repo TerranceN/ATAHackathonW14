@@ -187,10 +187,12 @@ public class Map {
 
             // check rows for collision offset
             for (int y = lowerY; y < upperY; y++) {
+                int wy = y % levelLayer.getHeight();
                 boolean foundCollision = false;
                 float newPenX = 0;
                 for (int x = startX; (foundCollision && (x < upperX + maxDepth && x >= lowerX - maxDepth)) || (x < upperX && x >= lowerX); x += xDir) {
-                    if (levelLayer.getCell(x, y) != null) {
+                    int wx = x % levelLayer.getWidth();
+                    if (levelLayer.getCell(wx, wy) != null) {
                         foundCollision = true;
                         if (vel.x < 0) {
                             newPenX = (x + 1) * tileSize - lower.x + 0.001f;
@@ -222,10 +224,12 @@ public class Map {
 
             // check columns for collision offset
             for (int x = lowerX; x < upperX; x++) {
+                int wx = x % levelLayer.getWidth();
                 boolean foundCollision = false;
                 float newPenY = 0;
                 for (int y = startY; (foundCollision && (y < upperY + maxDepth && y >= lowerY - maxDepth)) || (y < upperY && y >= lowerY); y += yDir) {
-                    if (levelLayer.getCell(x, y) != null) {
+                    int wy = y % levelLayer.getHeight();
+                    if (levelLayer.getCell(wx, wy) != null) {
                         foundCollision = true;
                         if (vel.y < 0) {
                             newPenY = (y + 1) * tileSize - lower.y;
