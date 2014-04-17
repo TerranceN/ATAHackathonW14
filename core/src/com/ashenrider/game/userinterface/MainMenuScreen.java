@@ -56,7 +56,7 @@ public class MainMenuScreen implements Screen {
     TextButton.TextButtonStyle style;
     TextButton.TextButtonStyle selectedStyle;
     public MainMenuScreen(final HackathonApp app) {
-    	intro = new Intro();
+        intro = new Intro();
         this.app = app;
 
         atlas = Assets.manager.get("pack/gui.atlas", TextureAtlas.class);
@@ -95,7 +95,7 @@ public class MainMenuScreen implements Screen {
         labelStyle.fontColor = Color.WHITE;
         labelSkin.add("default", labelStyle);
         skipLabel = new Label("Press A or Enter to skip", labelSkin);
-        		
+                
         menu = new Table();
         menu.setFillParent(true);
         menu.center().bottom();
@@ -154,7 +154,8 @@ public class MainMenuScreen implements Screen {
     }
 
     public void startGame() {
-        app.setScreen(new GameScreen(app, "maps/finalMap2/finalMap2.tmx"));
+        String mapName = HackathonApp.MAP;
+        app.setScreen(new GameScreen(app, "maps/" + mapName + "/" + mapName + ".tmx"));
     }
 
     public void exitGame() {
@@ -164,56 +165,56 @@ public class MainMenuScreen implements Screen {
     private void update(float delta) {
         //
         for (InputAxis iAxis : hAxis) {
-        	if (iAxis.getValue() > 0.5f) {
+            if (iAxis.getValue() > 0.5f) {
                 //Gdx.app.log("input", "Go right");
-        	} else if (iAxis.getValue() < -0.5f) {
+            } else if (iAxis.getValue() < -0.5f) {
                 //Gdx.app.log("input", "Go left");
-        	}
+            }
         }
         for (InputAxis iAxis : vAxis) {
-        	if (Math.abs(iAxis.getValue()) > 0.2f) {
-        		btnIndex += iAxis.getValue() * navSpeed * delta;
-        		if (btnIndex < 0) {
-        			btnIndex += buttons.size();
-        		} else {
-            		btnIndex = btnIndex % buttons.size();
-        		}
-        		//Gdx.app.log("Button index", "btn index: " + btnIndex);
-        	}
-        	if (iAxis.getValue() > 0.5f) {
+            if (Math.abs(iAxis.getValue()) > 0.2f) {
+                btnIndex += iAxis.getValue() * navSpeed * delta;
+                if (btnIndex < 0) {
+                    btnIndex += buttons.size();
+                } else {
+                    btnIndex = btnIndex % buttons.size();
+                }
+                //Gdx.app.log("Button index", "btn index: " + btnIndex);
+            }
+            if (iAxis.getValue() > 0.5f) {
                 //Gdx.app.log("input", "Go up");
-        	} else if (iAxis.getValue() < -0.5f) {
+            } else if (iAxis.getValue() < -0.5f) {
                 //Gdx.app.log("input", "Go down");
-        	}
+            }
         }
         for (InputButton iButton : select) {
-        	if (iButton.isDown()) {
+            if (iButton.isDown()) {
                 //Gdx.app.log("input", "Ok");
-            	if (!intro.isFinished()) {
-                	intro.skip();
-            	} else if (Math.floor(btnIndex) == 0) {
-            		startGame();
-            	} else {
+                if (!intro.isFinished()) {
+                    intro.skip();
+                } else if (Math.floor(btnIndex) == 0) {
+                    startGame();
+                } else {
                     exitGame();
-            	}
-        	}
+                }
+            }
         }
         for (InputButton iButton : back) {
-        	if (iButton.isDown()) {
+            if (iButton.isDown()) {
                 //Gdx.app.log("input", "Back");
                //exitGame();
-            	if (!intro.isFinished()) {
-                	intro.skip();
-            	}
-        	}
+                if (!intro.isFinished()) {
+                    intro.skip();
+                }
+            }
         }
         for (int i=0; i<buttons.size(); i++) {
-        	Button btn = buttons.get(i);
-        	if (i == Math.floor(btnIndex)) {
-        		btn.setStyle(selectedStyle);
-        	} else {
-        		btn.setStyle(style);
-        	}
+            Button btn = buttons.get(i);
+            if (i == Math.floor(btnIndex)) {
+                btn.setStyle(selectedStyle);
+            } else {
+                btn.setStyle(style);
+            }
         }
         // update intro at 60 fps with no jumping if there's lag
         intro.update(0.017f);

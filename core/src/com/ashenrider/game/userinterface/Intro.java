@@ -37,7 +37,7 @@ public class Intro {
             anim = new Animation(FRAME_DURATION, frames);
             staticAnim = anim;
 
-        	batch = new SpriteBatch();
+            batch = new SpriteBatch();
         } else {
             anim = staticAnim;
         }
@@ -53,17 +53,17 @@ public class Intro {
         animationTime += dt;
         // every 2s or so, play the last 10 frames of the animation again
         if (animationTime > FRAME_DURATION * NUM_FRAMES + LOOP_DELAY) {
-        	animationTime = LOOP_FRAME * FRAME_DURATION;
+            animationTime = LOOP_FRAME * FRAME_DURATION;
         }
         
     }
 
     public void skip() {
-    	animationTime = FRAME_DURATION * LOOP_FRAME;
+        animationTime = FRAME_DURATION * LOOP_FRAME;
     }
     
     public boolean isFinished() {
-    	return animationTime >= FRAME_DURATION * LOOP_FRAME;
+        return animationTime >= FRAME_DURATION * LOOP_FRAME;
     }
     
     public void render(float screenWidth, float screenHeight) {

@@ -23,7 +23,7 @@ public class ShotPowerUp extends PowerUp {
     @Override
     public void onPickup(Player player) {
         super.onPickup(player);
-    	player.addBuff(new StatusBuff(player, BUFF_DURATION, Buff.Status.MULTI_SHOT));
+        player.addBuff(new StatusBuff(player, BUFF_DURATION, Buff.Status.MULTI_SHOT));
         scene.addEntity(new OrbParticle(player, colorTint, BUFF_DURATION), Scene.PARTICLE_LAYER);
     }
 }

@@ -33,7 +33,7 @@ public class PlayerBody extends Entity {
         for (int i=0; i<10; i++) {
             deathFrames[i] = atlas.findRegion(String.format("p%d/death-%02d", (playerNumber % 4), i+1));
             if (facingRight) {
-            	deathFrames[i].flip(true,  false);
+                deathFrames[i].flip(true,  false);
             }
         }
         deathAnimation = new Animation(DEATH_FRAME_DURATION, deathFrames);

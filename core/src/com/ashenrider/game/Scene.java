@@ -194,16 +194,18 @@ public class Scene {
                         new KeyboardButton(Keys.SHIFT_LEFT));
 
         // uncontrollable players
-        for (int i = players.size(); i < 4; i++) {
-            player = addPlayer(new Vector2(100, 100));
-            player.setInputs(new KeyboardAxis(Keys.LEFT, Keys.RIGHT),
-                        new KeyboardAxis(Keys.DOWN, Keys.UP),
-                        new KeyboardAxis(Keys.NUMPAD_4, Keys.NUMPAD_6),
-                        new KeyboardAxis(Keys.NUMPAD_5, Keys.NUMPAD_8),
-                        new KeyboardButton(Keys.UP),
-                        new KeyboardButton(Keys.ENTER),
-                        new KeyboardButton(Keys.SHIFT_RIGHT),
-                        new KeyboardButton(Keys.CONTROL_RIGHT));
+        if (HackathonApp.FILLER_PLAYERS) {
+            for (int i = players.size(); i < 4; i++) {
+                player = addPlayer(new Vector2(100, 100));
+                player.setInputs(new KeyboardAxis(Keys.LEFT, Keys.RIGHT),
+                            new KeyboardAxis(Keys.DOWN, Keys.UP),
+                            new KeyboardAxis(Keys.NUMPAD_4, Keys.NUMPAD_6),
+                            new KeyboardAxis(Keys.NUMPAD_5, Keys.NUMPAD_8),
+                            new KeyboardButton(Keys.UP),
+                            new KeyboardButton(Keys.ENTER),
+                            new KeyboardButton(Keys.SHIFT_RIGHT),
+                            new KeyboardButton(Keys.CONTROL_RIGHT));
+            }
         }
 
         spawnPoints = map.getSpawnPoints();

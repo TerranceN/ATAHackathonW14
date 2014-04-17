@@ -44,10 +44,10 @@ public class AirSmoke extends Entity {
 
 
         size = new Vector2(8.0f, 8.0f).scl(scale);
-    	pos = initPosition.cpy().sub(size.cpy().scl(0.5f));
+        pos = initPosition.cpy().sub(size.cpy().scl(0.5f));
         //if (isRight) {
         //} else {
-        //	pos = initPosition.cpy().sub(size.x, 0.0f);
+        //    pos = initPosition.cpy().sub(size.x, 0.0f);
         //}
         
         lifeTime = FRAME_DURATION * 18;

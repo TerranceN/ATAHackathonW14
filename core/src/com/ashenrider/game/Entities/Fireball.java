@@ -11,10 +11,10 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-public class Fireball extends Projectile {	
-	// frames per particle spawn
+public class Fireball extends Projectile {    
+    // frames per particle spawn
     float scale = 2.0f;
-	private int particleTimer = 0;
+    private int particleTimer = 0;
     
     float animationTime = 0.0f;
 
@@ -24,8 +24,8 @@ public class Fireball extends Projectile {
     private Animation anim;
     float angle;
     
-	public Fireball(Vector2 initPosition, Vector2 direction, int playerNumber) {
-		super(initPosition, direction, playerNumber);
+    public Fireball(Vector2 initPosition, Vector2 direction, int playerNumber) {
+        super(initPosition, direction, playerNumber);
         angle = direction.angle();
         boolean flipped = true;
 
@@ -44,41 +44,41 @@ public class Fireball extends Projectile {
             anim = staticAnim;
         }
         
-		size = new Vector2(16, 16);
+        size = new Vector2(16, 16);
         pos = initPosition.cpy().sub(size.cpy().scl(0.5f));
 
-		
-		// you cannot hurt yourself within the first fraction of a second that a shot is fired
-		SPEED = 800.0f;
-		speed = direction.nor().scl(SPEED);
-		//GRAVITY = -300.0f;
-		falls = false;
-		
-		BOUNCE_WALLS = false;
-		BOUNCE_CEILING = false;
-		groundBounces = 0;
-		ELASTICITY = 0.7f;
-		type = DeathSources.FIREBALL;
-	}
+        
+        // you cannot hurt yourself within the first fraction of a second that a shot is fired
+        SPEED = 800.0f;
+        speed = direction.nor().scl(SPEED);
+        //GRAVITY = -300.0f;
+        falls = false;
+        
+        BOUNCE_WALLS = false;
+        BOUNCE_CEILING = false;
+        groundBounces = 0;
+        ELASTICITY = 0.7f;
+        type = DeathSources.FIREBALL;
+    }
 
-	@Override
-	public void destroy() {
-		super.destroy();
+    @Override
+    public void destroy() {
+        super.destroy();
         scene.addEntity(new Explosion(getCentre()), Scene.PARTICLE_LAYER);
-	}
-	
-	@Override
-	public void update(float dt) {
-		super.update(dt);
+    }
+    
+    @Override
+    public void update(float dt) {
+        super.update(dt);
         animationTime += dt;
-		//Particle p = new GunParticle(getCentre(), speed.cpy().scl(-1), 1.0f, 0.4f);
-		//scene.addEntity(p, Scene.PARTICLE_LAYER);
-	}
+        //Particle p = new GunParticle(getCentre(), speed.cpy().scl(-1), 1.0f, 0.4f);
+        //scene.addEntity(p, Scene.PARTICLE_LAYER);
+    }
 
     public TextureRegion getSprite() {
         return anim.getKeyFrame(animationTime, true);
     }
-	
+    
     @Override
     public void render(SpriteBatch batch) {
         TextureRegion frame = getSprite();

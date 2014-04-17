@@ -14,15 +14,15 @@ public class ControllerAxis extends InputAxis {
     }
 
     public ControllerAxis(Controller controller, int axis) {
-    	this(controller, axis, false);
+        this(controller, axis, false);
     }
 
     @Override
     public float getValue() {
-    	if (inverted) {
+        if (inverted) {
             return -controller.getAxis(axis);
-    	} else {
+        } else {
             return controller.getAxis(axis);
-    	}
+        }
     }
 }

@@ -13,10 +13,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 
 public class RespawnParticle extends Entity {
-	private static Texture RESPAWN_PARTICLE = null;
-	private Color respawnTint;
+    private static Texture RESPAWN_PARTICLE = null;
+    private Color respawnTint;
 
-	Texture img;
+    Texture img;
     private float lifeTime;
     
     private static final float TOTAL_TIME = 1.2f;
@@ -29,14 +29,14 @@ public class RespawnParticle extends Entity {
     public RespawnParticle(Player player) {
         super(player.getCentre());
         this.player = player;
-    	
-		if (RESPAWN_PARTICLE == null) {
-			RESPAWN_PARTICLE = Assets.manager.get("respawn.png", Texture.class);
-			//0xFFF76BFF
-		}
-		//respawnTint = new Color(0xFFF6ADFF); //RRGGBBAA
-		respawnTint = new Color(player.playerColor);
-		img = RESPAWN_PARTICLE;
+        
+        if (RESPAWN_PARTICLE == null) {
+            RESPAWN_PARTICLE = Assets.manager.get("respawn.png", Texture.class);
+            //0xFFF76BFF
+        }
+        //respawnTint = new Color(0xFFF6ADFF); //RRGGBBAA
+        respawnTint = new Color(player.playerColor);
+        img = RESPAWN_PARTICLE;
 
         size = new Vector2(16.0f, 16.0f);
         pos = pos.sub(size.cpy().scl(0.5f));
@@ -61,12 +61,12 @@ public class RespawnParticle extends Entity {
     public void render(SpriteBatch batch) {
         float angle = 45 + ROTATION * lifeTime/TOTAL_TIME;
         float scale = MIN_SCALE + (MAX_SCALE - MIN_SCALE) * lifeTime/TOTAL_TIME;
-		batch.setColor(respawnTint);
+        batch.setColor(respawnTint);
         float w = img.getWidth();
         float h = img.getHeight();
         float oX = w/2;
         float oY = h/2;
         batch.draw(img, pos.x + size.x/2f - oX, pos.y + size.y/2f - oY, oX, oY, w, h, scale, scale, angle, 0, 0, (int) w, (int) h, false, false);
-		batch.setColor(Color.WHITE);
+        batch.setColor(Color.WHITE);
     }
 }

@@ -41,9 +41,9 @@ public class GroundSmoke extends Entity {
         
         size = new Vector2(52.0f, 12.0f).scl(scale);
         if (isRight) {
-        	pos = initPosition.cpy();
+            pos = initPosition.cpy();
         } else {
-        	pos = initPosition.cpy().sub(size.x, 0.0f);
+            pos = initPosition.cpy().sub(size.x, 0.0f);
         }
         
         lifeTime = FRAME_DURATION * 18;

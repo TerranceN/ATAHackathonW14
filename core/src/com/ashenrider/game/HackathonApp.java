@@ -25,9 +25,11 @@ import java.util.Stack;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 public class HackathonApp extends Game {
-	public static final boolean DEBUG_HITBOXES = false;
-	public static final boolean DEBUG_FPS = false;
-	
+    public static final boolean DEBUG_HITBOXES = false;
+    public static final boolean DEBUG_FPS = false;
+    public static final boolean FILLER_PLAYERS = true;
+    public static final String MAP = "finalMap2";
+    
     Stack<Screen> backStack;
     private boolean isEscaping = false;
 
@@ -40,7 +42,7 @@ public class HackathonApp extends Game {
     FPSLogger logger;
     
     @Override
-	public void create () {
+    public void create () {
         packTextures();
 
         backStack = new Stack<Screen>();
@@ -79,11 +81,11 @@ public class HackathonApp extends Game {
         }
     }
 
-	@Override
-	public void render () {
-		if (DEBUG_FPS) {
-			logger.log();
-		}
+    @Override
+    public void render () {
+        if (DEBUG_FPS) {
+            logger.log();
+        }
         super.render();
 
         //Go back when esc is hit.

@@ -137,7 +137,7 @@ public class Map {
             levelLayer.setVisible(true);
             decorationFrontLayer.setVisible(true);
         } else {
-        	return;
+            return;
         }
         if (camera != null) {
             mapRenderer.setView(camera);
@@ -157,10 +157,10 @@ public class Map {
     }
 
     public Vector2 getLeastPenetration(Vector2 vel, Vector2 lower, Vector2 upper) {
-    	// check this many tiles further than the size of the character to determine the "depth" of the wall.
-    	// this may require fewer cells to be checked
-    	int maxDepth = 2;
-    	
+        // check this many tiles further than the size of the character to determine the "depth" of the wall.
+        // this may require fewer cells to be checked
+        int maxDepth = 2;
+        
         int lowerX = (int)Math.floor(lower.x / tileSize);
         int lowerY = (int)Math.floor(lower.y / tileSize);
         int upperX = (int)Math.ceil(upper.x / tileSize);

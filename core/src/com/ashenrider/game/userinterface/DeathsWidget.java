@@ -61,12 +61,12 @@ public class DeathsWidget implements PlayerDeathListener {
 
         ui.center().right();
         for(int i=0; i<DISPLAY_COUNT; i++) {
-        	rows[i] = new Table();
-        	NinePatch patch = atlas.createPatch("ashenrider_btn_pressed");
-        	patch.setColor(new Color(1,1,1,0.5f));
-        	NinePatchDrawable rowBkg = new NinePatchDrawable(patch);
-        	rows[i].setVisible(false);
-        	rows[i].setBackground(rowBkg);
+            rows[i] = new Table();
+            NinePatch patch = atlas.createPatch("ashenrider_btn_pressed");
+            patch.setColor(new Color(1,1,1,0.5f));
+            NinePatchDrawable rowBkg = new NinePatchDrawable(patch);
+            rows[i].setVisible(false);
+            rows[i].setBackground(rowBkg);
             ui.add(rows[i]).width(200).height(80).pad(ROW_PADDING);
 
             Image image = new Image();
@@ -98,18 +98,18 @@ public class DeathsWidget implements PlayerDeathListener {
             else {
                 rows[i].setVisible(true);
                 if (events.get(i).aggressor != null) {
-                	aggressorImages[i].setVisible(true);
-	                if(aggressorImages[i].getDrawable() == null) {
-	                    aggressorImages[i].setDrawable(new SpriteDrawable(new Sprite(events.get(i).aggressor.getHead())));
-	                } else {
-	                    ((SpriteDrawable)aggressorImages[i].getDrawable()).getSprite().setTexture(events.get(i).aggressor.getHead());
-	                }
+                    aggressorImages[i].setVisible(true);
+                    if(aggressorImages[i].getDrawable() == null) {
+                        aggressorImages[i].setDrawable(new SpriteDrawable(new Sprite(events.get(i).aggressor.getHead())));
+                    } else {
+                        ((SpriteDrawable)aggressorImages[i].getDrawable()).getSprite().setTexture(events.get(i).aggressor.getHead());
+                    }
                 } else {
-                	aggressorImages[i].setVisible(false);
+                    aggressorImages[i].setVisible(false);
                 }
                 Texture attackImg = attackIcons.get(events.get(i).source);
                 if(attackImages[i].getDrawable() == null) {
-                	attackImages[i].setDrawable(new SpriteDrawable(new Sprite(attackImg)));
+                    attackImages[i].setDrawable(new SpriteDrawable(new Sprite(attackImg)));
                 } else {
                     ((SpriteDrawable)attackImages[i].getDrawable()).getSprite().setTexture(attackImg);
                 }

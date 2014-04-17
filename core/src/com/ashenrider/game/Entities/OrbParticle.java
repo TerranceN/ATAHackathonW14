@@ -16,10 +16,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 
 public class OrbParticle extends Entity {
-	private static Texture ORB_PARTICLE = null;
-	private Color orbColor;
+    private static Texture ORB_PARTICLE = null;
+    private Color orbColor;
 
-	Texture img;
+    Texture img;
     private float lifeTime;
     
     private float TOTAL_TIME;
@@ -32,12 +32,12 @@ public class OrbParticle extends Entity {
     public OrbParticle(Player player, Color color, float duration) {
         super(player.getCentre());
         this.player = player;
-    	
-		if (ORB_PARTICLE == null) {
-			ORB_PARTICLE = Assets.manager.get("powerup.png", Texture.class);
-		}
-		orbColor = new Color(color); // copy the colour so that it can be modified to fade
-		img = ORB_PARTICLE;
+        
+        if (ORB_PARTICLE == null) {
+            ORB_PARTICLE = Assets.manager.get("powerup.png", Texture.class);
+        }
+        orbColor = new Color(color); // copy the colour so that it can be modified to fade
+        img = ORB_PARTICLE;
 
         size = new Vector2(20.0f, 20.0f);
         pos = pos.sub(size.cpy().scl(0.5f));
@@ -47,7 +47,7 @@ public class OrbParticle extends Entity {
         initialAngle = rand.nextFloat() * 360;
         rotationSpeed = 120 + rand.nextFloat() * 120f;
         if (rand.nextBoolean()) {
-        	rotationSpeed = -rotationSpeed;
+            rotationSpeed = -rotationSpeed;
         }
         
         TOTAL_TIME = duration;
@@ -70,8 +70,8 @@ public class OrbParticle extends Entity {
 
     @Override
     public void render(SpriteBatch batch) {
-		batch.setColor(orbColor);
+        batch.setColor(orbColor);
         batch.draw(img, pos.x, pos.y, size.x, size.y);
-		batch.setColor(Color.WHITE);
+        batch.setColor(Color.WHITE);
     }
 }
