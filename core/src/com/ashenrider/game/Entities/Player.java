@@ -76,7 +76,7 @@ public class Player extends Entity {
     public float speedMult = 1.0f;
     
     public enum Action {
-        MOVE_HORIZONTAL, MOVE_VERTICAL, AIM_HORIZONTAL, AIM_VERTICAL, JUMP, SHOOT, DASH, DOWN_DASH, NULL_SPHERE
+        MOVE_HORIZONTAL, MOVE_VERTICAL, AIM_HORIZONTAL, AIM_VERTICAL, JUMP, SHOOT, SWING, DASH, DOWN_DASH, NULL_SPHERE
     }
     
     HashMap<Action, InputButton> buttonMap;
@@ -168,12 +168,14 @@ public class Player extends Entity {
         cooldown = new HashMap<Action, Float>();
         cooldown.put(Action.JUMP, 0.0f);
         cooldown.put(Action.SHOOT, 0.0f);
+        cooldown.put(Action.SWING, 0.0f);
         cooldown.put(Action.DASH, 0.0f);
         cooldown.put(Action.DOWN_DASH, 0.0f);
         cooldown.put(Action.NULL_SPHERE, 0.0f);
         maxCooldown = new HashMap<Action, Float>();
         maxCooldown.put(Action.JUMP, 0.0f);
         maxCooldown.put(Action.SHOOT, 0.8f);
+        maxCooldown.put(Action.SWING, 0.15f);
         maxCooldown.put(Action.DASH, DASH_TIME + 0.35f);
         maxCooldown.put(Action.DOWN_DASH, 0.5f);
         maxCooldown.put(Action.NULL_SPHERE, 1.0f);
@@ -181,7 +183,7 @@ public class Player extends Entity {
         statusBuffs = new HashMap<Buff.Status, Buff>();
     }
     
-    public void setInputs(InputAxis moveH, InputAxis moveV, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton dash, InputButton nullSphere) {
+    public void setInputs(InputAxis moveH, InputAxis moveV, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton swing, InputButton dash, InputButton nullSphere) {
         axisMap.put(Action.MOVE_HORIZONTAL, moveH);
         axisMap.put(Action.MOVE_VERTICAL, moveV);
         axisMap.put(Action.AIM_HORIZONTAL, aimH);
@@ -189,6 +191,7 @@ public class Player extends Entity {
 
         buttonMap.put(Action.JUMP, jump);
         buttonMap.put(Action.SHOOT, shoot);
+        buttonMap.put(Action.SWING, swing);
         buttonMap.put(Action.DASH, dash);
         buttonMap.put(Action.NULL_SPHERE, nullSphere);
     }
@@ -348,11 +351,19 @@ public class Player extends Entity {
                 }
                 onWall = nextToWall;
             }
+            // sword
+            if (buttonMap.get(Action.SWING).isDown() && cooldown.get(Action.SWING) == 0.0f) {
+                Vector2 dir = new Vector2(axisMap.get(Action.AIM_HORIZONTAL).getValue(), axisMap.get(Action.AIM_VERTICAL).getValue());
+                if (dir.isZero()) {
+                    dir.x = 1;
+                }
+                scene.addEntity(new SwingParticle(this, dir.angle()), Scene.PARTICLE_LAYER);
+                cooldown.put(Action.SWING, maxCooldown.get(Action.SWING));
+            }
             // shoot
             if (buttonMap.get(Action.SHOOT).isDown() && cooldown.get(Action.SHOOT) == 0.0f) {
                 Vector2 dir = new Vector2(axisMap.get(Action.AIM_HORIZONTAL).getValue(), axisMap.get(Action.AIM_VERTICAL).getValue());
                 if (dir.isZero()) {
-                    // if dir is 0 the projectile would sit still in space
                     dir.x = 1;
                 }
                 if (hasStatus(Buff.Status.MULTI_SHOT)) {

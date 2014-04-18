@@ -120,11 +120,13 @@ public class Scene {
 
         for(Controller controller : Controllers.getControllers()) {
             Player player = addPlayer(new Vector2(400, 200));
+            // need to update controllerHelper in order to support more buttons, or rethink the control scheme
             player.setInputs(ControllerHelper.getAxis(controller, ControllerHelper.LEFT_STICK_HORIZONTAL),
                     ControllerHelper.getAxis(controller, ControllerHelper.LEFT_STICK_VERTICAL),
                     ControllerHelper.getAxis(controller, ControllerHelper.RIGHT_STICK_HORIZONTAL),
                     ControllerHelper.getAxis(controller, ControllerHelper.RIGHT_STICK_VERTICAL),
                     ControllerHelper.getButton(controller, ControllerHelper.A_BTN),
+                    ControllerHelper.getButton(controller, ControllerHelper.RIGHT_TRIGGER),
                     ControllerHelper.getButton(controller, ControllerHelper.RIGHT_TRIGGER),
                     ControllerHelper.getButton(controller, ControllerHelper.LEFT_TRIGGER),
                     ControllerHelper.getButton(controller, ControllerHelper.B_BTN));
@@ -190,6 +192,7 @@ public class Scene {
                         new MouseAxis(player, camera, false),
                         new KeyboardButton(Keys.W),
                         new MouseButton(Buttons.LEFT),
+                        new MouseButton(Buttons.RIGHT),
                         new KeyboardButton(Keys.E),
                         new KeyboardButton(Keys.SHIFT_LEFT));
 
@@ -202,6 +205,7 @@ public class Scene {
                             new KeyboardAxis(Keys.NUMPAD_4, Keys.NUMPAD_6),
                             new KeyboardAxis(Keys.NUMPAD_5, Keys.NUMPAD_8),
                             new KeyboardButton(Keys.UP),
+                            new KeyboardButton(Keys.ENTER),
                             new KeyboardButton(Keys.ENTER),
                             new KeyboardButton(Keys.SHIFT_RIGHT),
                             new KeyboardButton(Keys.CONTROL_RIGHT));
