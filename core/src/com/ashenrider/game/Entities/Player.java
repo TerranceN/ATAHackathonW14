@@ -51,9 +51,6 @@ public class Player extends Entity {
     float nullTime = 0.0f;
     public boolean nullSphereEnabled = false;
 
-    boolean jumpPressedLastFrame = false;
-    boolean dashPressedLastFrame = false;
-
     // current
     int airJumps = 0;
     int airDashes = 0;
@@ -296,6 +293,24 @@ public class Player extends Entity {
 
     @Override
     public void update(float dt) {
+        // cooldown / status effects that can happen while alive or dead happen here
+        frameCount++;
+        animationTime += dt;
+        
+        // update input objects (to keep justPressed info accurate)
+        // Note that this means that these inputObjects cannot be shared by 2 players
+        for (InputButton btn : buttonMap.values()) {
+            btn.update();
+        }
+        for (InputAxis axis : axisMap.values()) {
+            axis.update();
+        }
+
+        // update cooldowns
+        for (Action action : cooldown.keySet()) {
+            cooldown.put(action, Math.max(0.0f, cooldown.get(action) - dt));
+        }
+        
         if (alive) {
             // jump
             if (!nullSphereEnabled && buttonMap.get(Action.NULL_SPHERE).isDown() && cooldown.get(Action.NULL_SPHERE) == 0.0f) {
@@ -310,7 +325,7 @@ public class Player extends Entity {
                 }
             }
             
-            if (!jumpPressedLastFrame && buttonMap.get(Action.JUMP).isDown() && cooldown.get(Action.JUMP) == 0.0f) {
+            if (buttonMap.get(Action.JUMP).justPressed() && cooldown.get(Action.JUMP) == 0.0f) {
                 if (onGround || airJumps > 0) {
                     speed.y = JUMP;
                     cooldown.put(Action.JUMP, maxCooldown.get(Action.JUMP));
@@ -352,7 +367,7 @@ public class Player extends Entity {
                 onWall = nextToWall;
             }
             // sword
-            if (buttonMap.get(Action.SWING).isDown() && cooldown.get(Action.SWING) == 0.0f) {
+            if (buttonMap.get(Action.SWING).justPressed() && cooldown.get(Action.SWING) == 0.0f) {
                 Vector2 dir = new Vector2(axisMap.get(Action.AIM_HORIZONTAL).getValue(), axisMap.get(Action.AIM_VERTICAL).getValue());
                 if (dir.isZero()) {
                     dir.x = 1;
@@ -381,7 +396,7 @@ public class Player extends Entity {
             }
             // dash quickly in the currently facing direction
             // (or in the aimed direction)
-            if (buttonMap.get(Action.DASH).isDown() && !dashPressedLastFrame) {
+            if (buttonMap.get(Action.DASH).justPressed()) {
                 if (axisMap.get(Action.MOVE_VERTICAL).getValue() < -0.5f) {
                     // Down smash (doesnt use an air dash and has its own cooldown)
                     if (!onGround && axisMap.get(Action.MOVE_VERTICAL).getValue() < -0.5f && cooldown.get(Action.DOWN_DASH) == 0.0f) {
@@ -390,7 +405,7 @@ public class Player extends Entity {
                         scene.addEntity(new AirSmoke(getCentre(), 30, false), Scene.PARTICLE_LAYER);
                         scene.addEntity(new AirSmoke(getCentre(), 150, true), Scene.PARTICLE_LAYER);
                     }
-                } else if (buttonMap.get(Action.DASH).isDown() && cooldown.get(Action.DASH) == 0.0f && airDashes > 0) {
+                } else if (cooldown.get(Action.DASH) == 0.0f && airDashes > 0) {
                     // horizontal dash
                     float xAxis = axisMap.get(Action.MOVE_HORIZONTAL).getValue();
                     float dir = speed.x > 0 ? 1 : -1;
@@ -454,16 +469,6 @@ public class Player extends Entity {
                     scene.addEntity(new RespawnParticle(this), Scene.PARTICLE_LAYER);
                 }
             }
-        }
-        // cooldown / status effects that can happen while alive or dead happen here
-        frameCount++;
-        animationTime += dt;
-        jumpPressedLastFrame = buttonMap.get(Action.JUMP).isDown();
-        dashPressedLastFrame = buttonMap.get(Action.DASH).isDown();
-
-        // update cooldowns
-        for (Action action : cooldown.keySet()) {
-            cooldown.put(action, Math.max(0.0f, cooldown.get(action) - dt));
         }
     }
 
