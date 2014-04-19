@@ -16,6 +16,6 @@ public abstract class InputButton {
     }
     
     public boolean justReleased() {
-        return (isPressed && !wasPressed);
+        return (!isPressed && wasPressed);
     }
 }    
