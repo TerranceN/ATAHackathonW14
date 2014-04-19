@@ -73,15 +73,14 @@ public class Player extends Entity {
     public float speedMult = 1.0f;
     
     public enum Action {
-        MOVE_HORIZONTAL, MOVE_VERTICAL, AIM_HORIZONTAL, AIM_VERTICAL, JUMP, SHOOT, SWING, DASH, DOWN_DASH, NULL_SPHERE
+        MOVE_HORIZONTAL, MOVE_VERTICAL, AIM_HORIZONTAL, AIM_VERTICAL, JUMP, SHOOT, SWING, DASH, DOWN_DASH, NULL_SPHERE, OK, BACK, PAUSE, 
     }
     
-    HashMap<Action, InputButton> buttonMap;
-    public HashMap<Action, InputAxis> axisMap;
+    PlayerInput input;
     
     HashMap<Action, Float> cooldown;
     HashMap<Action, Float> maxCooldown;
-    HashMap<Buff.Status, Buff> statusBuffs;
+    HashMap<Status, Buff> statusBuffs;
     ArrayList<Buff> buffs;
         
     // playerNumber is an ID for 
@@ -159,9 +158,6 @@ public class Player extends Entity {
         // approximate size of the player
         size = new Vector2(16.0f, 48.0f).scl(scale);
         
-        buttonMap = new HashMap<Action, InputButton>();
-        axisMap = new HashMap<Action, InputAxis>();
-        
         cooldown = new HashMap<Action, Float>();
         cooldown.put(Action.JUMP, 0.0f);
         cooldown.put(Action.SHOOT, 0.0f);
@@ -176,31 +172,15 @@ public class Player extends Entity {
         maxCooldown.put(Action.DASH, DASH_TIME + 0.35f);
         maxCooldown.put(Action.DOWN_DASH, 0.5f);
         maxCooldown.put(Action.NULL_SPHERE, 1.0f);
+        
         buffs = new ArrayList<Buff>();
-        statusBuffs = new HashMap<Buff.Status, Buff>();
+        statusBuffs = new HashMap<Status, Buff>();
     }
     
-    public void setInputs(InputAxis moveH, InputAxis moveV, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton swing, InputButton dash, InputButton nullSphere) {
-        axisMap.put(Action.MOVE_HORIZONTAL, moveH);
-        axisMap.put(Action.MOVE_VERTICAL, moveV);
-        axisMap.put(Action.AIM_HORIZONTAL, aimH);
-        axisMap.put(Action.AIM_VERTICAL, aimV);
-
-        buttonMap.put(Action.JUMP, jump);
-        buttonMap.put(Action.SHOOT, shoot);
-        buttonMap.put(Action.SWING, swing);
-        buttonMap.put(Action.DASH, dash);
-        buttonMap.put(Action.NULL_SPHERE, nullSphere);
+    public void setInput(PlayerInput pInput) {
+        input = pInput;
     }
-
-    public void setInput(Action action, InputAxis axis) {
-        axisMap.put(action, axis);
-    }
-
-    public void setInput(Action action, InputButton button) {
-        buttonMap.put(action, button);
-    }
-
+    
     public ArrayList<Vector2> getPoints() {
         ArrayList<Vector2> points = new ArrayList<Vector2>();
 
@@ -277,7 +257,7 @@ public class Player extends Entity {
     public TextureRegion getSprite() {
         TextureRegion frame;
         // pass a time to animation to get the right frame
-        if (hasStatus(Buff.Status.LAND_STUN)) {
+        if (hasStatus(Status.LAND_STUN)) {
             frame = landAnimation.getKeyFrame(animationTime, false);
         } else if (onWall) {
             frame = wallHug;
@@ -296,15 +276,6 @@ public class Player extends Entity {
         // cooldown / status effects that can happen while alive or dead happen here
         frameCount++;
         animationTime += dt;
-        
-        // update input objects (to keep justPressed info accurate)
-        // Note that this means that these inputObjects cannot be shared by 2 players
-        for (InputButton btn : buttonMap.values()) {
-            btn.update();
-        }
-        for (InputAxis axis : axisMap.values()) {
-            axis.update();
-        }
 
         // update cooldowns
         for (Action action : cooldown.keySet()) {
@@ -312,20 +283,20 @@ public class Player extends Entity {
         }
         
         if (alive) {
-            // jump
-            if (!nullSphereEnabled && buttonMap.get(Action.NULL_SPHERE).isDown() && cooldown.get(Action.NULL_SPHERE) == 0.0f) {
+            if (!nullSphereEnabled && input.getButton(Action.NULL_SPHERE).isDown() && cooldown.get(Action.NULL_SPHERE) == 0.0f) {
                 nullSphereEnabled = true;
                 nullTime = MAX_NULL_TIME;
             } else if (nullSphereEnabled) {
                 nullTime -= dt;
-                if (nullTime <= 0 || !buttonMap.get(Action.NULL_SPHERE).isDown()) {
+                if (nullTime <= 0 || !input.getButton(Action.NULL_SPHERE).isDown()) {
                     nullTime = 0;
                     nullSphereEnabled = false;
                     cooldown.put(Action.NULL_SPHERE, maxCooldown.get(Action.NULL_SPHERE));
                 }
             }
             
-            if (buttonMap.get(Action.JUMP).justPressed() && cooldown.get(Action.JUMP) == 0.0f) {
+            // jump
+            if (input.getButton(Action.JUMP).justPressed() && cooldown.get(Action.JUMP) == 0.0f) {
                 if (onGround || airJumps > 0) {
                     speed.y = JUMP;
                     cooldown.put(Action.JUMP, maxCooldown.get(Action.JUMP));
@@ -367,8 +338,8 @@ public class Player extends Entity {
                 onWall = nextToWall;
             }
             // sword
-            if (buttonMap.get(Action.SWING).justPressed() && cooldown.get(Action.SWING) == 0.0f) {
-                Vector2 dir = new Vector2(axisMap.get(Action.AIM_HORIZONTAL).getValue(), axisMap.get(Action.AIM_VERTICAL).getValue());
+            if (input.getButton(Action.SWING).justPressed() && cooldown.get(Action.SWING) == 0.0f) {
+                Vector2 dir = new Vector2(input.getAxis(Action.AIM_HORIZONTAL).getValue(), input.getAxis(Action.AIM_VERTICAL).getValue());
                 if (dir.isZero()) {
                     dir.x = 1;
                 }
@@ -376,12 +347,12 @@ public class Player extends Entity {
                 cooldown.put(Action.SWING, maxCooldown.get(Action.SWING));
             }
             // shoot
-            if (buttonMap.get(Action.SHOOT).isDown() && cooldown.get(Action.SHOOT) == 0.0f) {
-                Vector2 dir = new Vector2(axisMap.get(Action.AIM_HORIZONTAL).getValue(), axisMap.get(Action.AIM_VERTICAL).getValue());
+            if (input.getButton(Action.SHOOT).isDown() && cooldown.get(Action.SHOOT) == 0.0f) {
+                Vector2 dir = new Vector2(input.getAxis(Action.AIM_HORIZONTAL).getValue(), input.getAxis(Action.AIM_VERTICAL).getValue());
                 if (dir.isZero()) {
                     dir.x = 1;
                 }
-                if (hasStatus(Buff.Status.MULTI_SHOT)) {
+                if (hasStatus(Status.MULTI_SHOT)) {
                     float spread = 42;
                     Vector2 offset = dir.cpy().rotate90(1).nor().scl(spread/2f);
                     Projectile p = new Fireball(getCentre().cpy().add(offset), dir, number);
@@ -396,10 +367,10 @@ public class Player extends Entity {
             }
             // dash quickly in the currently facing direction
             // (or in the aimed direction)
-            if (buttonMap.get(Action.DASH).justPressed()) {
-                if (axisMap.get(Action.MOVE_VERTICAL).getValue() < -0.5f) {
+            if (input.getButton(Action.DASH).justPressed()) {
+                if (input.getAxis(Action.MOVE_VERTICAL).getValue() < -0.5f) {
                     // Down smash (doesnt use an air dash and has its own cooldown)
-                    if (!onGround && axisMap.get(Action.MOVE_VERTICAL).getValue() < -0.5f && cooldown.get(Action.DOWN_DASH) == 0.0f) {
+                    if (!onGround && input.getAxis(Action.MOVE_VERTICAL).getValue() < -0.5f && cooldown.get(Action.DOWN_DASH) == 0.0f) {
                         cooldown.put(Action.DOWN_DASH, maxCooldown.get(Action.DOWN_DASH));
                         speed.y = speed.y - DOWN_DASH_SPEED;
                         scene.addEntity(new AirSmoke(getCentre(), 30, false), Scene.PARTICLE_LAYER);
@@ -407,7 +378,7 @@ public class Player extends Entity {
                     }
                 } else if (cooldown.get(Action.DASH) == 0.0f && airDashes > 0) {
                     // horizontal dash
-                    float xAxis = axisMap.get(Action.MOVE_HORIZONTAL).getValue();
+                    float xAxis = input.getAxis(Action.MOVE_HORIZONTAL).getValue();
                     float dir = speed.x > 0 ? 1 : -1;
                     if (Math.abs(xAxis) > 0.25) {
                         dir = Math.signum(xAxis);
@@ -430,17 +401,17 @@ public class Player extends Entity {
                 }
             }
             // accelerate
-            float move = axisMap.get(Action.MOVE_HORIZONTAL).getValue();
+            float move = input.getAxis(Action.MOVE_HORIZONTAL).getValue();
             float xAcceleration = ACCEL * move * speedMult;
             if (Math.abs(move) > 0.25) {
                 if (!onGround) {
                     xAcceleration *= 0.25f;
                 }
-                if (!hasStatus(Buff.Status.LAND_STUN)) {
+                if (!hasStatus(Status.LAND_STUN)) {
                     speed.x = speed.x + xAcceleration * dt;
                 }
             }
-            if (!hasStatus(Buff.Status.DASHING)){
+            if (!hasStatus(Status.DASHING)){
                 // max speed
                 if (Math.abs(speed.x) > MAX_MOVE_SPEED * speedMult) {
                     speed.scl(MAX_MOVE_SPEED * speedMult / Math.abs(speed.x), 1.0f);
@@ -531,7 +502,7 @@ public class Player extends Entity {
         if (onGround && velY < minLandedSpeed) {
             float duration = LAND_FRAME_DURATION * 4;
             animationTime = 0.0f;
-            addBuff(new StatusBuff(this, duration, Buff.Status.LAND_STUN));
+            addBuff(new StatusBuff(this, duration, Status.LAND_STUN));
             scene.addEntity(new GroundSmoke(new Vector2(pos.x + size.x/2, pos.y), false), Scene.PARTICLE_LAYER);
             scene.addEntity(new GroundSmoke(new Vector2(pos.x + size.x/2, pos.y), true), Scene.PARTICLE_LAYER);
         }
@@ -669,7 +640,7 @@ public class Player extends Entity {
     public void render(SpriteBatch batch) {
         if (alive) {
             TextureRegion frame = getSprite();
-            if (hasStatus(Buff.Status.INVULNERABLE)) {
+            if (hasStatus(Status.INVULNERABLE)) {
                 batch.setColor(1.0f, 1.0f, 1.0f - (animationTime % 0.3f) * 1.5f, 0.4f + (animationTime % 0.3f) * 2.0f);
             }
     
@@ -683,7 +654,7 @@ public class Player extends Entity {
     }
 
     public boolean killPlayer(int killerID, int deathSource) {
-        if(alive && (!hasStatus(Buff.Status.INVULNERABLE) || deathSource == DeathSources.WALL)) {
+        if(alive && (!hasStatus(Status.INVULNERABLE) || deathSource == DeathSources.WALL)) {
             lives--;
             alive = false;
             scene.addEntity(new PlayerBody(number, pos, speed.cpy(), 5.0f, facingRight), Scene.PLAYER_LAYER);
@@ -726,8 +697,8 @@ public class Player extends Entity {
             }
         }
         
-        Set<Buff.Status> expired = new HashSet<Buff.Status>();
-        for (Buff.Status status : statusBuffs.keySet()) {
+        Set<Status> expired = new HashSet<Status>();
+        for (Status status : statusBuffs.keySet()) {
             Buff b = statusBuffs.get(status);
             b.update(dt);
             if (b.finished) {
@@ -735,7 +706,7 @@ public class Player extends Entity {
             }
         }
         // avoid concurrent modification of statusBuffs    
-        for (Buff.Status status : expired) {
+        for (Status status : expired) {
             statusBuffs.remove(status);
         }
     }
@@ -753,11 +724,11 @@ public class Player extends Entity {
         }
     }
     
-    private boolean hasStatus(Buff.Status status) {
+    private boolean hasStatus(Status status) {
         return statusBuffs.containsKey(status);
     }
     
-    private float getBuffDuration(Buff.Status status) {
+    private float getBuffDuration(Status status) {
         if (hasStatus(status)) {
             return statusBuffs.get(status).duration;
         } else {
@@ -773,7 +744,7 @@ public class Player extends Entity {
         for (Buff b : buffs) {
             b.duration = 0.0f;
         }
-        for (Buff.Status status : statusBuffs.keySet()) {
+        for (Status status : statusBuffs.keySet()) {
             Buff b = statusBuffs.get(status);
             b.duration = 0.0f;
         }

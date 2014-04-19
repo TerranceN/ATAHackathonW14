@@ -172,6 +172,7 @@ public class MainMenuScreen implements Screen {
             }
         }
         for (InputAxis iAxis : vAxis) {
+            // hold up
             if (Math.abs(iAxis.getValue()) > 0.2f) {
                 btnIndex += iAxis.getValue() * navSpeed * delta;
                 if (btnIndex < 0) {
@@ -188,7 +189,7 @@ public class MainMenuScreen implements Screen {
             }
         }
         for (InputButton iButton : select) {
-            if (iButton.isDown()) {
+            if (iButton.justPressed()) {
                 //Gdx.app.log("input", "Ok");
                 if (!intro.isFinished()) {
                     intro.skip();
@@ -200,7 +201,7 @@ public class MainMenuScreen implements Screen {
             }
         }
         for (InputButton iButton : back) {
-            if (iButton.isDown()) {
+            if (iButton.justPressed()) {
                 //Gdx.app.log("input", "Back");
                //exitGame();
                 if (!intro.isFinished()) {

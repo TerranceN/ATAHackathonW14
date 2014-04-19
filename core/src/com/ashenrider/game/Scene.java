@@ -12,14 +12,11 @@ import com.ashenrider.game.Entities.Particle;
 import com.ashenrider.game.Entities.Player;
 import com.ashenrider.game.Entities.ShotPowerUp;
 import com.ashenrider.game.Entities.SpeedPowerUp;
+import com.ashenrider.game.Entities.Player.Action;
 import com.ashenrider.game.Input.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
-import com.badlogic.gdx.controllers.Controller;
-import com.badlogic.gdx.controllers.ControllerListener;
-import com.badlogic.gdx.controllers.Controllers;
-import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
@@ -144,101 +141,19 @@ public class Scene {
             entityLayers.add(new ArrayList<Entity>());
         }
         
+        // make a player for each PlayerInput object
         players = new ArrayList<Player>();
-        boolean controllerDebug = false;
-
-        for(Controller controller : Controllers.getControllers()) {
+        for (PlayerInput input : HackathonApp.playerInputs) {
             Player player = addPlayer(new Vector2(400, 200));
-            // need to update controllerHelper in order to support more buttons, or rethink the control scheme
-            player.setInputs(ControllerHelper.getAxis(controller, ControllerHelper.LEFT_STICK_HORIZONTAL),
-                    ControllerHelper.getAxis(controller, ControllerHelper.LEFT_STICK_VERTICAL),
-                    ControllerHelper.getAxis(controller, ControllerHelper.RIGHT_STICK_HORIZONTAL),
-                    ControllerHelper.getAxis(controller, ControllerHelper.RIGHT_STICK_VERTICAL),
-                    ControllerHelper.getButton(controller, ControllerHelper.A_BTN),
-                    ControllerHelper.getButton(controller, ControllerHelper.RIGHT_TRIGGER),
-                    ControllerHelper.getButton(controller, ControllerHelper.RIGHT_TRIGGER),
-                    ControllerHelper.getButton(controller, ControllerHelper.LEFT_TRIGGER),
-                    ControllerHelper.getButton(controller, ControllerHelper.B_BTN));
-
-
-            if (controllerDebug) {
-                controller.addListener(new ControllerListener() {
-                    @Override
-                    public void connected(Controller controller) {
-
-                    }
-
-                    @Override
-                    public void disconnected(Controller controller) {
-
-                    }
-
-                    @Override
-                    public boolean buttonDown(Controller controller, int i) {
-                        Gdx.app.log("Controller", "BUTTON: " + i);
-                        return false;
-                    }
-
-                    @Override
-                    public boolean buttonUp(Controller controller, int i) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean axisMoved(Controller controller, int i, float v) {
-                        Gdx.app.log("Controller", "AXIS: " + i + " || " + v);
-                        return false;
-                    }
-
-                    @Override
-                    public boolean povMoved(Controller controller, int i, PovDirection povDirection) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean xSliderMoved(Controller controller, int i, boolean b) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean ySliderMoved(Controller controller, int i, boolean b) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean accelerometerMoved(Controller controller, int i, Vector3 vector3) {
-                        return false;
-                    }
-                });
-            }
+            player.setInput(input);
         }
         
-        // keyboard/mouse player
-        Player player = addPlayer(new Vector2(100, 100));
-        player.setInputs(new KeyboardAxis(Keys.A, Keys.D),
-                        new KeyboardAxis(Keys.S, Keys.W),
-                        new MouseAxis(player, camera, true),
-                        new MouseAxis(player, camera, false),
-                        new KeyboardButton(Keys.W),
-                        new MouseButton(Buttons.LEFT),
-                        new MouseButton(Buttons.RIGHT),
-                        new KeyboardButton(Keys.E),
-                        new KeyboardButton(Keys.SHIFT_LEFT));
-
-        // uncontrollable players
-        if (HackathonApp.FILLER_PLAYERS) {
-            for (int i = players.size(); i < 4; i++) {
-                player = addPlayer(new Vector2(100, 100));
-                player.setInputs(new KeyboardAxis(Keys.LEFT, Keys.RIGHT),
-                            new KeyboardAxis(Keys.DOWN, Keys.UP),
-                            new KeyboardAxis(Keys.NUMPAD_4, Keys.NUMPAD_6),
-                            new KeyboardAxis(Keys.NUMPAD_5, Keys.NUMPAD_8),
-                            new KeyboardButton(Keys.UP),
-                            new KeyboardButton(Keys.ENTER),
-                            new KeyboardButton(Keys.ENTER),
-                            new KeyboardButton(Keys.SHIFT_RIGHT),
-                            new KeyboardButton(Keys.CONTROL_RIGHT));
-            }
+        // keyboard/mouse player hack
+        if (HackathonApp.mousePlayer != -1) {
+            Player player = players.get(HackathonApp.mousePlayer);
+            PlayerInput input = HackathonApp.playerInputs.get(HackathonApp.mousePlayer);
+            input.setInput(Action.AIM_HORIZONTAL, new MouseAxis(player, camera, true));
+            input.setInput(Action.AIM_VERTICAL, new MouseAxis(player, camera, false));
         }
 
         spawnPoints = map.getSpawnPoints();
@@ -249,7 +164,7 @@ public class Scene {
         addEntity(new ShotPowerUp(powerUpPoints), PLAYER_LAYER);
 
         for (int i = 0; i < players.size(); i++) {
-            player = players.get(i);
+            Player player = players.get(i);
             // stagger the initial player spawns ?
             respawnPlayer(player, 0.5f * i);
         }
