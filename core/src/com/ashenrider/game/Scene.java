@@ -69,7 +69,8 @@ public class Scene {
 
     float unitScale = 1f;
     private static float NULL_FADE_TIME = 0.8f;
-    private static float HEAT_FADE_TIME = 1.6f;
+    private static float HEAT_FADE_TIME = 1.0f;
+    private static float FIRE_GLOW_FADE_TIME = 0.8f;
 
     ShaderProgram nullSphereMaskingShader;
     ShaderProgram nullSphereFadeShader;
@@ -344,9 +345,9 @@ public class Scene {
         heatEffectBuffer.begin();
         batch.setShader(nullSphereFadeShader);
         nullSphereFadeShader.begin();
-        batch.begin();
         nullSphereFadeShader.setUniformf("u_dt", dt);
-        nullSphereFadeShader.setUniformf("u_fadeRate", 1.0f/HEAT_FADE_TIME);
+        nullSphereFadeShader.setUniformf("u_fadeRates", 1.0f/HEAT_FADE_TIME, 1.0f/FIRE_GLOW_FADE_TIME, 0.0f);
+        batch.begin();
         batch.setProjectionMatrix(mapCam.combined);
         batch.draw(heatEffectBufferRegion, 0, 0, map.getWidth(), map.getHeight());
         batch.end();
@@ -370,7 +371,7 @@ public class Scene {
         nullSphereFadeShader.begin();
         batch.begin();
         nullSphereFadeShader.setUniformf("u_dt", dt);
-        nullSphereFadeShader.setUniformf("u_fadeRate", 1.0f/NULL_FADE_TIME);
+        nullSphereFadeShader.setUniformf("u_fadeRates", 1.0f/NULL_FADE_TIME, 0.0f, 0.0f);
         batch.setProjectionMatrix(mapCam.combined);
         batch.draw(collisionMaskRegion, 0, 0, map.getWidth(), map.getHeight());
         batch.end();
@@ -453,17 +454,30 @@ public class Scene {
     }
 
     public void renderSpheresToHeatMask() {
+        int oldSrcFunc = batch.getBlendSrcFunc();
+        int oldDstFunc = batch.getBlendDstFunc();
+
+        batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_DST_ALPHA);
+
         heatEffectBuffer.begin();
         batch.begin();
         batch.setProjectionMatrix(mapCam.combined);
-        float size = 100f;
         for (Entity e : entities) {
             if (e instanceof Fireball) {
-                batch.draw(circleGradient, e.pos.x + e.size.x / 2f - size / 2f, e.pos.y + e.size.y / 2f - size /2f, size, size);
+                float size = 120f * (float)Math.min(1.0f, e.life / 0.2f);
+                batch.setColor(0, 1, 0, 0.25f);
+                Vector2 drawPos = e.pos.cpy().add(e.size.cpy().scl(1f/2f)).sub(new Vector2(1, 1).scl(size/2f));
+                batch.draw(circleGradient, drawPos.x, drawPos.y, size, size);
+                batch.setColor(1, 0, 0, 0.25f);
+                drawPos.sub(e.speed.cpy().nor().scl(0.5f * size));
+                batch.draw(circleGradient, drawPos.x, drawPos.y, size, size);
             }
         }
+        batch.setColor(1, 1, 1, 1);
         batch.end();
         heatEffectBuffer.end();
+
+        batch.setBlendFunction(oldSrcFunc, oldDstFunc);
     }
 
     public void render() {

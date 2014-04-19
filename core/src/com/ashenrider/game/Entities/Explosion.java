@@ -14,7 +14,7 @@ public class Explosion extends Entity {
 
     private float lifeTime = 5.0f;
 
-    float scale = 3.0f;
+    float scale = 4.0f;
     float animationTime = 0.0f;
 
     private static Animation staticAnim;

@@ -13,6 +13,8 @@ public abstract class Entity {
     public Vector2 pos;
     public Vector2 speed;
     public Vector2 size;
+
+    public float life = 0f;
     
     float GRAVITY = -600.0f;
     public boolean falls = true;
@@ -28,6 +30,8 @@ public abstract class Entity {
     }
     
     public void update(float dt) {
+        life += dt;
+
         //if (falls && !onGround) {
         if (falls) {
             speed.add(0, GRAVITY * dt);
