@@ -15,6 +15,7 @@ import com.ashenrider.game.Entities.SpeedPowerUp;
 import com.ashenrider.game.Input.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
@@ -93,6 +94,7 @@ public class Scene {
     Texture noiseTexture;
 
     float gameTime = 0f;
+    float backgroundHeat = 0.0f;
     
     public Scene(String filename) {
         batch = new SpriteBatch();
@@ -346,7 +348,7 @@ public class Scene {
         batch.setShader(nullSphereFadeShader);
         nullSphereFadeShader.begin();
         nullSphereFadeShader.setUniformf("u_dt", dt);
-        nullSphereFadeShader.setUniformf("u_fadeRates", 1.0f/HEAT_FADE_TIME, 1.0f/FIRE_GLOW_FADE_TIME, 0.0f);
+        nullSphereFadeShader.setUniformf("u_fadeRates", 1.0f/HEAT_FADE_TIME, 1.0f/FIRE_GLOW_FADE_TIME, 1000000f);
         batch.begin();
         batch.setProjectionMatrix(mapCam.combined);
         batch.draw(heatEffectBufferRegion, 0, 0, map.getWidth(), map.getHeight());
@@ -458,13 +460,13 @@ public class Scene {
         int oldDstFunc = batch.getBlendDstFunc();
 
         batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_DST_ALPHA);
-
         heatEffectBuffer.begin();
+
         batch.begin();
         batch.setProjectionMatrix(mapCam.combined);
         for (Entity e : entities) {
             if (e instanceof Fireball) {
-                float size = 120f * (float)Math.min(1.0f, e.life / 0.2f);
+                float size = 140f * (float)Math.min(1.0f, e.life / 0.2f);
                 batch.setColor(0, 1, 0, 0.25f);
                 Vector2 drawPos = e.pos.cpy().add(e.size.cpy().scl(1f/2f)).sub(new Vector2(1, 1).scl(size/2f));
                 batch.draw(circleGradient, drawPos.x, drawPos.y, size, size);
@@ -475,8 +477,20 @@ public class Scene {
         }
         batch.setColor(1, 1, 1, 1);
         batch.end();
-        heatEffectBuffer.end();
 
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+        shapeRenderer.begin(ShapeType.Filled);
+        Color haze = new Color(0, 0, 1, 0.5f);
+        Color noHaze = new Color(0, 0, 0, 0f);
+        shapeRenderer.rect(0, 0, map.getWidth(), 500, haze, haze, noHaze, noHaze);
+        shapeRenderer.rect(0, map.getHeight() - 500, map.getWidth(), 500, noHaze, noHaze, haze, haze);
+        shapeRenderer.rect(0, 0, 500, map.getHeight(), haze, noHaze, noHaze, haze);
+        shapeRenderer.rect(map.getWidth() - 500, 0, 500, map.getHeight(), noHaze, haze, haze, noHaze);
+        shapeRenderer.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+
+        heatEffectBuffer.end();
         batch.setBlendFunction(oldSrcFunc, oldDstFunc);
     }
 
@@ -523,6 +537,7 @@ public class Scene {
         heatEffectShader.setUniformi("u_noiseTexture", 2);
         heatEffectShader.setUniformf("u_gameTime", gameTime);
         heatEffectShader.setUniformf("u_noiseTexSize", (float)noiseTexture.getWidth(), (float)noiseTexture.getHeight());
+        heatEffectShader.setUniformf("u_backgroundHeat", backgroundHeat);
         Gdx.graphics.getGL20().glActiveTexture(GL20.GL_TEXTURE0);
         batch.begin();
         batch.setProjectionMatrix(camera.combined);

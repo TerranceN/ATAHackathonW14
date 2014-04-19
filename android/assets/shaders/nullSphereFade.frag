@@ -1,6 +1,5 @@
 uniform sampler2D u_texture;
 uniform float u_dt;
-uniform float u_fadeRate;
 uniform vec3 u_fadeRates;
 
 varying vec2 v_texCoord;
