@@ -52,7 +52,7 @@ public class MainMenuScreen implements Screen {
     private static final float MIN_AXIS_MOVE = 0.35f;
     // axis value required to start scrolling at NAV_SPEED/second
     private static final float MIN_AXIS_HOLD = 0.7f;
-    private static final float NAV_SPEED = 4.0f; // buttons per second
+    private static final float NAV_SPEED = 3.0f; // buttons per second
 
     TextButton.TextButtonStyle style;
     TextButton.TextButtonStyle selectedStyle;
@@ -143,34 +143,34 @@ public class MainMenuScreen implements Screen {
         for (PlayerInput input : HackathonApp.playerInputs) {
             // Horizontal
             InputAxis hAxis = input.getAxis(Action.MOVE_HORIZONTAL);
-            if (hAxis.getValue() > MIN_AXIS_HOLD) {
-                //Scroll right at NAV_SPEED
-            } else if (hAxis.getValue() > MIN_AXIS_MOVE && hAxis.getValue() - hAxis.getDelta() < MIN_AXIS_MOVE) {
+            if (hAxis.getValue() > MIN_AXIS_MOVE && hAxis.getValue() - hAxis.getDelta() < MIN_AXIS_MOVE) {
                 //Go right once
+            } else if (hAxis.getValue() > MIN_AXIS_HOLD) {
+                //Scroll right at NAV_SPEED
             }
             
-            if (hAxis.getValue() < -MIN_AXIS_HOLD) {
-                //Scroll left at NAV_SPEED
-            } else if (hAxis.getValue() < -MIN_AXIS_MOVE && hAxis.getValue() - hAxis.getDelta() > -MIN_AXIS_MOVE) {
+            if (hAxis.getValue() < -MIN_AXIS_MOVE && hAxis.getValue() - hAxis.getDelta() > -MIN_AXIS_MOVE) {
                 //Go left once
+            } else if (hAxis.getValue() < -MIN_AXIS_HOLD) {
+                //Scroll left at NAV_SPEED
             }
             
             // Vertical
             InputAxis vAxis = input.getAxis(Action.MOVE_VERTICAL);
-            if (vAxis.getValue() > MIN_AXIS_HOLD) {
+            if (vAxis.getValue() > MIN_AXIS_MOVE && vAxis.getValue() - vAxis.getDelta() < MIN_AXIS_MOVE) {
+                //Go up once
+                btnIndex = (float) Math.floor(btnIndex + 1) + 0.5f;
+            } else if (vAxis.getValue() > MIN_AXIS_HOLD) {
                 //Scroll up
                 btnIndex += NAV_SPEED * delta;
-            } else if (vAxis.getValue() > MIN_AXIS_MOVE && vAxis.getValue() - vAxis.getDelta() < MIN_AXIS_MOVE) {
-                //Go up once
-                btnIndex += 1;
             }
             
-            if (vAxis.getValue() < -MIN_AXIS_HOLD) {
+            if (vAxis.getValue() < -MIN_AXIS_MOVE && vAxis.getValue() - vAxis.getDelta() > -MIN_AXIS_MOVE) {
+                //Go down once
+                btnIndex = (float) Math.floor(btnIndex - 1) + 0.5f;
+            } else if (vAxis.getValue() < -MIN_AXIS_HOLD) {
                 //Scroll down
                 btnIndex -= NAV_SPEED * delta;
-            } else if (vAxis.getValue() < -MIN_AXIS_MOVE && vAxis.getValue() - vAxis.getDelta() > -MIN_AXIS_MOVE) {
-                //Go down once
-                btnIndex -= 1;
             }
             
             // scoll wrap
