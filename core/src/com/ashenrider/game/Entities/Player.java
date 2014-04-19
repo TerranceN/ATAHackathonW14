@@ -73,7 +73,7 @@ public class Player extends Entity {
     public float speedMult = 1.0f;
     
     public enum Action {
-        MOVE_HORIZONTAL, MOVE_VERTICAL, AIM_HORIZONTAL, AIM_VERTICAL, JUMP, SHOOT, SWING, DASH, DOWN_DASH, NULL_SPHERE, OK, BACK, PAUSE, 
+        MOVE_HORIZONTAL, MOVE_VERTICAL, AIM_HORIZONTAL, AIM_VERTICAL, JUMP, SHOOT, SWING, DASH, DOWN_DASH, NULL_SPHERE, MENU_OK, MENU_BACK, PAUSE, 
     }
     
     PlayerInput input;

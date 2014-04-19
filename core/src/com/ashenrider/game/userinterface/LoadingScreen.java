@@ -58,7 +58,8 @@ public class LoadingScreen implements Screen {
             }
         } else {
             System.out.println("exiting");
-            app.popBackstack();
+            // remove the Loading Screen from the stack (so that going "back" from the menu doesnt try to load again)
+            app.popBackStack();
         }
     }
 

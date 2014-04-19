@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.ashenrider.game.GameScreen;
 import com.ashenrider.game.HackathonApp;
+import com.ashenrider.game.Entities.Player.Action;
 import com.ashenrider.game.Input.*;
 import com.ashenrider.game.Assets;
 import com.badlogic.gdx.Gdx;
@@ -45,13 +46,13 @@ public class MainMenuScreen implements Screen {
     private Skin skin;
     private ArrayList<Button> buttons;
     
-    private List<InputAxis> hAxis;
-    private List<InputAxis> vAxis;
-    private List<InputButton> select;
-    private List<InputButton> back;
-
     private float btnIndex; // floor to get actual button index
-    private float navSpeed = 4.0f; // buttons per second
+    
+    // axis value required to move up a single space
+    private static final float MIN_AXIS_MOVE = 0.35f;
+    // axis value required to start scrolling at NAV_SPEED/second
+    private static final float MIN_AXIS_HOLD = 0.7f;
+    private static final float NAV_SPEED = 4.0f; // buttons per second
 
     TextButton.TextButtonStyle style;
     TextButton.TextButtonStyle selectedStyle;
@@ -127,30 +128,6 @@ public class MainMenuScreen implements Screen {
         buttons.add(exitButton);
 
         menu.add(skipLabel);
-
-        hAxis = new ArrayList<InputAxis>();
-        vAxis = new ArrayList<InputAxis>();
-        select = new ArrayList<InputButton>();
-        back = new ArrayList<InputButton>();
-        
-        hAxis.add(new KeyboardAxis(Keys.A, Keys.D));
-        hAxis.add(new KeyboardAxis(Keys.LEFT, Keys.RIGHT));
-        vAxis.add(new KeyboardAxis(Keys.S, Keys.W));
-        vAxis.add(new KeyboardAxis(Keys.DOWN, Keys.UP));
-
-        select.add(new KeyboardButton(Keys.ENTER));
-        back.add(new KeyboardButton(Keys.ESCAPE));
-        
-        for(Controller controller : Controllers.getControllers()) {
-            hAxis.add(ControllerHelper.getAxis(controller, ControllerHelper.LEFT_STICK_HORIZONTAL));
-            vAxis.add(ControllerHelper.getAxis(controller, ControllerHelper.LEFT_STICK_VERTICAL));
-            select.add(ControllerHelper.getButton(controller, ControllerHelper.A_BTN));
-            back.add(ControllerHelper.getButton(controller, ControllerHelper.B_BTN));
-        }
-
-        for(Controller cont : Controllers.getControllers()) {
-            Gdx.app.log("NAME", cont.getName());
-        }
     }
 
     public void startGame() {
@@ -163,52 +140,66 @@ public class MainMenuScreen implements Screen {
     }
 
     private void update(float delta) {
-        //
-        for (InputAxis iAxis : hAxis) {
-            if (iAxis.getValue() > 0.5f) {
-                //Gdx.app.log("input", "Go right");
-            } else if (iAxis.getValue() < -0.5f) {
-                //Gdx.app.log("input", "Go left");
+        for (PlayerInput input : HackathonApp.playerInputs) {
+            // Horizontal
+            InputAxis hAxis = input.getAxis(Action.MOVE_HORIZONTAL);
+            if (hAxis.getValue() > MIN_AXIS_HOLD) {
+                //Scroll right at NAV_SPEED
+            } else if (hAxis.getValue() > MIN_AXIS_MOVE && hAxis.getValue() - hAxis.getDelta() < MIN_AXIS_MOVE) {
+                //Go right once
             }
-        }
-        for (InputAxis iAxis : vAxis) {
-            // hold up
-            if (Math.abs(iAxis.getValue()) > 0.2f) {
-                btnIndex += iAxis.getValue() * navSpeed * delta;
-                if (btnIndex < 0) {
-                    btnIndex += buttons.size();
-                } else {
-                    btnIndex = btnIndex % buttons.size();
+            
+            if (hAxis.getValue() < -MIN_AXIS_HOLD) {
+                //Scroll left at NAV_SPEED
+            } else if (hAxis.getValue() < -MIN_AXIS_MOVE && hAxis.getValue() - hAxis.getDelta() > -MIN_AXIS_MOVE) {
+                //Go left once
+            }
+            
+            // Vertical
+            InputAxis vAxis = input.getAxis(Action.MOVE_VERTICAL);
+            if (vAxis.getValue() > MIN_AXIS_HOLD) {
+                //Scroll up
+                btnIndex += NAV_SPEED * delta;
+            } else if (vAxis.getValue() > MIN_AXIS_MOVE && vAxis.getValue() - vAxis.getDelta() < MIN_AXIS_MOVE) {
+                //Go up once
+                btnIndex += 1;
+            }
+            
+            if (vAxis.getValue() < -MIN_AXIS_HOLD) {
+                //Scroll down
+                btnIndex -= NAV_SPEED * delta;
+            } else if (vAxis.getValue() < -MIN_AXIS_MOVE && vAxis.getValue() - vAxis.getDelta() > -MIN_AXIS_MOVE) {
+                //Go down once
+                btnIndex -= 1;
+            }
+            
+            // scoll wrap
+            if (btnIndex < 0) {
+                btnIndex += buttons.size();
+            } else {
+                btnIndex = btnIndex % buttons.size();
+            }
+            
+            if (intro.isFinished()) {
+                if (input.getButton(Action.MENU_OK).justPressed()) {
+                    // select the highlighted button
+                    if (Math.floor(btnIndex) == 0) {
+                        startGame();
+                    } else {
+                        exitGame();
+                    }
                 }
-                //Gdx.app.log("Button index", "btn index: " + btnIndex);
-            }
-            if (iAxis.getValue() > 0.5f) {
-                //Gdx.app.log("input", "Go up");
-            } else if (iAxis.getValue() < -0.5f) {
-                //Gdx.app.log("input", "Go down");
-            }
-        }
-        for (InputButton iButton : select) {
-            if (iButton.justPressed()) {
-                //Gdx.app.log("input", "Ok");
-                if (!intro.isFinished()) {
+                if (input.getButton(Action.MENU_BACK).justPressed()) {
+                    //exitGame() ?
+                }
+            } else {
+                // "Any button" to skip ?
+                if (input.getButton(Action.MENU_OK).justPressed()) {
                     intro.skip();
-                } else if (Math.floor(btnIndex) == 0) {
-                    startGame();
-                } else {
-                    exitGame();
                 }
             }
         }
-        for (InputButton iButton : back) {
-            if (iButton.justPressed()) {
-                //Gdx.app.log("input", "Back");
-               //exitGame();
-                if (!intro.isFinished()) {
-                    intro.skip();
-                }
-            }
-        }
+        // highlight button[buttonIndex]
         for (int i=0; i<buttons.size(); i++) {
             Button btn = buttons.get(i);
             if (i == Math.floor(btnIndex)) {

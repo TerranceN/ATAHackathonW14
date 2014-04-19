@@ -1,6 +1,7 @@
 package com.ashenrider.game;
 
 import com.ashenrider.game.Entities.Player;
+import com.ashenrider.game.Entities.Player.Action;
 import com.ashenrider.game.Input.ControllerAxis;
 import com.ashenrider.game.Input.ControllerAxisButton;
 import com.ashenrider.game.Input.ControllerButton;
@@ -78,7 +79,9 @@ public class HackathonApp extends Game {
                                         new MouseButton(Buttons.LEFT),
                                         new MouseButton(Buttons.RIGHT),
                                         new KeyboardButton(Keys.E),
-                                        new KeyboardButton(Keys.SHIFT_LEFT)));
+                                        new KeyboardButton(Keys.SHIFT_LEFT),
+                                        new KeyboardButton(Keys.ENTER),
+                                        new KeyboardButton(Keys.ESCAPE)));
         // controller players
 
         boolean controllerDebug = false;
@@ -93,9 +96,13 @@ public class HackathonApp extends Game {
                     ControllerHelper.getButton(controller, ControllerHelper.RIGHT_TRIGGER),
                     ControllerHelper.getButton(controller, ControllerHelper.RIGHT_TRIGGER),
                     ControllerHelper.getButton(controller, ControllerHelper.LEFT_TRIGGER),
+                    ControllerHelper.getButton(controller, ControllerHelper.B_BTN),
+                    ControllerHelper.getButton(controller, ControllerHelper.A_BTN),
                     ControllerHelper.getButton(controller, ControllerHelper.B_BTN)));
 
             if (controllerDebug) {
+                Gdx.app.log("NAME", controller.getName());
+
                 controller.addListener(new ControllerListener() {
                     @Override
                     public void connected(Controller controller) {
@@ -149,6 +156,7 @@ public class HackathonApp extends Game {
         // uncontrollable players
         if (HackathonApp.FILLER_PLAYERS) {
             for (int i = playerInputs.size(); i < 4; i++) {
+                // these are awkward but non-null buttons
                 playerInputs.add(new PlayerInput(new KeyboardAxis(Keys.LEFT, Keys.RIGHT),
                         new KeyboardAxis(Keys.DOWN, Keys.UP),
                         new KeyboardAxis(Keys.NUMPAD_4, Keys.NUMPAD_6),
@@ -157,7 +165,9 @@ public class HackathonApp extends Game {
                         new KeyboardButton(Keys.ENTER),
                         new KeyboardButton(Keys.ENTER),
                         new KeyboardButton(Keys.SHIFT_RIGHT),
-                        new KeyboardButton(Keys.CONTROL_RIGHT)));
+                        new KeyboardButton(Keys.CONTROL_RIGHT),
+                        new KeyboardButton(Keys.NUMPAD_9),
+                        new KeyboardButton(Keys.NUMPAD_7)));
             }
         }
         
@@ -198,16 +208,14 @@ public class HackathonApp extends Game {
             input.update();
         }
         
+        // for now, only the keyboard MENU_BACK pops the backStack
+        PlayerInput input = playerInputs.get(mousePlayer);
+        if (input.getButton(Action.MENU_BACK).justReleased()) {
+            popBackStack();
+        }
+
         // draws the current screen
         super.render();
-
-        //Go back when esc is hit.
-        if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
-            isEscaping = true;
-        } else if(isEscaping == true) {
-            isEscaping = false;
-            popBackstack();
-        }
     }
 
     @Override
@@ -216,7 +224,7 @@ public class HackathonApp extends Game {
         super.setScreen(screen);
     }
 
-    public void popBackstack() {
+    public void popBackStack() {
         getScreen().dispose();
         Screen next = this.backStack.pop();
         if (next == null) {

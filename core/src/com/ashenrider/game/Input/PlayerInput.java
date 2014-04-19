@@ -15,13 +15,13 @@ public class PlayerInput {
         axisMap = new HashMap<Action, InputAxis>();
     }
     
-    public PlayerInput(InputAxis moveH, InputAxis moveV, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton swing, InputButton dash, InputButton nullSphere) {
+    public PlayerInput(InputAxis moveH, InputAxis moveV, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton swing, InputButton dash, InputButton nullSphere, InputButton menuOk, InputButton menuBack) {
         buttonMap = new HashMap<Action, InputButton>();
         axisMap = new HashMap<Action, InputAxis>();
-        setInputs(moveH, moveV, aimH, aimV, jump, shoot, swing, dash, nullSphere);
+        setInputs(moveH, moveV, aimH, aimV, jump, shoot, swing, dash, nullSphere, menuOk, menuBack);
     }
     
-    public void setInputs(InputAxis moveH, InputAxis moveV, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton swing, InputButton dash, InputButton nullSphere) {
+    public void setInputs(InputAxis moveH, InputAxis moveV, InputAxis aimH, InputAxis aimV, InputButton jump, InputButton shoot, InputButton swing, InputButton dash, InputButton nullSphere, InputButton menuOk, InputButton menuBack) {
         axisMap.put(Action.MOVE_HORIZONTAL, moveH);
         axisMap.put(Action.MOVE_VERTICAL, moveV);
         axisMap.put(Action.AIM_HORIZONTAL, aimH);
@@ -32,6 +32,9 @@ public class PlayerInput {
         buttonMap.put(Action.SWING, swing);
         buttonMap.put(Action.DASH, dash);
         buttonMap.put(Action.NULL_SPHERE, nullSphere);
+
+        buttonMap.put(Action.MENU_OK, menuOk);
+        buttonMap.put(Action.MENU_BACK, menuBack);
     }
 
     public void update() {
