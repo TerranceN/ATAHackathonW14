@@ -13,7 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Fireball extends Projectile {    
     // frames per particle spawn
-    float scale = 2.0f;
+    float scale = 2.5f;
     private int particleTimer = 0;
     
     float animationTime = 0.0f;
