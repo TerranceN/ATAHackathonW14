@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import com.ashenrider.game.Entities.Entity;
+import com.ashenrider.game.Entities.Fireball;
 import com.ashenrider.game.Entities.InvulnerabilityPowerUp;
 import com.ashenrider.game.Entities.Particle;
 import com.ashenrider.game.Entities.Player;
@@ -21,6 +22,8 @@ import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureWrap;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.Input.Keys;
@@ -66,10 +69,12 @@ public class Scene {
 
     float unitScale = 1f;
     private static float NULL_FADE_TIME = 0.8f;
+    private static float HEAT_FADE_TIME = 1.6f;
 
     ShaderProgram nullSphereMaskingShader;
     ShaderProgram nullSphereFadeShader;
     ShaderProgram nullSphereFilterShader;
+    ShaderProgram heatEffectShader;
 
     FrameBuffer collisionMask;
     TextureRegion collisionMaskRegion;
@@ -79,6 +84,14 @@ public class Scene {
 
     FrameBuffer levelBuffer;
     TextureRegion levelBufferRegion;
+
+    FrameBuffer heatEffectBuffer;
+    TextureRegion heatEffectBufferRegion;
+
+    Texture circleGradient;
+    Texture noiseTexture;
+
+    float gameTime = 0f;
     
     public Scene(String filename) {
         batch = new SpriteBatch();
@@ -86,6 +99,11 @@ public class Scene {
         camera = new OrthographicCamera();
         mapCam = new OrthographicCamera();
         mapCam.setToOrtho(false, map.getWidth(), map.getHeight());
+
+        circleGradient = Assets.manager.get("circle_gradient.png", Texture.class);
+        noiseTexture = Assets.manager.get("noise.png");
+        noiseTexture.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+        noiseTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
         collisionMask = new FrameBuffer(Format.RGB888, (int)map.getWidth(), (int)map.getHeight(), false);
         collisionMaskRegion = new TextureRegion(collisionMask.getColorBufferTexture());
@@ -96,6 +114,16 @@ public class Scene {
         Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         collisionMask.end();
+
+        heatEffectBuffer = new FrameBuffer(Format.RGB888, (int)map.getWidth(), (int)map.getHeight(), false);
+        heatEffectBufferRegion = new TextureRegion(heatEffectBuffer.getColorBufferTexture());
+        heatEffectBufferRegion.flip(false, true);
+
+        // clear the buffer at the beginning
+        heatEffectBuffer.begin();
+        Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        heatEffectBuffer.end();
 
         tmpMapBuffer = new FrameBuffer(Format.RGBA8888, (int)map.getWidth(), (int)map.getHeight(), false);
         tmpMapBufferRegion = new TextureRegion(tmpMapBuffer.getColorBufferTexture());
@@ -278,6 +306,11 @@ public class Scene {
                 Gdx.files.internal("shaders/nullSphereFilter.vert").readString(),
                 Gdx.files.internal("shaders/nullSphereFilter.frag").readString());
         testShaderCompilation(nullSphereFilterShader);
+
+        heatEffectShader = new ShaderProgram(
+                Gdx.files.internal("shaders/heatEffect.vert").readString(),
+                Gdx.files.internal("shaders/heatEffect.frag").readString());
+        testShaderCompilation(heatEffectShader);
     }
 
     public void onResize() {
@@ -307,6 +340,21 @@ public class Scene {
     }
 
     public void update(float dt) {
+        // fade heat effect
+        heatEffectBuffer.begin();
+        batch.setShader(nullSphereFadeShader);
+        nullSphereFadeShader.begin();
+        batch.begin();
+        nullSphereFadeShader.setUniformf("u_dt", dt);
+        nullSphereFadeShader.setUniformf("u_fadeRate", 1.0f/HEAT_FADE_TIME);
+        batch.setProjectionMatrix(mapCam.combined);
+        batch.draw(heatEffectBufferRegion, 0, 0, map.getWidth(), map.getHeight());
+        batch.end();
+        nullSphereFadeShader.end();
+        batch.setShader(null);
+        heatEffectBuffer.end();
+
+        gameTime += dt;
         // if you resize the window, it pauses all rendering
         // so you can get a delta time of around 3 seconds, which would result in collision bugs
         dt = Math.min(dt, 1/30f);
@@ -376,9 +424,8 @@ public class Scene {
         e.layer = layer;
         newEntities.add(e);
     }
-    
-    public void render() {
-        // render circles onto collisionMask
+
+    public void renderSpheresToCollisionMask() {
         collisionMask.begin();
         shapeRenderer.begin(ShapeType.Filled);
         shapeRenderer.setProjectionMatrix(mapCam.combined);
@@ -403,6 +450,27 @@ public class Scene {
         }
         shapeRenderer.end();
         collisionMask.end();
+    }
+
+    public void renderSpheresToHeatMask() {
+        heatEffectBuffer.begin();
+        batch.begin();
+        batch.setProjectionMatrix(mapCam.combined);
+        float size = 100f;
+        for (Entity e : entities) {
+            if (e instanceof Fireball) {
+                batch.draw(circleGradient, e.pos.x + e.size.x / 2f - size / 2f, e.pos.y + e.size.y / 2f - size /2f, size, size);
+            }
+        }
+        batch.end();
+        heatEffectBuffer.end();
+    }
+
+    public void render() {
+        // render circles onto collisionMask
+        renderSpheresToCollisionMask();
+
+        renderSpheresToHeatMask();
 
         levelBuffer.begin();
         batch.setProjectionMatrix(mapCam.combined);
@@ -417,6 +485,7 @@ public class Scene {
         maskAndDrawTmpFrameBufferForLayer(FOREGROUND_LAYER);
         renderLayers(FOREGROUND_LAYER + 1, NUM_LAYERS - 1);
 
+        tmpMapBuffer.begin();
         batch.setShader(nullSphereFilterShader);
         nullSphereFilterShader.begin();
         Texture collisionTexture = collisionMaskRegion.getTexture();
@@ -424,10 +493,28 @@ public class Scene {
         nullSphereMaskingShader.setUniformi("u_maskTexture", 1);
         Gdx.graphics.getGL20().glActiveTexture(GL20.GL_TEXTURE0);
         batch.begin();
-        batch.setProjectionMatrix(camera.combined);
+        batch.setProjectionMatrix(mapCam.combined);
         batch.draw(levelBufferRegion, 0, 0, map.getWidth(), map.getHeight());
         batch.end();
         nullSphereFilterShader.end();
+        batch.setShader(null);
+        tmpMapBuffer.end();
+
+        batch.setShader(heatEffectShader);
+        heatEffectShader.begin();
+        Texture heatTexture = heatEffectBufferRegion.getTexture();
+        heatTexture.bind(1);
+        heatEffectShader.setUniformi("u_heatTexture", 1);
+        noiseTexture.bind(2);
+        heatEffectShader.setUniformi("u_noiseTexture", 2);
+        heatEffectShader.setUniformf("u_gameTime", gameTime);
+        heatEffectShader.setUniformf("u_noiseTexSize", (float)noiseTexture.getWidth(), (float)noiseTexture.getHeight());
+        Gdx.graphics.getGL20().glActiveTexture(GL20.GL_TEXTURE0);
+        batch.begin();
+        batch.setProjectionMatrix(camera.combined);
+        batch.draw(tmpMapBufferRegion, 0, 0, map.getWidth(), map.getHeight());
+        batch.end();
+        heatEffectShader.end();
         batch.setShader(null);
     }
 
