@@ -481,12 +481,24 @@ public class Scene {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
         shapeRenderer.begin(ShapeType.Filled);
-        Color haze = new Color(0, 0, 1, 0.5f);
+        float s = (float)Math.sin(gameTime) + 0.5f * (float)Math.sin(gameTime * 4) + 0.25f * (float)Math.sin(gameTime * 16);
+        Color haze = new Color(0, 0, 1, 0.6f + 0.1f * s);
         Color noHaze = new Color(0, 0, 0, 0f);
-        shapeRenderer.rect(0, 0, map.getWidth(), 500, haze, haze, noHaze, noHaze);
-        shapeRenderer.rect(0, map.getHeight() - 500, map.getWidth(), 500, noHaze, noHaze, haze, haze);
-        shapeRenderer.rect(0, 0, 500, map.getHeight(), haze, noHaze, noHaze, haze);
-        shapeRenderer.rect(map.getWidth() - 500, 0, 500, map.getHeight(), noHaze, haze, haze, noHaze);
+        float edgeSize = 400 + 50 * s;
+        shapeRenderer.rect(edgeSize, 0, map.getWidth() - edgeSize * 2, edgeSize, haze, haze, noHaze, noHaze);
+        shapeRenderer.rect(0, 0, edgeSize, edgeSize, haze, haze, noHaze, haze);
+
+        shapeRenderer.rect(0, edgeSize, edgeSize, map.getHeight() - edgeSize * 2, haze, noHaze, noHaze, haze);
+        shapeRenderer.triangle(0, map.getHeight() - edgeSize, edgeSize, map.getHeight() - edgeSize, 0, map.getHeight(), haze, noHaze, haze);
+        shapeRenderer.triangle(edgeSize, map.getHeight() - edgeSize, edgeSize, map.getHeight(), 0, map.getHeight(), noHaze, haze, haze);
+
+        shapeRenderer.rect(edgeSize, map.getHeight() - edgeSize, map.getWidth() - edgeSize * 2, edgeSize, noHaze, noHaze, haze, haze);
+        shapeRenderer.rect(map.getWidth() - edgeSize, map.getHeight() - edgeSize, edgeSize, edgeSize, noHaze, haze, haze, haze);
+
+        shapeRenderer.rect(map.getWidth() - edgeSize, edgeSize, edgeSize, map.getHeight() - edgeSize * 2, noHaze, haze, haze, noHaze);
+        shapeRenderer.triangle(map.getWidth() - edgeSize, 0, map.getWidth(), 0, map.getWidth() - edgeSize, edgeSize, haze, haze, noHaze);
+        shapeRenderer.triangle(map.getWidth(), 0, map.getWidth(), edgeSize, map.getWidth() - edgeSize, edgeSize, haze, haze, noHaze);
+
         shapeRenderer.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
