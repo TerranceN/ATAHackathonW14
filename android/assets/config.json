@@ -1,0 +1,109 @@
+{
+KeyboardMouse: [
+	{
+		type: controlScheme,
+		buttonMap: {
+			MENU_BACK: {
+				type: key,
+				key: 131
+			},
+			SHOOT: {
+				type: mouseBtn
+			},
+			SWING: {
+				type: mouseBtn,
+				button: 1
+			},
+			MENU_OK: {
+				type: key,
+				key: 66
+			},
+			DASH: {
+				type: key,
+				key: 33
+			},
+			JUMP: {
+				type: key,
+				key: 51
+			},
+			NULL_SPHERE: {
+				type: key,
+				key: 59
+			}
+		},
+		name: KeyboardMouse,
+		axisMap: {
+			MOVE_HORIZONTAL: {
+				type: keyPair,
+				keyMore: 32,
+				keyLess: 29
+			},
+			AIM_HORIZONTAL: null,
+			AIM_VERTICAL: null,
+			MOVE_VERTICAL: {
+				type: keyPair,
+				keyMore: 51,
+				keyLess: 47
+			}
+		}
+	}
+],
+Keyboard: [
+	{
+		type: controlScheme,
+		buttonMap: {
+			MENU_BACK: {
+				type: key,
+				key: 151
+			},
+			SHOOT: {
+				type: key,
+				key: 66
+			},
+			SWING: {
+				type: key,
+				key: 66
+			},
+			MENU_OK: {
+				type: key,
+				key: 153
+			},
+			DASH: {
+				type: key,
+				key: 60
+			},
+			JUMP: {
+				type: key,
+				key: 19
+			},
+			NULL_SPHERE: {
+				type: key,
+				key: 130
+			}
+		},
+		name: Keyboard,
+		axisMap: {
+			MOVE_HORIZONTAL: {
+				type: keyPair,
+				keyMore: 22,
+				keyLess: 21
+			},
+			AIM_HORIZONTAL: {
+				type: keyPair,
+				keyMore: 150,
+				keyLess: 148
+			},
+			AIM_VERTICAL: {
+				type: keyPair,
+				keyMore: 152,
+				keyLess: 149
+			},
+			MOVE_VERTICAL: {
+				type: keyPair,
+				keyMore: 19,
+				keyLess: 20
+			}
+		}
+	}
+]
+}

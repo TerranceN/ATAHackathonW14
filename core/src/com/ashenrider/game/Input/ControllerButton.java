@@ -6,6 +6,10 @@ public class ControllerButton extends InputButton {
     private Controller controller;
     private int button;
 
+    public ControllerButton() {
+        
+    }
+    
     public ControllerButton(Controller controller, int button) {
         this.controller = controller;
         this.button = button;

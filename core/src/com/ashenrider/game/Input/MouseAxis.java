@@ -9,9 +9,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 public class MouseAxis extends InputAxis {
-    Entity relativeE;
-    OrthographicCamera camera;
-    boolean xAxis;
+    public Entity relativeE;
+    public OrthographicCamera camera;
+    public boolean xAxis;
     
     public MouseAxis(Entity e, OrthographicCamera cam, boolean useX) {
         xAxis = useX;

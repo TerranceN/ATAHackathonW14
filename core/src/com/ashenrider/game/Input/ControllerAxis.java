@@ -7,6 +7,9 @@ public class ControllerAxis extends InputAxis {
     private int axis;
     private boolean inverted;
 
+    public ControllerAxis() {
+        
+    }
     public ControllerAxis(Controller controller, int axis, boolean inverted) {
         this.controller = controller;
         this.axis = axis;

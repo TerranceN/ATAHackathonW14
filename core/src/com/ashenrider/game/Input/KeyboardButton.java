@@ -3,7 +3,10 @@ package com.ashenrider.game.Input;
 import com.badlogic.gdx.Gdx;
 
 public class KeyboardButton extends InputButton{
-    int key;
+    public int key;
+    
+    public KeyboardButton() {
+    }
     public KeyboardButton(int keycode) {
         key = keycode;
     }

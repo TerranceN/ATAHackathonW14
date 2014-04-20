@@ -148,14 +148,11 @@ public class Scene {
         for (PlayerInput input : HackathonApp.playerInputs) {
             Player player = addPlayer(new Vector2(400, 200));
             player.setInput(input);
-        }
-        
-        // keyboard/mouse player hack
-        if (HackathonApp.mousePlayer != -1) {
-            Player player = players.get(HackathonApp.mousePlayer);
-            PlayerInput input = HackathonApp.playerInputs.get(HackathonApp.mousePlayer);
-            input.setInput(Action.AIM_HORIZONTAL, new MouseAxis(player, camera, true));
-            input.setInput(Action.AIM_VERTICAL, new MouseAxis(player, camera, false));
+            // Any player using the mouse needs it's input buttons/axis updated now
+            if (input.name.equals(PlayerInput.KEYBOARD_AND_MOUSE)) {
+                input.setInput(Action.AIM_HORIZONTAL, new MouseAxis(player, camera, true));
+                input.setInput(Action.AIM_VERTICAL, new MouseAxis(player, camera, false));
+            }
         }
 
         spawnPoints = map.getSpawnPoints();

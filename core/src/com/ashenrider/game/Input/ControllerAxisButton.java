@@ -8,6 +8,10 @@ public class ControllerAxisButton extends InputButton {
     private boolean countsPressure;
     private float threshold;
 
+    public ControllerAxisButton() {
+        
+    }
+    
     public ControllerAxisButton(Controller controller, int axis) {
         this(controller, axis, 0.5f, true);
     }

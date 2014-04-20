@@ -4,6 +4,9 @@ import com.badlogic.gdx.Gdx;
 public class KeyboardAxis extends InputAxis {
     int keyLess;
     int keyMore;
+    public KeyboardAxis() {
+        
+    }
     public KeyboardAxis(int key1, int key2) {
         keyLess = key1;
         keyMore = key2;
