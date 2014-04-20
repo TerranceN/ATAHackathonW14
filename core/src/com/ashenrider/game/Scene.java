@@ -200,32 +200,30 @@ public class Scene {
     }
 
     public void testShaderCompilation(ShaderProgram program) {
+        testShaderCompilation(program, "No name given");
+    }
+
+    public void testShaderCompilation(ShaderProgram program, String name) {
         if (!program.isCompiled()) {
+            System.out.println("Error loading shader: " + name);
             System.out.println(program.getLog());
             System.exit(0);
         }
     }
 
+    public ShaderProgram loadShader(String name) {
+        ShaderProgram shader = new ShaderProgram(
+                Gdx.files.internal("shaders/" + name + ".vert").readString(),
+                Gdx.files.internal("shaders/" + name + ".frag").readString());
+        testShaderCompilation(shader, name);
+        return shader;
+    }
+
     public void loadShaders() {
-        nullSphereMaskingShader = new ShaderProgram(
-                Gdx.files.internal("shaders/nullSphereMasking.vert").readString(),
-                Gdx.files.internal("shaders/nullSphereMasking.frag").readString());
-        testShaderCompilation(nullSphereMaskingShader);
-
-        nullSphereFadeShader = new ShaderProgram(
-                Gdx.files.internal("shaders/nullSphereFade.vert").readString(),
-                Gdx.files.internal("shaders/nullSphereFade.frag").readString());
-        testShaderCompilation(nullSphereFadeShader);
-
-        nullSphereFilterShader = new ShaderProgram(
-                Gdx.files.internal("shaders/nullSphereFilter.vert").readString(),
-                Gdx.files.internal("shaders/nullSphereFilter.frag").readString());
-        testShaderCompilation(nullSphereFilterShader);
-
-        heatEffectShader = new ShaderProgram(
-                Gdx.files.internal("shaders/heatEffect.vert").readString(),
-                Gdx.files.internal("shaders/heatEffect.frag").readString());
-        testShaderCompilation(heatEffectShader);
+        nullSphereMaskingShader = loadShader("nullSphereMasking");
+        nullSphereFadeShader = loadShader("nullSphereFade");
+        nullSphereFilterShader = loadShader("nullSphereFilter");
+        heatEffectShader = loadShader("heatEffect");
     }
 
     public void onResize() {
