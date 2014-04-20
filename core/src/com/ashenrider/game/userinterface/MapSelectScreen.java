@@ -62,7 +62,7 @@ public class MapSelectScreen implements Screen {
     private float mapYIndex; // floor to get actual index
 
     private int MAPS_PER_ROW = 1;
-    float padding = 6;
+    float padding = 10;
     float border = 3;
 
     Map currentMap;
@@ -104,7 +104,7 @@ public class MapSelectScreen implements Screen {
             ArrayList<Map> row = new ArrayList<Map>();
             for (int x = 0; x < MAPS_PER_ROW && y * MAPS_PER_ROW + x < mapNames.length; x++) {
                 String mapName = mapNames[y * MAPS_PER_ROW + x];
-                row.add(new Map("maps/" + mapName + "/" + mapName + ".tmx"));
+                row.add(new Map(mapName));
             }
             // invert the order of the rows,
             maps.add(0, row);
@@ -205,8 +205,7 @@ public class MapSelectScreen implements Screen {
     
     @Override
     public void render(float delta) {
-        //Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        Gdx.gl.glClearColor(57/255f, 133/255f, 142/255f, 1);
+        Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         update(delta);
 
@@ -238,14 +237,19 @@ public class MapSelectScreen implements Screen {
                 float x1 = previewCentre.x + (PREVIEW_SIZE.x + padding) * (x - row.size()/2f);
                 float y1 = previewCentre.y + (PREVIEW_SIZE.y + padding) * (y - maps.size()/2f);
                 // draw a box around the map preview
-                shapeRenderer.begin(ShapeType.Filled);
                 if (map == currentMap) {
                     shapeRenderer.setColor(1f, 1, 0, 1);
                 } else {
                     shapeRenderer.setColor(0, 0, 0, 1);
                 }
+                shapeRenderer.begin(ShapeType.Filled);
                 shapeRenderer.rect(x1-border, y1-border, PREVIEW_SIZE.x+2*border, PREVIEW_SIZE.y+2*border);
-                shapeRenderer.setColor(57/255f, 133/255f, 142/255f, 1);
+                
+                if (map == currentMap) {
+                    shapeRenderer.setColor(211/255f, 182/255f, 55/255f, 1f);
+                } else {
+                    shapeRenderer.setColor(26/255f, 48/255f, 68/255f, 1f);
+                }
                 shapeRenderer.rect(x1, y1, PREVIEW_SIZE.x, PREVIEW_SIZE.y);
                 shapeRenderer.end();
                 // transform and scale map coordinates to center it in the box

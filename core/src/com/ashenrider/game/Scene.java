@@ -60,7 +60,6 @@ public class Scene {
     
     public Map map;
     SpriteBatch batch;
-    Texture background;
     private List<PlayerDeathListener> playerDeathListeners = new LinkedList<PlayerDeathListener>();
 
     ShapeRenderer shapeRenderer;
@@ -132,8 +131,6 @@ public class Scene {
         levelBuffer = new FrameBuffer(Format.RGBA8888, (int)map.getWidth(), (int)map.getHeight(), false);
         levelBufferRegion = new TextureRegion(levelBuffer.getColorBufferTexture());
         levelBufferRegion.flip(false, true);
-
-        background = Assets.manager.get("background.png", Texture.class);
 
         onResize();
         newEntities = new ArrayList<Entity>();
@@ -423,10 +420,7 @@ public class Scene {
         renderSpheresToHeatMask();
 
         levelBuffer.begin();
-        batch.setProjectionMatrix(mapCam.combined);
-        batch.begin();
-        batch.draw(background, 0, 0, map.getWidth(), map.getHeight());
-        batch.end();
+        map.drawBkgImage(mapCam);
         levelBuffer.end();
 
         renderLayers(0, BACKGROUND_LAYER - 1);

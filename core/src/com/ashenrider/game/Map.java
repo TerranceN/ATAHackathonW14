@@ -4,15 +4,22 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.*;
 import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 
 public class Map {
     TiledMap tiledMap;
+    Texture background;
+    
     OrthogonalTiledMapRenderer mapRenderer;
-
+    SpriteBatch batch;
+    
     TiledMapTileLayer backgroundLayer;
     public TiledMapTileLayer levelLayer;
     TiledMapTileLayer powerUpLayer;
@@ -27,7 +34,12 @@ public class Map {
     float height = 0f;
 
     public Map(String fileName) {
-        tiledMap = new TmxMapLoader().load(fileName);
+        background = Assets.manager.get("maps/" + fileName + "/background.png", Texture.class);
+        batch = new SpriteBatch();
+        
+        // The TmxMapLoader that uses AssetManager seems to be incomplete
+        // So the tmx file and all of it's dependencies are loaded by filename instead of preloaded.
+        tiledMap = new TmxMapLoader().load("maps/" + fileName + "/" + fileName + ".tmx");
         spawnLayer = getLayerByName("spawn");
         powerUpLayer = getLayerByName("powerup");
         levelLayer = getLayerByName("level");
@@ -128,6 +140,13 @@ public class Map {
         return null;
     }
     
+    public void drawBkgImage(OrthographicCamera camera) {
+        batch.begin();
+        batch.setProjectionMatrix(camera.combined);
+        batch.draw(background, 0, 0, getWidth(), getHeight());
+        batch.end();
+    }
+    
     public void renderLayer(int layer, OrthographicCamera camera) {
         hideAllLayers();
         if (layer == Scene.BACKGROUND_LAYER) {
@@ -147,6 +166,8 @@ public class Map {
     
     public void drawPreview(OrthographicCamera camera) {
         // draw the map for the sake of a map select screen
+        drawBkgImage(camera);
+        
         hideAllLayers();
         backgroundLayer.setVisible(true);
         decorationBackLayer.setVisible(true);
