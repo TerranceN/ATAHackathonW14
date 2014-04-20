@@ -73,15 +73,9 @@ public class PlayerInput {
     }
 
     public InputButton getButton(Action action) {
-        if (buttonMap.get(action) == null) {
-            Gdx.app.log("INPUT", "Action (" + action + ") is null");
-        }
         return buttonMap.get(action);
     }
     public InputAxis getAxis(Action action) {
-        if (axisMap.get(action) == null) {
-            Gdx.app.log("INPUT", "Action (" + action + ") is null");
-        }
         return axisMap.get(action);
     }
     

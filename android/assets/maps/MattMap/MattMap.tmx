@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="38" height="25" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="TileSet" tilewidth="32" tileheight="32">
+  <image source="tiles.png" width="512" height="512"/>
+  <terraintypes>
+   <terrain name="Purple" tile="-1"/>
+  </terraintypes>
+  <tile id="69" terrain=",,,0"/>
+  <tile id="70" terrain=",,0,0"/>
+  <tile id="71" terrain=",,0,"/>
+  <tile id="72" terrain="0,0,0,"/>
+  <tile id="73" terrain="0,0,,"/>
+  <tile id="74" terrain="0,0,,0"/>
+  <tile id="85" terrain=",0,,0"/>
+  <tile id="86" terrain="0,0,0,0"/>
+  <tile id="87" terrain="0,,0,"/>
+  <tile id="88" terrain="0,,0,"/>
+  <tile id="90" terrain=",0,,0"/>
+  <tile id="101" terrain=",0,,"/>
+  <tile id="102" terrain="0,0,,"/>
+  <tile id="103" terrain="0,,,"/>
+  <tile id="104" terrain="0,,0,0"/>
+  <tile id="105" terrain=",,0,0"/>
+  <tile id="106" terrain=",0,0,0"/>
+ </tileset>
+ <tileset firstgid="257" name="control" tilewidth="32" tileheight="32">
+  <image source="controls.png" width="256" height="256"/>
+ </tileset>
+ <layer name="background" width="38" height="25">
+  <data encoding="base64" compression="zlib">
+   eJztwQENAAAAwqD3T20ON6AAAADg1wAO2AAB
+  </data>
+ </layer>
+ <layer name="decoration_back" width="38" height="25">
+  <data encoding="base64" compression="zlib">
+   eJztwQENAAAAwqD3T20ON6AAAADg1wAO2AAB
+  </data>
+ </layer>
+ <layer name="level" width="38" height="25">
+  <data encoding="base64" compression="zlib">
+   eJztl1sLgzAMhfPrvGzv6vB9ne7/vy9hPRCHsLTYC+KBA4JtOcTw2YxENLJ7ttvxi/7ryb5FrMce55/vPgvcG89LLcmLbJKzhkyQZHOlQ2RQw+5Kh9iR1L+mfsit1N8l9vyB/Tg4i9bMniL2pe6Xqx8vTpTUSnXVX/qhpe+/OyUPQiV8wj2nplzCNclkvcvl0tnuOaGcysW1UE6djWvCr9a7JMfALeTQc9Gi3q1kz4ozrYxu/FpdkzdtuYXZTc+Meraz9AaYY2Whnsd+jZnxA9BYLAo=
+  </data>
+ </layer>
+ <layer name="decoration_front" width="38" height="25">
+  <data encoding="base64" compression="zlib">
+   eJztwQENAAAAwqD3T20ON6AAAADg1wAO2AAB
+  </data>
+ </layer>
+ <layer name="spawn" width="38" height="25">
+  <data encoding="base64" compression="zlib">
+   eJzt1MsJADAIREGT/ov2lLsRxFXeNOD6QTMAzz07amAHbqWf0g6UsgCYQeFvRDL85sz0pTAL1HK/bgAf
+  </data>
+ </layer>
+ <layer name="powerup" width="38" height="25">
+  <data encoding="base64" compression="zlib">
+   eJzt1DEOACAIBDD4/6edXZxAYmx3BsgdEXTKvDMDp9zIFK+YzKqezPG/dp07/3hPqFLRHx3sswDDfAAZ
+  </data>
+ </layer>
+</map>

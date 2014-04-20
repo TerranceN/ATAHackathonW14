@@ -56,7 +56,7 @@ public class MapSelectScreen implements Screen {
     private Vector2 PREVIEW_SIZE = new Vector2(200, 150);
     
     // 2d array of maps that can be navigated spacially
-    private String[] mapNames = {"finalMap2", "finalMap", "test"};
+    private String[] mapNames = {"finalMap2", "finalMap", "MattMap", "test"};
     private ArrayList<ArrayList<Map>> maps;
     private float mapXIndex; // floor to get actual index
     private float mapYIndex; // floor to get actual index
