@@ -20,7 +20,7 @@ public class Fireball extends Projectile {
 
     private static Animation staticAnim;
 
-    private float FRAME_DURATION = 0.05f;
+    private float FRAME_DURATION = 0.015f;
     private Animation anim;
     float angle;
     
