@@ -26,6 +26,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -59,7 +60,11 @@ public class MapSelectScreen implements Screen {
     private ArrayList<ArrayList<Map>> maps;
     private float mapXIndex; // floor to get actual index
     private float mapYIndex; // floor to get actual index
+
     private int MAPS_PER_ROW = 1;
+    float padding = 6;
+    float border = 3;
+
     Map currentMap;
     
     // axis value required to move up a single space
@@ -72,6 +77,7 @@ public class MapSelectScreen implements Screen {
     TextButton.TextButtonStyle selectedStyle;
     
     ShapeRenderer shapeRenderer;
+    InputButton click = new MouseButton(Buttons.LEFT);
 
     public MapSelectScreen(final HackathonApp app) {
         this.app = app;
@@ -173,6 +179,27 @@ public class MapSelectScreen implements Screen {
                 startGame();
             }
         }
+
+        previewCentre = new Vector2(10 + PREVIEW_SIZE.x/2f, Gdx.graphics.getHeight()/2f + 100);
+        Vector2 mouse = new Vector2(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY()); // there seems to be a default transform setting y-up for the shaperenderer
+        for (int y=0; y <maps.size(); y++) {
+            ArrayList<Map> row = maps.get(y);
+            for (int x=0; x<row.size(); x++) {
+                float x1 = previewCentre.x + (PREVIEW_SIZE.x + padding) * (x - row.size()/2f);
+                float y1 = previewCentre.y + (PREVIEW_SIZE.y + padding) * (y - maps.size()/2f);
+                Rectangle box = new Rectangle(x1, y1, PREVIEW_SIZE.x, PREVIEW_SIZE.y);
+                if (box.contains(mouse)) {
+                    currentMap = row.get(x);
+                    mapXIndex = x + 0.5f;
+                    mapYIndex = y + 0.5f;
+                    if (click.justPressed()) {
+                        startGame();
+                    }
+                }
+            }
+        }
+
+        click.update();
         currentMap = maps.get((int) mapYIndex).get((int) mapXIndex);
     }
     
@@ -199,7 +226,6 @@ public class MapSelectScreen implements Screen {
         currentMap.drawPreview(previewCam);
         
         // draw all maps (with current map highlighted)
-        previewCentre = new Vector2(10 + PREVIEW_SIZE.x/2f, Gdx.graphics.getHeight()/2f);
         for (int y=0; y <maps.size(); y++) {
             ArrayList<Map> row = maps.get(y);
             for (int x=0; x<row.size(); x++) {
@@ -208,8 +234,6 @@ public class MapSelectScreen implements Screen {
                 // draw a preview for this map
                 float prevRatio = PREVIEW_SIZE.x / PREVIEW_SIZE.y;
                 mapRatio = (float)map.getWidth() / map.getHeight();
-                float padding = 6;
-                float border = 3;
                 scale = prevRatio <= mapRatio ? PREVIEW_SIZE.x / map.getWidth() : PREVIEW_SIZE.y / map.getHeight();
                 float x1 = previewCentre.x + (PREVIEW_SIZE.x + padding) * (x - row.size()/2f);
                 float y1 = previewCentre.y + (PREVIEW_SIZE.y + padding) * (y - maps.size()/2f);
