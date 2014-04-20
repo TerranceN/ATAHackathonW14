@@ -180,7 +180,7 @@ public class MapSelectScreen implements Screen {
             }
         }
 
-        previewCentre = new Vector2(10 + PREVIEW_SIZE.x/2f, Gdx.graphics.getHeight()/2f + 100);
+        previewCentre = new Vector2(10 + PREVIEW_SIZE.x/2f, Gdx.graphics.getHeight()/2f);
         Vector2 mouse = new Vector2(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY()); // there seems to be a default transform setting y-up for the shaperenderer
         for (int y=0; y <maps.size(); y++) {
             ArrayList<Map> row = maps.get(y);

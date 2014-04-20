@@ -46,6 +46,7 @@ public class HackathonApp extends Game {
 
         backStack = new Stack<Screen>();
         // generate fonts
+        // Fonts used in the loading screen should be loaded immediately rather than through the asset manager
         FileHandle centuryGothic = Gdx.files.internal("fonts/Gothic.TTF");
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(centuryGothic);
         titleFont = generator.generateFont(48);
