@@ -95,7 +95,7 @@ public class MainMenuScreen implements Screen {
         labelStyle.font = HackathonApp.buttonFont;
         labelStyle.fontColor = Color.WHITE;
         labelSkin.add("default", labelStyle);
-        skipLabel = new Label("Press A or Enter to skip", labelSkin);
+        skipLabel = new Label("Press Jump, Shoot, Dash etc to skip", labelSkin);
                 
         menu = new Table();
         menu.setFillParent(true);
@@ -192,9 +192,11 @@ public class MainMenuScreen implements Screen {
                     //exitGame() ?
                 }
             } else {
-                // "Any button" to skip ?
-                if (input.getButton(Action.MENU_OK).justPressed()) {
-                    intro.skip();
+                for (Action a : Action.values()) {
+                    // "Any button" to skip
+                    if (input.getButton(a) != null && input.getButton(a).justPressed()) {
+                        intro.skip();
+                    }
                 }
             }
         }
