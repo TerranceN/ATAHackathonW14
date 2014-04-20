@@ -12,9 +12,9 @@ varying vec4 v_color;
 
 void main() {
     vec4 heatData = texture2D(u_heatTexture, v_texCoord);
-    float heatIntensity = heatData.r + (heatData.b + u_backgroundHeat) / 4f;
+    float heatIntensity = heatData.r + (heatData.b + u_backgroundHeat) / 4.0;
     float trail = (heatData.g + heatData.b + u_backgroundHeat) / 2.0;
-    vec2 noiseUV = gl_FragCoord / u_noiseTexSize;
+    vec2 noiseUV = gl_FragCoord.xy / u_noiseTexSize;
     noiseUV = noiseUV / (vec2(2.0, 1.0) * 10.0) + vec2(1, -1) * u_gameTime / 7.0;
     float noise = texture2D(u_noiseTexture, noiseUV).a;
     vec2 displacement = vec2(0, 1) * noise / 30.0;
