@@ -93,7 +93,7 @@ public class HackathonApp extends Game {
         for (PlayerInput input : playerInputs) {
             input.update();
             // for now, only the keyboard MENU_BACK pops the backStack
-            if (input.name == PlayerInput.KEYBOARD_AND_MOUSE && input.getButton(Action.MENU_BACK).justReleased()) {
+            if (input.name.equals(PlayerInput.KEYBOARD_AND_MOUSE) && input.getButton(Action.MENU_BACK).justReleased()) {
                 popBackStack();
             }
 
