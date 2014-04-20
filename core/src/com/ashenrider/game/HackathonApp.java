@@ -36,9 +36,8 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 public class HackathonApp extends Game {
     public static final boolean DEBUG_HITBOXES = false;
-    public static final boolean DEBUG_FPS = false;
+    public static final boolean DEBUG_FPS = true;
     public static final boolean FILLER_PLAYERS = true;
-    public static final String MAP = "finalMap2";
     
     Stack<Screen> backStack;
     private boolean isEscaping = false;

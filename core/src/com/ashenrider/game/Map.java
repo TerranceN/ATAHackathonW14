@@ -144,6 +144,19 @@ public class Map {
         }
         mapRenderer.render();
     }
+    
+    public void drawPreview(OrthographicCamera camera) {
+        // draw the map for the sake of a map select screen
+        hideAllLayers();
+        backgroundLayer.setVisible(true);
+        decorationBackLayer.setVisible(true);
+        levelLayer.setVisible(true);
+        decorationFrontLayer.setVisible(true);
+        if (camera != null) {
+            mapRenderer.setView(camera);
+        }
+        mapRenderer.render();        
+    }
 
     public Vector2 getTileCoords(Vector2 worldCoords) {
         return new Vector2((float)Math.floor(worldCoords.x / tileSize), (float)Math.floor(worldCoords.y / tileSize));

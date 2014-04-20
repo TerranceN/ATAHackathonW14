@@ -131,8 +131,7 @@ public class MainMenuScreen implements Screen {
     }
 
     public void startGame() {
-        String mapName = HackathonApp.MAP;
-        app.setScreen(new GameScreen(app, "maps/" + mapName + "/" + mapName + ".tmx"));
+        app.setScreen(new MapSelectScreen(app));
     }
 
     public void exitGame() {

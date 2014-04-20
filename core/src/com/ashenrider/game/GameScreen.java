@@ -17,7 +17,7 @@ public class GameScreen implements Screen {
     DeathsWidget deathsWidget;
     WinWidget winWidget;
 
-    public GameScreen(HackathonApp app, String map) {
+    public GameScreen(HackathonApp app, Map map) {
         this.app = app;
 
         scene = new Scene(map);

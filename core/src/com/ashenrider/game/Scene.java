@@ -93,9 +93,9 @@ public class Scene {
     float gameTime = 0f;
     float backgroundHeat = 0.0f;
     
-    public Scene(String filename) {
+    public Scene(Map map) {
         batch = new SpriteBatch();
-        map = new Map(filename);
+        this.map = map;
         camera = new OrthographicCamera();
         mapCam = new OrthographicCamera();
         mapCam.setToOrtho(false, map.getWidth(), map.getHeight());
