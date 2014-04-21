@@ -83,8 +83,8 @@ public class PlayerInput {
     // the json parser converts the Actions to strings, since it doesn't try custom type deserialization for keys of maps
     // fix the result
     public void jsonFix() {
-        HashMap<Action, InputButton> oldBtnMap = buttonMap;
-        HashMap<Action, InputAxis> oldAxisMap = axisMap;
+        HashMap<?, InputButton> oldBtnMap = buttonMap;
+        HashMap<?, InputAxis> oldAxisMap = axisMap;
         buttonMap = new HashMap<Action, InputButton>();
         axisMap = new HashMap<Action, InputAxis>();
         for (Object o : oldBtnMap.keySet()) {
