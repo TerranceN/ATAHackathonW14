@@ -183,6 +183,10 @@ public class Map {
         return new Vector2((float)Math.floor(worldCoords.x / tileSize), (float)Math.floor(worldCoords.y / tileSize));
     }
 
+    public boolean isInsideLevel(Vector2 point) {
+        return isInsideLevel(point.x, point.y);
+    }
+    
     public boolean isInsideLevel(float x, float y) {
         int tileX = (int)Math.floor(x / tileSize);
         int tileY = (int)Math.floor(y / tileSize);

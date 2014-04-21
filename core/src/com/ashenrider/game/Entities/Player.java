@@ -764,4 +764,12 @@ public class Player extends Entity {
     public boolean isOnWall() {
         return onWall;
     }
+    
+    public int getNumAirDashes() {
+        return airDashes;
+    }
+    
+    public float getDashDistance() {
+        return DASH_SPEED * DASH_TIME;
+    }
 }

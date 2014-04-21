@@ -57,17 +57,32 @@ public class AILogic extends PlayerInput {
             if ((player.isOnGround() || player.isOnWall()) && player.getCooldown(Action.JUMP) == 0.0f) {
                 AIButton btn = (AIButton) getButton(Action.JUMP);
                 btn.press();
+                // sometimes jump away fro mthe wall, and other times stay on it
+                if (player.isOnWall() && rand.nextBoolean()) {
+                    dir = -dir;
+                }
             }
             
             Vector2 pos = player.pos.cpy();
             Vector2 centre = player.getCentre();
             Vector2 size = player.size.cpy();
-            // Turn when you hit a wall
-            if (map.isInsideLevel(pos.x + size.x/2 + (size.x/2 + 20) * dir, pos.y + 2) || map.isInsideLevel(pos.x + size.x/2 + (size.x/2 + 20) * dir, pos.y + size.y - 2)) {
+            // Turn when you hit a wall and not in the air
+            Vector2 p1 = new Vector2(pos.x + size.x/2 + (size.x/2 + 20) * dir, pos.y + 2);
+            Vector2 p2 = new Vector2(pos.x + size.x/2 + (size.x/2 + 20) * dir, pos.y + size.y - 2);
+            if (player.isOnGround() && (map.isInsideLevel(p1) || map.isInsideLevel(p2))) {
                 dir = -dir;
             // Walk in a random direction after landing or after spawning
             } else if (player.hasStatus(Status.LAND_STUN) || (player.lives > 0 && !player.alive)) {
                 dir = rand.nextBoolean() ? 1 : -1;
+            }
+            // look for floating platforms to dash to for wall jumps
+            if (!player.isOnGround() && player.getNumAirDashes() > 0 && player.getCooldown(Action.JUMP) == 0.0f) {
+                float dash_distance = player.getDashDistance();
+                Vector2 p = centre.cpy().add(dash_distance * dir, 0);
+                if (map.isInsideLevel(p)) {
+                    AIButton btn = (AIButton) getButton(Action.DASH);
+                    btn.press();
+                }
             }
 
             AIAxis axis = (AIAxis) getAxis(Action.MOVE_HORIZONTAL);
