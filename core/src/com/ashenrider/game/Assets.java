@@ -40,7 +40,6 @@ public class Assets {
                 }
                 // Maps and map data
                 for (FileHandle folder : Gdx.files.internal("maps").list()) {
-                    Gdx.app.log("Folder", folder.path());
                     if (folder.isDirectory()) {
                         // The TmxMapLoader loads it's own images, just load the background images for now.
                         manager.load(folder.path() + "/background.png", Texture.class);

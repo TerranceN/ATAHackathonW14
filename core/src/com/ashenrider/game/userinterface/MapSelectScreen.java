@@ -44,12 +44,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 public class MapSelectScreen implements Screen {
 
     private HackathonApp app;
-    private TextureAtlas atlas;
-    
-    private Stage stage;
-    private Table menu;
-    
-    private Skin skin;
 
     private OrthographicCamera previewCam;
     private Vector2 previewCentre;
@@ -72,32 +66,12 @@ public class MapSelectScreen implements Screen {
     // axis value required to start scrolling at NAV_SPEED/second
     private static final float MIN_AXIS_HOLD = 0.7f;
     private static final float NAV_SPEED = 3.0f; // buttons per second
-
-    TextButton.TextButtonStyle style;
-    TextButton.TextButtonStyle selectedStyle;
     
     ShapeRenderer shapeRenderer;
     InputButton click = new MouseButton(Buttons.LEFT);
 
     public MapSelectScreen(final HackathonApp app) {
         this.app = app;
-
-        atlas = Assets.manager.get("pack/gui.atlas", TextureAtlas.class);
-
-        stage = new Stage();
-        Gdx.input.setInputProcessor(stage);
-
-        BitmapFont labelFont = new BitmapFont();
-        Skin labelSkin = new Skin();
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = HackathonApp.buttonFont;
-        labelStyle.fontColor = Color.WHITE;
-        labelSkin.add("default", labelStyle);
-                
-        menu = new Table();
-        menu.setFillParent(true);
-        menu.center().bottom();
-        stage.addActor(menu);
 
         maps = new ArrayList<ArrayList<Map>>();
         for (int y = 0; y < (mapNames.length + MAPS_PER_ROW - 1) / MAPS_PER_ROW; y++) {
@@ -263,24 +237,18 @@ public class MapSelectScreen implements Screen {
                 map.drawPreview(previewCam);
             }
         }
-        stage.act(delta);
-        stage.draw();
-        Table.drawDebug(stage);
     }
 
     @Override
     public void resize(int width, int height) {
-        stage.getViewport().update(width, height, true);
     }
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
     public void hide() {
-        Gdx.input.setInputProcessor(null);
     }
 
     @Override
@@ -295,7 +263,5 @@ public class MapSelectScreen implements Screen {
 
     @Override
     public void dispose() {
-        Gdx.input.setInputProcessor(null);
-        stage.dispose();
     }
 }

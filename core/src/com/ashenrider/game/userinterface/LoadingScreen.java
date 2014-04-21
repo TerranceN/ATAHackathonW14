@@ -26,7 +26,7 @@ public class LoadingScreen implements Screen {
     String previousFile = "";
     SpriteBatch batch;
     
-    private static final int ASSET_COUNT = 116;
+    private static final int ASSET_COUNT = 119;
     
     public LoadingScreen(final HackathonApp app) {
         super();
@@ -88,7 +88,7 @@ public class LoadingScreen implements Screen {
                 shapeRenderer.end();
                 
                 if (ASSET_COUNT < count) {
-                    Gdx.app.log("LoadingScreen", "ASSET COUNT IS WRONG! Loaded " + count + " assets.");
+                    Gdx.app.log("LoadingScreen", "Asset count is wrong! Loaded " + count + " assets, expected " + ASSET_COUNT);
                 }
                 loadedMainMenu = true;
                 app.setScreen(new MainMenuScreen(app));
