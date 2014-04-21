@@ -1,5 +1,7 @@
 package com.ashenrider.game;
 
+import com.ashenrider.game.AI.AILogic;
+import com.ashenrider.game.Input.PlayerInput;
 import com.ashenrider.game.userinterface.DeathsWidget;
 import com.ashenrider.game.userinterface.LivesWidget;
 import com.ashenrider.game.userinterface.WinWidget;
@@ -65,6 +67,11 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        // computer players should stop giving input
+        for (PlayerInput input : HackathonApp.playerInputs) {
+            if (input instanceof AILogic) {
+                ((AILogic) input).gameEnded();
+            }
+        }
     }
 }

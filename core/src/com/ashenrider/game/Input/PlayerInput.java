@@ -9,9 +9,10 @@ import com.badlogic.gdx.utils.Json;
 public class PlayerInput {
     public static final String KEYBOARD_ONLY = "Keyboard";
     public static final String KEYBOARD_AND_MOUSE = "KeyboardMouse";
+    public static final String AI = "CPU";
     
-    private HashMap<Action, InputButton> buttonMap;
-    private HashMap<Action, InputAxis> axisMap;
+    protected HashMap<Action, InputButton> buttonMap;
+    protected HashMap<Action, InputAxis> axisMap;
     public String name;
     
     public PlayerInput() {

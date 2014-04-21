@@ -683,10 +683,6 @@ public class Player extends Entity {
     public void destroy() {
         super.destroy();
     }
-
-    public boolean isAlive() {
-        return alive;
-    }
     
     private void updateBuffs(float dt) {
         for (int i = buffs.size() - 1; i >= 0; i--) {
@@ -724,10 +720,6 @@ public class Player extends Entity {
         }
     }
     
-    private boolean hasStatus(Status status) {
-        return statusBuffs.containsKey(status);
-    }
-    
     private float getBuffDuration(Status status) {
         if (hasStatus(status)) {
             return statusBuffs.get(status).duration;
@@ -749,5 +741,27 @@ public class Player extends Entity {
             b.duration = 0.0f;
         }
         // they will call their "end" methods and be removed next update
+    }
+    
+    // public methods (for AI, mostly)
+    
+    public boolean hasStatus(Status status) {
+        return statusBuffs.containsKey(status);
+    }
+    
+    public float getCooldown(Action a) {
+        return cooldown.get(a);
+    }
+
+    public boolean isAlive() {
+        return alive;
+    }
+    
+    public boolean isOnGround() {
+        return onGround;
+    }
+    
+    public boolean isOnWall() {
+        return onWall;
     }
 }

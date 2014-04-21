@@ -186,8 +186,8 @@ public class Map {
     public boolean isInsideLevel(float x, float y) {
         int tileX = (int)Math.floor(x / tileSize);
         int tileY = (int)Math.floor(y / tileSize);
-
-        return levelLayer.getCell(tileX, tileY) != null;
+        
+        return levelLayer.getCell(tileX % levelLayer.getWidth(), tileY % levelLayer.getHeight()) != null;
     }
 
     public Vector2 getLeastPenetration(Vector2 vel, Vector2 lower, Vector2 upper) {

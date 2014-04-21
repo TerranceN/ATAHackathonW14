@@ -9,6 +9,7 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.controllers.PovDirection;
+import com.ashenrider.game.AI.AILogic;
 import com.ashenrider.game.Entities.Player;
 import com.ashenrider.game.Entities.Player.Action;
 import com.ashenrider.game.Input.ControllerAxis;
@@ -144,7 +145,8 @@ public class ControlSchemeManager {
         if (HackathonApp.FILLER_PLAYERS) {
             for (int i = playerInputs.size(); i < 4; i++) {
                 // the keyboard - no mouse control scheme
-                playerInputs.add(getControlScheme(PlayerInput.KEYBOARD_ONLY, 0));
+                //playerInputs.add(getControlScheme(PlayerInput.KEYBOARD_ONLY, 0));
+                playerInputs.add(new AILogic());
             }
         }
         return playerInputs;

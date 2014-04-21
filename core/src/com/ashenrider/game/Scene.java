@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import com.ashenrider.game.AI.AILogic;
 import com.ashenrider.game.Entities.Entity;
 import com.ashenrider.game.Entities.Fireball;
 import com.ashenrider.game.Entities.InvulnerabilityPowerUp;
@@ -149,6 +150,10 @@ public class Scene {
             if (input.name.equals(PlayerInput.KEYBOARD_AND_MOUSE)) {
                 input.setInput(Action.AIM_HORIZONTAL, new MouseAxis(player, camera, true));
                 input.setInput(Action.AIM_VERTICAL, new MouseAxis(player, camera, false));
+            }
+            // computer input objects need to know their player entity and the scene
+            if (input instanceof AILogic) {
+                ((AILogic) input).setPlayer(player);
             }
         }
 
